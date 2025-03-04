@@ -1,4 +1,4 @@
-import { Button, Col, Grid, Input, Row, Space } from "antd";
+import { Button, Col, Grid, Input, Row } from "antd";
 import Title from "antd/es/typography/Title";
 import SectionLayout from "../../layouts/SectionLayout";
 import { SendOutlined } from "@ant-design/icons";

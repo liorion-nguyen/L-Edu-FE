@@ -9,10 +9,6 @@ import { Helmet } from "react-helmet-async";
 const { Title } = Typography;
 
 const Login = () => {
-    const initialValues = {
-        email: "",
-        password: "",
-    };
     const handleSubmit = (values: any) => {
         console.log("Success:", values);
     };
