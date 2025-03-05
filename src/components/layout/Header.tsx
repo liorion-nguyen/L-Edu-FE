@@ -4,11 +4,14 @@ import { Button, Col, Layout, Menu, Row, Drawer, Grid } from "antd";
 import { useLocation, useNavigate } from "react-router-dom";
 import { CSSProperties, useState } from "react";
 import { MenuOutlined } from "@ant-design/icons";
+import UserMenu from "./UserMenu";
+import { User } from "../../types/auth";
 
 const { useBreakpoint } = Grid;
 const menuItems = [
     { key: "/", label: "Home" },
     { key: "/about", label: "About" },
+    { key: "/course", label: "Course" },
     { key: "/contact", label: "Contact" },
 ];
 
@@ -27,13 +30,24 @@ const Header = () => {
     const handleLogin = () => {
         navigate("/login");
     };
+    const user: User = {
+        id: "1",
+        name: "John Doe",
+        email: "liorion.nguyen@gmail.com",
+        role: "Student",
+        course: ["react_native"],
+        avatar: "/images/landing/sections/fakeImages/avatarStudent.png"
+    };
+    const handleHome = () => {  
+        navigate("/");
+    };
     return (
         <Layout.Header style={styles.header}>
             <SectionLayout>
                 <Row justify="space-between" align="middle" style={{ width: "100%" }}>
                     {/* Logo */}
                     <Col lg={4} md={6} sm={18} xs={18}>
-                        <Title level={1} style={styles.logo}>L Edu</Title>
+                        <Title level={1} style={styles.logo} onClick={handleHome}>L Edu</Title>
                     </Col>
 
                     {/* Menu hiển thị trên màn hình lớn */}
@@ -49,15 +63,18 @@ const Header = () => {
 
                     {/* Nút Enroll + Menu Icon trên mobile */}
                     <Col lg={4} md={6} sm={6} xs={6} style={{ textAlign: "right" }}>
-                        <Button style={{ ...styles.button, display: getSizeScreen() ? "inline-flex" : "none"}} onClick={handleLogin}>Enroll now</Button>
-                        <MenuOutlined style={{ ...styles.menuIcon, display: getSizeScreen() ? "none" : "inline-flex"}} onClick={() => setOpen(true)} />
+                        {
+                            user ? getSizeScreen() && <UserMenu user={user}/>
+                                : <Button style={{ ...styles.button, display: getSizeScreen() ? "inline-flex" : "none" }} onClick={handleLogin}>Enroll now</Button>
+                        }
+                        <MenuOutlined style={{ ...styles.menuIcon, display: getSizeScreen() ? "none" : "inline-flex" }} onClick={() => setOpen(true)} />
                     </Col>
                 </Row>
             </SectionLayout>
 
             {/* Drawer cho mobile */}
             <Drawer
-                title="Menu"
+                title={user ? user.name : "Guest Account"}
                 placement="right"
                 closable
                 onClose={() => setOpen(false)}

@@ -47,7 +47,7 @@ const OurMentor = () => {
                         { breakpoint: 768, settings: { slidesToShow: 1 } }
                     ]}>
                         {mentors.map((mentor, index) => (
-                            <Col>
+                            <Col key={index}>
                                 <Card key={index} style={{ paddingTop: "10px", margin: "10px", overflow: "visible", border: 0, boxShadow: "0px 4px 8px rgba(38, 38, 38, 0.2)" }} cover={<img src={mentor.image} alt={mentor.name} style={{ height: 200, width: "-webkit-fill-available", objectFit: "cover", margin: '10px 20px' }} />}>
                                     <Card.Meta style={{ textAlign: "center" }} title={mentor.name} description={mentor.title} />
                                 </Card>

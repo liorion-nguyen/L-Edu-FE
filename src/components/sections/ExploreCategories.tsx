@@ -66,14 +66,14 @@ const ExploreCategories = () => {
     return (
         <SectionLayout>
             <Row justify="center">
-                <Col span={24} style={{ marginBottom: "20px" }}>
+                <Col span={24} style={{ paddingBottom: "20px" }}>
                     <Title level={2} style={{ textAlign: "center", color: "#282846" }}>Explore Our Categories</Title>
                 </Col>
                 <Col span={24}>
-                    <Row justify="center" gutter={[20, 20]}>
+                    <Row gutter={[20, 20]}>
                         {categories.map((category, index) => (
-                            <Col xs={24} sm={12} md={8} lg={6} key={index} style={{ border: "1px solid #8B8A9D", borderRadius: "50px", padding: "15px" }}>
-                                <Row justify="space-between" align="middle" gutter={[10, 0]}>
+                            <Col xs={24} sm={12} md={8} lg={6} key={index}>
+                                <Row justify="space-between" align="middle" style={{ border: "1px solid #8B8A9D", borderRadius: "50px", padding: "10px 20px" }}>
                                     <Col style={{ width: "60px", height: "50px" }}>
                                         <img src={category.icon} alt={category.name} style={{ width: "100%", height: "100%" }} />
                                     </Col>

@@ -51,7 +51,7 @@ const styles = {
     },
     input: {
         border: "none",
-        outline: "none",
+        boxShadow: "none",
         fontSize: "16px",
         flex: 1
     },
