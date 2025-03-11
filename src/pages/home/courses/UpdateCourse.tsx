@@ -148,11 +148,15 @@ const UpdateCourse = () => {
 
                         <Form.Item label="Giáo viên" name="instructorId">
                             {
-                                optionsStudents.length != 0 && course &&
-                                <CustomSelectMultiple
-                                    placeholder="Choose Teacher"
+                                optionsTeachers.length != 0 && course &&
+                                <Select
+                                    showSearch
+                                    placeholder="Select A Teacher"
+                                    defaultValue={course?.instructorId}
+                                    filterOption={(input, option) =>
+                                        (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                                    }
                                     options={optionsTeachers}
-                                    defaultValue={[course?.instructorId || ""]}
                                 />
                             }
                         </Form.Item>

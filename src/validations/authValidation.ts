@@ -12,7 +12,7 @@ export const LoginValidationSchema = Yup.object().shape({
 });
 
 export const SignUpValidationSchema = Yup.object().shape({
-    fullname: Yup.string()
+    fullName: Yup.string()
         .trim()
         .min(3, "Fullname must be at least 3 characters")
         .required("Please enter your fullname"),
@@ -24,7 +24,7 @@ export const SignUpValidationSchema = Yup.object().shape({
         .trim()
         .min(6, "Password must be at least 6 characters")
         .required("Please enter your password"),
-    confirmPassword: Yup.string()
+    cfPassword: Yup.string()
         .trim()
         .required("Please confirm your password")
         .oneOf([Yup.ref("password")], "Passwords must match"),

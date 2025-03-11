@@ -8,6 +8,8 @@ import { dispatch, RootState, useSelector } from "../../../redux/store";
 import { getCourseById } from "../../../redux/slices/courses";
 import Loading from "../../../components/common/Loading";
 import { Mode } from "../../../enum/course.enum";
+import { Role } from "../../../enum/user.enum";
+import { useIsAdmin } from "../../../utils/auth";
 
 const Text = Typography.Text;
 const useBreakpoint = Grid.useBreakpoint;
@@ -39,7 +41,7 @@ const Session = ({ item, index }: { item: any; index: number }) => {
         if (name == "Video document") navigate(`/course/video/${link}`);
         if (name == "Quiz document") navigate(`/course/quiz/${link}`);
     }
-    
+    const isAdmin = useIsAdmin();
     return (
         <Row gutter={[0, 20]} style={styles.container}>
             <Col span={24}>
@@ -74,13 +76,14 @@ const Session = ({ item, index }: { item: any; index: number }) => {
                     }
                 </Row>
             </Col>
-            <Col span={24}>
-                <Flex justify="center" align="center" style={{zIndex:10}}>
+            {isAdmin && <Col span={24}>
+                <Flex justify="center" align="center" style={{ zIndex: 10 }}>
                     <Button type="primary" icon={<ProductOutlined />} size="large" onClick={() => { navigate(`/session/updateSession/${item._id}`) }}>
                         Update Session
                     </Button>
                 </Flex>
             </Col>
+            }
             {
                 item.mode === Mode.CLOSE && <Flex style={styles.lock} justify="center" align="center" vertical>
                     <LockOutlined style={{ fontSize: "30px" }} />
@@ -95,7 +98,7 @@ const Session = ({ item, index }: { item: any; index: number }) => {
 const CourseDetail = () => {
     const navigate = useNavigate();
     const { id } = useParams();
-    const { course, loading } = useSelector((state: RootState) => state.courses);    
+    const { course, loading } = useSelector((state: RootState) => state.courses);
     useEffect(() => {
         fetch();
     }, [id]);
@@ -109,6 +112,7 @@ const CourseDetail = () => {
     const handleAddSession = () => {
         navigate(`../session/addSession/${id}`);
     }
+    const { user } = useSelector((state: RootState) => state.auth);
     return (
         loading ? <Loading /> :
             course && <SectionLayout title={course.name}>
@@ -116,7 +120,10 @@ const CourseDetail = () => {
                     <Col span={24}>
                         <Flex justify="space-between" align="center">
                             <Title level={2}>{course.name}</Title>
-                            <Button type="primary" icon={<PlusOutlined />} size="large" onClick={handleAddSession}>Add Session</Button>
+                            {
+                                user && user.role === Role.ADMIN &&
+                                <Button type="primary" icon={<PlusOutlined />} size="large" onClick={handleAddSession}>Add Session</Button>
+                            }
                         </Flex>
                     </Col>
                     <Col dangerouslySetInnerHTML={{ __html: course.description }} span={24} />

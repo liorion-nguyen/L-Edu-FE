@@ -9,6 +9,8 @@ import { dispatch, RootState, useSelector } from "../../../redux/store";
 import { getCourses } from "../../../redux/slices/courses";
 import Loading from "../../../components/common/Loading";
 import { Mode } from "../../../enum/course.enum";
+import { Role } from "../../../enum/user.enum";
+import { useIsAdmin } from "../../../utils/auth";
 
 const Text = Typography.Text;
 const { useBreakpoint } = Grid;
@@ -23,6 +25,7 @@ const ItemCourse = (item: CourseType) => {
     const handleUpdateCourse = () => {
         navigate(`/course/update/${item._id}`);
     }
+    const isAdmin = useIsAdmin();
     return (
         <Row style={styles.container}>
             <Col span={24} style={{ position: "relative" }}>
@@ -39,14 +42,21 @@ const ItemCourse = (item: CourseType) => {
             </Col>
             <Col span={24} style={styles.content}>
                 <Title level={4} style={styles.nameCourse}>{item.name}</Title>
-                <Flex justify="space-around" align="center">
-                    <Button type="primary" icon={item.mode === Mode.CLOSE ? <LockOutlined /> : <LoginOutlined />} size={"large"} onClick={handleJoinCourse} disabled={item.mode === Mode.CLOSE}>
-                        {item.mode === Mode.CLOSE ? "Has Been Locked" : "Join Course"}
-                    </Button>
-                    <Button type="primary" icon={<EditOutlined />} size={"large"} onClick={handleUpdateCourse}>
-                        Update
-                    </Button>
-                </Flex>
+                <Row justify="space-between" align="middle" gutter={[20, 20]} style={{ padding: "0 20px" }}>
+                    <Col xs={24} sm={24} md={24} lg={24} xl={isAdmin ? 12 : 24} style={{ textAlign: "center" }}>
+                        <Button type="primary" icon={item.mode === Mode.CLOSE ? <LockOutlined /> : <LoginOutlined />} size={"large"} onClick={handleJoinCourse} disabled={item.mode === Mode.CLOSE}>
+                            {item.mode === Mode.CLOSE ? "Has Been Locked" : "Join Course"}
+                        </Button>
+                    </Col>
+                    {
+                        isAdmin &&
+                        <Col xs={24} sm={24} md={24} lg={24} xl={12} style={{ textAlign: "center" }}>
+                            <Button type="primary" icon={<EditOutlined />} size={"large"} onClick={handleUpdateCourse}>
+                                Update
+                            </Button>
+                        </Col>
+                    }
+                </Row>
             </Col>
         </Row>
     );

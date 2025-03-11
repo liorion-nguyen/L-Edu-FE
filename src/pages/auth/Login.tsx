@@ -42,8 +42,6 @@ const Login = () => {
     };
 
     const { user } = useSelector((state: RootState) => state.auth);
-    console.log(user);
-    
     return (
         <Card style={{ boxShadow: "0px 4px 8px rgba(38, 38, 38, 0.2)", borderRadius: "10px" }}>
             <Helmet>
