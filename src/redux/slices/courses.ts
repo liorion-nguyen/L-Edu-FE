@@ -8,6 +8,7 @@ import { envConfig } from '../../config';
 import { showNotification } from '../../components/common/Toaster';
 import { ToasterType } from '../../enum/toaster';
 import { initialValuesType, SessionResponse } from '../../types/session';
+import { Role } from '../../enum/user.enum';
 
 type GetCoursesSuccessAction = PayloadAction<{ courses: CourseType[] | null, totalCourse: number }>;
 type GetCoursesuccessAction = PayloadAction<{ course: CourseType }>;
@@ -85,6 +86,21 @@ export const getCourseById = (id: string) => {
             return false;
         }
     };
+};
+
+export const updateCourse = (id: string, course: CourseType) => {
+    return async () => {
+        try {
+            dispatch(CoursesSlice.actions.getRequest());
+            await axios.put(`${envConfig.serverURL}/courses/${id}`, course);
+            showNotification(ToasterType.success, 'Course updated successfully');
+        }
+        catch (error: Error | any) {
+            const errorMessage: string = error.response ? error.response.data.message : 'Something went wrong';
+            showNotification(ToasterType.error, 'Update failed', errorMessage);
+            dispatch(CoursesSlice.actions.getFailure(errorMessage));
+        }
+    }
 };
 
 export const createSession = (values: initialValuesType) => {
@@ -168,5 +184,19 @@ export const updateSession = (id: string, values: initialValuesType) => {
         }
     };
 };
+
+export const getUsersCore = (role: Role) => {
+    return async () => {
+        try {
+            dispatch(CoursesSlice.actions.getRequest());
+            const result = await axios.get(`${envConfig.serverURL}/users/core/${role}`);
+            return result.data.data;
+        } catch (error: Error | any) {
+            const errorMessage = error.response ? error.response.data.message : 'Something went wrong';
+            toast.error(errorMessage);
+            dispatch(CoursesSlice.actions.getFailure(errorMessage));
+        }
+    };
+}
 
 export default CoursesSlice.reducer;

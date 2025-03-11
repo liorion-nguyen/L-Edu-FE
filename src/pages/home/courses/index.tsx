@@ -1,8 +1,8 @@
-import { Avatar, Button, Col, Grid, Input, Row, Tooltip, Typography } from "antd";
+import { Avatar, Button, Col, Flex, Grid, Input, Row, Tooltip, Typography } from "antd";
 import Title from "antd/es/typography/Title";
 import { CourseType } from "../../../types/course";
 import SectionLayout from "../../../layouts/SectionLayout";
-import { LockOutlined, LoginOutlined, SearchOutlined } from "@ant-design/icons";
+import { EditOutlined, LockOutlined, LoginOutlined, SearchOutlined } from "@ant-design/icons";
 import { CSSProperties, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { dispatch, RootState, useSelector } from "../../../redux/store";
@@ -17,6 +17,11 @@ const ItemCourse = (item: CourseType) => {
     const navigate = useNavigate();
     const handleJoinCourse = () => {
         navigate(`/course/${item._id}`);
+    }
+    const { user } = useSelector((state: RootState) => state.auth);
+
+    const handleUpdateCourse = () => {
+        navigate(`/course/update/${item._id}`);
     }
     return (
         <Row style={styles.container}>
@@ -34,9 +39,14 @@ const ItemCourse = (item: CourseType) => {
             </Col>
             <Col span={24} style={styles.content}>
                 <Title level={4} style={styles.nameCourse}>{item.name}</Title>
-                <Button type="primary" icon={item.mode === Mode.CLOSE ? <LockOutlined /> : <LoginOutlined />} size={"large"} onClick={handleJoinCourse} disabled={item.mode === Mode.CLOSE}>
-                {item.mode === Mode.CLOSE ? "Has Been Locked" : "Join Course"}
-                </Button>
+                <Flex justify="space-around" align="center">
+                    <Button type="primary" icon={item.mode === Mode.CLOSE ? <LockOutlined /> : <LoginOutlined />} size={"large"} onClick={handleJoinCourse} disabled={item.mode === Mode.CLOSE}>
+                        {item.mode === Mode.CLOSE ? "Has Been Locked" : "Join Course"}
+                    </Button>
+                    <Button type="primary" icon={<EditOutlined />} size={"large"} onClick={handleUpdateCourse}>
+                        Update
+                    </Button>
+                </Flex>
             </Col>
         </Row>
     );
@@ -73,7 +83,7 @@ const Course = () => {
                             <Row gutter={[20, 20]}>
                                 {
                                     courses && courses.map((course, index) => (
-                                        <Col key={index} lg={8} md={12} sm={12} xs={24}>
+                                        course && <Col key={index} lg={8} md={12} sm={12} xs={24}>
                                             <ItemCourse {...course} />
                                         </Col>
                                     ))

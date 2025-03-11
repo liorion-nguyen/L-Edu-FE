@@ -1,6 +1,6 @@
 export enum TypeDiscount {
-  PERCENTAGE = "PERCENTAGE",
-  FIXED = "FIXED",
+  PERCENT = "PERCENT",
+  VALUE = "VALUE",
 }
 
 export enum Currency {

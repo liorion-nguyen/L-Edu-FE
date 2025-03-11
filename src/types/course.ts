@@ -31,7 +31,7 @@ export type CourseType = {
     category?: string;
     cover?: string;
     students: string[];
-    sessions: SessionCoreResponse[] | string[];
+    sessions?: SessionCoreResponse[] | string[];
     duration: number;
     status: Status;
     createdAt: string;
