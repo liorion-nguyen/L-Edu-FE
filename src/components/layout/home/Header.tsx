@@ -1,11 +1,14 @@
-import SectionLayout from "../../layouts/SectionLayout";
+import SectionLayout from "../../../layouts/SectionLayout";
 import Title from "antd/es/typography/Title";
 import { Button, Col, Layout, Menu, Row, Drawer, Grid } from "antd";
 import { useLocation, useNavigate } from "react-router-dom";
-import { CSSProperties, useState } from "react";
+import { CSSProperties, useEffect, useState } from "react";
 import { MenuOutlined } from "@ant-design/icons";
-import UserMenu from "./UserMenu";
-import { User } from "../../types/auth";
+import UserMenu from "../UserMenu";
+import { UserType } from "../../../types/user";
+import { Role, Status } from "../../../enum/user.enum";
+import { dispatch, RootState, useSelector } from "../../../redux/store";
+import { getUser } from "../../../redux/slices/auth";
 
 const { useBreakpoint } = Grid;
 const menuItems = [
@@ -30,17 +33,15 @@ const Header = () => {
     const handleLogin = () => {
         navigate("/login");
     };
-    const user: User = {
-        id: "1",
-        name: "John Doe",
-        email: "liorion.nguyen@gmail.com",
-        role: "Student",
-        course: ["react_native"],
-        avatar: "/images/landing/sections/fakeImages/avatarStudent.png"
-    };
-    const handleHome = () => {  
+    const handleHome = () => {
         navigate("/");
     };
+    const { user } = useSelector((state: RootState) => state.auth);
+    useEffect(() => {
+        if (!user) {
+            dispatch(getUser());
+        }
+    }, []);
     return (
         <Layout.Header style={styles.header}>
             <SectionLayout>
@@ -64,7 +65,7 @@ const Header = () => {
                     {/* Nút Enroll + Menu Icon trên mobile */}
                     <Col lg={4} md={6} sm={6} xs={6} style={{ textAlign: "right" }}>
                         {
-                            user ? getSizeScreen() && <UserMenu user={user}/>
+                            user ? getSizeScreen() && <UserMenu user={user} />
                                 : <Button style={{ ...styles.button, display: getSizeScreen() ? "inline-flex" : "none" }} onClick={handleLogin}>Enroll now</Button>
                         }
                         <MenuOutlined style={{ ...styles.menuIcon, display: getSizeScreen() ? "none" : "inline-flex" }} onClick={() => setOpen(true)} />
@@ -74,7 +75,7 @@ const Header = () => {
 
             {/* Drawer cho mobile */}
             <Drawer
-                title={user ? user.name : "Guest Account"}
+                title={user ? user.fullName : "Guest Account"}
                 placement="right"
                 closable
                 onClose={() => setOpen(false)}

@@ -1,7 +1,7 @@
 import React from "react";
 import { Layout } from "antd";
-import Header from "../components/layout/Header";
-import Footer from "../components/layout/Footer";
+import Header from "../components/layout/home/Header";
+import Footer from "../components/layout/home/Footer";
 
 const { Content } = Layout;
 

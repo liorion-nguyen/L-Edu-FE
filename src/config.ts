@@ -1,6 +1,5 @@
 export const envConfig = {
-    googleAppId: process.env.VITE_GOOGLE_APP_ID,
-    serverURL: process.env.VITE_SERVER_URL,
+    serverURL: process.env.REACT_APP_API_URL,
 };
 
 export const localStorageConfig = {

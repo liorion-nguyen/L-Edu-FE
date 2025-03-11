@@ -1,15 +1,42 @@
 import { Card, Checkbox, CheckboxProps, Divider, Typography } from "antd";
-import { Formik, Form, Field } from "formik";
+import { Formik, Form, Field, useFormik } from "formik";
 import InputForm from "../../components/common/CustomInput";
-import { signUpValidationSchema } from "../../validations/authValidation";
+import { SignUpValidationSchema } from "../../validations/authValidation";
 import ButtonForm from "../../components/common/CustomButton";
 import { Helmet } from "react-helmet-async";
+import { dispatch } from "../../redux/store";
+import { register } from "../../redux/slices/auth";
+import InputFormHide from "../../components/common/CustomInputHide";
 
 const { Title } = Typography;
 
+interface SignUpValues {
+    fullName: string;
+    email: string;
+    password: string;
+    cfPassword?: string;
+    submit: null;
+}
+
+const initialValues: SignUpValues = {
+    fullName: '',
+    email: '',
+    password: '',
+    cfPassword: '',
+    submit: null,
+};
+
 const SignUp = () => {
-    const handleSubmit = (values: any) => {
-        console.log("Success:", values);
+    const formik = useFormik({
+        initialValues,
+        validationSchema: SignUpValidationSchema,
+        onSubmit: (values) => {
+        }
+    });
+
+    const handleSubmit = (values: SignUpValues) => {
+        // dispatch(register({ fullName: values.fullName, email: values.email, password: values.password }));
+        console.log(values);
     };
 
     const onChange: CheckboxProps['onChange'] = (e) => {
@@ -25,13 +52,13 @@ const SignUp = () => {
             <Title level={1} style={{ textAlign: "center" }}>Sign Up</Title>
 
             <Formik
-                initialValues={{ fullname: "", email: "", password: "", confirmPassword: "" }}
-                validationSchema={signUpValidationSchema}
+                initialValues={initialValues}
+                validationSchema={SignUpValidationSchema}
                 onSubmit={handleSubmit}
             >
                 {({ errors, touched }) => (
                     <Form>
-                        <Field name="fullname">
+                        <Field name="fullName">
                             {({ field }: any) => (
                                 <div>
                                     <InputForm {...field} placeholder="Enter your fullName" />
@@ -50,7 +77,7 @@ const SignUp = () => {
                         <Field name="password">
                             {({ field }: any) => (
                                 <div>
-                                    <InputForm {...field} placeholder="Enter your password" />
+                                    <InputFormHide {...field} placeholder="Enter your password" />
                                 </div>
                             )}
                         </Field>
@@ -58,7 +85,7 @@ const SignUp = () => {
                         <Field name="confirmPassword">
                             {({ field }: any) => (
                                 <div>
-                                    <InputForm {...field} placeholder="Enter your confirmPassword" />
+                                    <InputFormHide {...field} placeholder="Enter your confirmPassword" />
                                 </div>
                             )}
                         </Field>

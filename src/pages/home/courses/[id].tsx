@@ -1,43 +1,55 @@
-import { Button, Col, Grid, Row, Typography } from "antd";
+import { Button, Col, Flex, Grid, Row, Typography } from "antd";
 import SectionLayout from "../../../layouts/SectionLayout";
 import Title from "antd/es/typography/Title";
-import { KnowledgeType } from "../../../types/course";
-import { LogoutOutlined } from "@ant-design/icons";
-import { CSSProperties } from "react";
-import { useNavigate } from "react-router-dom";
+import { EyeOutlined, LockOutlined, LogoutOutlined, PlusOutlined, ProductOutlined } from "@ant-design/icons";
+import { CSSProperties, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { dispatch, RootState, useSelector } from "../../../redux/store";
+import { getCourseById } from "../../../redux/slices/courses";
+import Loading from "../../../components/common/Loading";
+import { Mode } from "../../../enum/course.enum";
 
 const Text = Typography.Text;
 const useBreakpoint = Grid.useBreakpoint;
-const Session = ({ item, index }: { item: KnowledgeType; index: number }) => {
+const Session = ({ item, index }: { item: any; index: number }) => {
     const sections = [
         {
             name: "Note document",
             icon: "/images/icons/course/doc.png",
-            link: `../document/${item.id}`,
-            status: item.content ? true : false
+            id: item._id,
+            status: item.modeNoteMd == Mode.OPEN ? true : false
         },
         {
             name: "Video document",
             icon: "/images/icons/course/video.png",
-            link: `../video/${item.id}`,
-            status: item.video ? true : false
+            id: item._id,
+            status: item.modeVideoUrl == Mode.OPEN ? true : false
         },
         {
             name: "Quiz document",
             icon: "/images/icons/course/quiz.png",
-            link: `../quiz/${item.id}`,
-            status: item.quiz ? true : false
+            id: item._id,
+            status: item.modeQuizId == Mode.OPEN ? true : false
         }
     ];
     const screens = useBreakpoint();
     const navigate = useNavigate();
-    const handleView = (link: string) => {
-        navigate(link);
+    const handleView = (link: string, name: string) => {
+        if (name == "Note document") navigate(`/course/document/${link}`);
+        if (name == "Video document") navigate(`/course/video/${link}`);
+        if (name == "Quiz document") navigate(`/course/quiz/${link}`);
     }
+    
     return (
         <Row gutter={[0, 20]} style={styles.container}>
             <Col span={24}>
-                <Title level={4} style={{ marginTop: "10px" }}>Lesson {index + 1}. {item.title}</Title>
+                <Flex justify="space-between" align="center">
+                    <Title level={4} style={{ marginTop: "10px" }}>Lesson {item.sessionNumber}. {item.title}</Title>
+                    <Flex gap={5}>
+                        <EyeOutlined />
+                        <Text>{item?.views || 0} views</Text>
+                    </Flex>
+                </Flex>
             </Col>
             <Col span={24}>
                 <Row gutter={[20, 20]}>
@@ -52,7 +64,7 @@ const Session = ({ item, index }: { item: KnowledgeType; index: number }) => {
                                         <Text>{section.name}</Text>
                                     </Col>
                                     <Col xs={2} sm={2} md={3} lg={3} style={styles.boxButton}>
-                                        <Button style={styles.button} icon={screens.md ? undefined : <LogoutOutlined />} disabled={!section.status} onClick={() => {handleView(section.link)}}>
+                                        <Button style={styles.button} icon={screens.md ? undefined : <LogoutOutlined />} disabled={!section.status} onClick={() => { handleView(section.id, section.name) }}>
                                             {screens.md ? "Open View" : ""}
                                         </Button>
                                     </Col>
@@ -62,81 +74,71 @@ const Session = ({ item, index }: { item: KnowledgeType; index: number }) => {
                     }
                 </Row>
             </Col>
+            <Col span={24}>
+                <Flex justify="center" align="center" style={{zIndex:10}}>
+                    <Button type="primary" icon={<ProductOutlined />} size="large" onClick={() => { navigate(`/session/updateSession/${item._id}`) }}>
+                        Update Session
+                    </Button>
+                </Flex>
+            </Col>
+            {
+                item.mode === Mode.CLOSE && <Flex style={styles.lock} justify="center" align="center" vertical>
+                    <LockOutlined style={{ fontSize: "30px" }} />
+                    <Title level={3}>Temporarily Locked</Title>
+                </Flex>
+            }
         </Row>
     );
 }
 
 
 const CourseDetail = () => {
-    const course = {
-        id: "1",
-        title: "Lập trình app(React Native)",
-        description: "Học lập trình app với React Native, bạn sẽ học được cách xây dựng ứng dụng di động trên cả hai hệ điều hành Android và iOS. Bạn sẽ học được cách sử dụng React Native để xây dựng ứng dụng di động thực tế.",
-        language: ["React Native", "TypeScript", "JavaScript", "HTML", "CSS"],
-        thumbnail: "/images/landing/sections/fakeImages/thumbnailCourse.png",
-        teacher: {
-            id: "1",
-            name: "John Doe",
-            avatar: "/images/landing/sections/fakeImages/mentor1.png"
-        },
-        price: 1000000,
-        discount: 0,
-        status: "Open",
-        countLesson: 20,
-        student: ["1", "2", "3"],
-        knowledge: [
-            {
-                id: "1",
-                title: "Tuần sinh hoạt Công dân-HSSV năm học 2021-2022 cho sinh viên K71",
-                content: "hello",
-                status: "Open",
-                video: "",
-                quiz: ""
-            },
-            {
-                id: "2",
-                title: "Tuần sinh hoạt Công dân-HSSV năm học 2021-2022 cho sinh viên K71",
-                content: "dsadsadsa",
-                status: "Open",
-                video: "",
-                quiz: ""
-            },
-            {
-                id: "3",
-                title: "Tuần sinh hoạt Công dân-HSSV năm học 2021-2022 cho sinh viên K71",
-                content: "sadsadsad",
-                status: "Open",
-                video: "",
-                quiz: ""
-            }
-        ]
-    };
+    const navigate = useNavigate();
+    const { id } = useParams();
+    const { course, loading } = useSelector((state: RootState) => state.courses);    
+    useEffect(() => {
+        fetch();
+    }, [id]);
 
+    const fetch = async () => {
+        const check = await dispatch(getCourseById(id as string));
+        if (!check) {
+            navigate(-1);
+        }
+    }
+    const handleAddSession = () => {
+        navigate(`../session/addSession/${id}`);
+    }
     return (
-        <SectionLayout title={course.title}>
-            <Row style={{ marginBottom: "50px" }} gutter={[20, 20]}>
-                <Col span={24}>
-                    <Title level={2}>{course.title}</Title>
-                </Col>
-                <Col span={24}>
-                    <Row gutter={[20, 40]}>
-                        {
-                            course.knowledge?.map((item, index) => (
-                                <Col span={24} key={index}>
-                                    <Session key={index} item={item} index={index} />
-                                </Col>
-                            ))
-                        }
-                    </Row>
-                </Col>
-            </Row>
-        </SectionLayout>
+        loading ? <Loading /> :
+            course && <SectionLayout title={course.name}>
+                <Row style={{ marginBottom: "50px" }} gutter={[20, 20]}>
+                    <Col span={24}>
+                        <Flex justify="space-between" align="center">
+                            <Title level={2}>{course.name}</Title>
+                            <Button type="primary" icon={<PlusOutlined />} size="large" onClick={handleAddSession}>Add Session</Button>
+                        </Flex>
+                    </Col>
+                    <Col dangerouslySetInnerHTML={{ __html: course.description }} span={24} />
+                    <Col span={24}>
+                        <Row gutter={[20, 40]}>
+                            {
+                                course.sessions?.map((item, index) => (
+                                    <Col span={24} key={index}>
+                                        <Session key={index} item={item} index={index} />
+                                    </Col>
+                                ))
+                            }
+                        </Row>
+                    </Col>
+                </Row>
+            </SectionLayout>
     );
 };
 
 export default CourseDetail;
 
-const styles: { boxButton: CSSProperties, button: CSSProperties, icon: CSSProperties, boxSession: CSSProperties, container: CSSProperties } = {
+const styles: { boxButton: CSSProperties, lock: CSSProperties, button: CSSProperties, icon: CSSProperties, boxSession: CSSProperties, container: CSSProperties } = {
     boxButton: {
         textAlign: "right"
     },
@@ -158,6 +160,19 @@ const styles: { boxButton: CSSProperties, button: CSSProperties, icon: CSSProper
         padding: "20px",
         background: "#ffffff",
         borderRadius: "20px",
-        boxShadow: "0px 4px 8px rgba(38, 38, 38, 0.2)"
+        boxShadow: "0px 4px 8px rgba(38, 38, 38, 0.2)",
+        position: "relative"
+    },
+    lock: {
+        position: "absolute",
+        top: "0",
+        right: "0",
+        color: "#f0f2f5",
+        width: "100%",
+        height: "100%",
+        background: "grey",
+        opacity: 0.3,
+        borderRadius: "20px",
+        zIndex: 1
     }
 }

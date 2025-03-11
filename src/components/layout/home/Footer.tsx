@@ -1,6 +1,6 @@
 import { Col, Layout, Row, Space, Typography } from "antd";
 import { CSSProperties } from "react";
-import SectionLayout from "../../layouts/SectionLayout";
+import SectionLayout from "../../../layouts/SectionLayout";
 
 const { Title, Text } = Typography;
 

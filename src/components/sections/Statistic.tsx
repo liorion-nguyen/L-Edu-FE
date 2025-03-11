@@ -1,6 +1,7 @@
 import { Col, Row } from "antd";
 import SectionLayout from "../../layouts/SectionLayout";
 import { Typography } from "antd";
+import { formatNumber } from "../../utils/logic";
 
 const { Text } = Typography;
 
@@ -23,13 +24,6 @@ const Statistic = () => {
             count: 180000,
         }
     ];
-
-    const formatNumber = (num: number) => {
-        if (num >= 1_000_000_000) return (num / 1_000_000_000).toFixed(1) + "B+";
-        if (num >= 1_000_000) return (num / 1_000_000).toFixed(1) + "M+";
-        if (num >= 1_000) return (num / 1_000).toFixed(1) + "K+";
-        return num;
-    };
 
     return (
         <SectionLayout>

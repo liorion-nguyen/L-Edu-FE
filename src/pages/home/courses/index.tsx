@@ -2,9 +2,13 @@ import { Avatar, Button, Col, Grid, Input, Row, Tooltip, Typography } from "antd
 import Title from "antd/es/typography/Title";
 import { CourseType } from "../../../types/course";
 import SectionLayout from "../../../layouts/SectionLayout";
-import { LoginOutlined, SearchOutlined } from "@ant-design/icons";
-import { CSSProperties, useState } from "react";
+import { LockOutlined, LoginOutlined, SearchOutlined } from "@ant-design/icons";
+import { CSSProperties, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { dispatch, RootState, useSelector } from "../../../redux/store";
+import { getCourses } from "../../../redux/slices/courses";
+import Loading from "../../../components/common/Loading";
+import { Mode } from "../../../enum/course.enum";
 
 const Text = Typography.Text;
 const { useBreakpoint } = Grid;
@@ -12,23 +16,26 @@ const { useBreakpoint } = Grid;
 const ItemCourse = (item: CourseType) => {
     const navigate = useNavigate();
     const handleJoinCourse = () => {
-        navigate(`/course/${item.id}`);
+        navigate(`/course/${item._id}`);
     }
     return (
         <Row style={styles.container}>
             <Col span={24} style={{ position: "relative" }}>
-                <img src={item.thumbnail} alt={item.title} style={styles.thumbnail} />
-                <Text style={styles.countLesson}>{item.countLesson} Sessions</Text>
-                <a href={`../profile/${item.teacher.id}`} style={styles.avtTeacher}>
-                    <Tooltip title={item.teacher.name} placement="top">
-                        <Avatar src={item.teacher.avatar} style={{ width: "100%", height: "100%" }} />
-                    </Tooltip>
-                </a>
+                <img src={item.cover || "/images/landing/sections/fakeImages/thumbnailCourse.png"} alt={item.name} style={styles.thumbnail} />
+                <Text style={styles.countLesson}>{item.duration} Sessions</Text>
+                {
+                    item.instructor &&
+                    <a href={`../profile/${item.instructor._id}`} style={styles.avtTeacher}>
+                        <Tooltip title={item.instructor.fullName} placement="top">
+                            <Avatar src={item.instructor.avatar || "/images/landing/sections/fakeImages/avatarStudent.png"} style={{ width: "100%", height: "100%" }} />
+                        </Tooltip>
+                    </a>
+                }
             </Col>
             <Col span={24} style={styles.content}>
-                <Title level={4} style={styles.nameCourse}>{item.title}</Title>
-                <Button type="primary" icon={<LoginOutlined />} size={"large"} onClick={handleJoinCourse}>
-                    Join Course
+                <Title level={4} style={styles.nameCourse}>{item.name}</Title>
+                <Button type="primary" icon={item.mode === Mode.CLOSE ? <LockOutlined /> : <LoginOutlined />} size={"large"} onClick={handleJoinCourse} disabled={item.mode === Mode.CLOSE}>
+                {item.mode === Mode.CLOSE ? "Has Been Locked" : "Join Course"}
                 </Button>
             </Col>
         </Row>
@@ -36,78 +43,14 @@ const ItemCourse = (item: CourseType) => {
 };
 
 const Course = () => {
-    const categories = [
-        {
-            id: "1",
-            title: "Lập trình app(React Native)",
-            description: "Học lập trình app với React Native, bạn sẽ học được cách xây dựng ứng dụng di động trên cả hai hệ điều hành Android và iOS. Bạn sẽ học được cách sử dụng React Native để xây dựng ứng dụng di động thực tế.",
-            language: ["React Native", "TypeScript", "JavaScript", "HTML", "CSS"],
-            thumbnail: "/images/landing/sections/fakeImages/thumbnailCourse.png",
-            teacher: {
-                id: "1",
-                name: "John Doe",
-                avatar: "/images/landing/sections/fakeImages/mentor1.png"
-            },
-            price: 1000000,
-            discount: 0,
-            status: "Open",
-            countLesson: 20,
-            handle: () => { }
-        },
-        {
-            id: "2",
-            title: "Lập trình web(React)",
-            description: "Học lập trình web với React, bạn sẽ học được cách xây dựng ứng dụng web hiện đại với React. Bạn sẽ học được cách sử dụng React để xây dựng ứng dụng web thực tế.",
-            language: ["React", "TypeScript", "JavaScript", "HTML", "CSS"],
-            thumbnail: "/images/landing/sections/fakeImages/thumbnailCourse.png",
-            teacher: {
-                id: "1",
-                name: "John Doe",
-                avatar: "/images/landing/sections/fakeImages/mentor1.png"
-            },
-            price: 1000000,
-            discount: 0,
-            status: "Open",
-            countLesson: 20,
-            handle: () => { }
-        },
-        {
-            id: "3",
-            title: "Lập trình website cơ bản",
-            description: "Học lập trình website cơ bản, bạn sẽ học được cách xây dựng website cơ bản với HTML, CSS và JavaScript. Bạn sẽ học được cách sử dụng HTML, CSS, JavaScript để xây dựng website cơ bản.",
-            language: ["HTML", "CSS", "JavaScript"],
-            thumbnail: "/images/landing/sections/fakeImages/thumbnailCourse.png",
-            teacher: {
-                id: "1",
-                name: "John Doe",
-                avatar: "/images/landing/sections/fakeImages/mentor1.png"
-            },
-            price: 1000000,
-            discount: 0,
-            status: "Open",
-            countLesson: 20,
-            handle: () => { }
-        },
-        {
-            id: "4",
-            title: "Lập trình web",
-            description: "Học lập trình web, bạn sẽ học được cách xây dựng website với HTML, CSS và JavaScript. Bạn sẽ học được cách sử dụng HTML, CSS, JavaScript để xây dựng website thực tế.",
-            language: ["HTML", "CSS", "JavaScript", "Firebase"],
-            thumbnail: "/images/landing/sections/fakeImages/thumbnailCourse.png",
-            teacher: {
-                id: "1",
-                name: "John Doe",
-                avatar: "/images/landing/sections/fakeImages/mentor1.png"
-            },
-            price: 1000000,
-            discount: 0,
-            status: "Open",
-            countLesson: 42,
-            handle: () => { }
-        }
-    ];
-
     const screens = useBreakpoint();
+    const { courses, totalCourse, loading } = useSelector((state: RootState) => state.courses);
+    useEffect(() => {
+        if (totalCourse === 0) {
+            dispatch(getCourses());
+        }
+    }, []);
+
     return (
         <SectionLayout title="Courses">
             <Row gutter={[20, 20]} style={{ textAlign: "center", paddingBottom: "50px" }}>
@@ -124,17 +67,20 @@ const Course = () => {
                         </Col>
                     </Row>
                 </Col>
-                <Col span={24}>
-                    <Row gutter={[20, 20]}>
-                        {
-                            categories.map((category, index) => (
-                                <Col key={index} lg={8} md={12} sm={12} xs={24}>
-                                    <ItemCourse {...category} />
-                                </Col>
-                            ))
-                        }
-                    </Row>
-                </Col>
+                {
+                    loading ? <Loading /> :
+                        <Col span={24}>
+                            <Row gutter={[20, 20]}>
+                                {
+                                    courses && courses.map((course, index) => (
+                                        <Col key={index} lg={8} md={12} sm={12} xs={24}>
+                                            <ItemCourse {...course} />
+                                        </Col>
+                                    ))
+                                }
+                            </Row>
+                        </Col>
+                }
             </Row>
         </SectionLayout>
     );

@@ -1,18 +1,49 @@
 import { Card, Divider, Typography } from "antd";
-import { Formik, Form, Field } from "formik";
+import { Formik, Form, Field, useFormik } from "formik";
 import LoginMethods from "./components/LoginMethods";
 import InputForm from "../../components/common/CustomInput";
-import { loginValidationSchema } from "../../validations/authValidation";
 import ButtonForm from "../../components/common/CustomButton";
+import { LoginValidationSchema } from "../../validations/authValidation";
 import { Helmet } from "react-helmet-async";
+import { dispatch, RootState, useSelector } from "../../redux/store";
+import { getUser, login } from "../../redux/slices/auth";
+import InputFormHide from "../../components/common/CustomInputHide";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 const { Title } = Typography;
 
+interface LoginValues {
+    email: string;
+    password: string;
+    submit: null;
+}
+
+const initialValues: LoginValues = {
+    email: '',
+    password: '',
+    submit: null,
+};
+
 const Login = () => {
-    const handleSubmit = (values: any) => {
-        console.log("Success:", values);
+    const navigate = useNavigate();
+    const formik = useFormik({
+        initialValues,
+        validationSchema: LoginValidationSchema,
+        onSubmit: (values) => {
+        }
+    });
+
+    const handleSubmit = async(values: LoginValues) => {
+        const checkLogin = await dispatch(login({ email: values.email, password: values.password }));
+        if (checkLogin) {
+            navigate('/');
+        }
     };
 
+    const { user } = useSelector((state: RootState) => state.auth);
+    console.log(user);
+    
     return (
         <Card style={{ boxShadow: "0px 4px 8px rgba(38, 38, 38, 0.2)", borderRadius: "10px" }}>
             <Helmet>
@@ -22,8 +53,8 @@ const Login = () => {
             <Title level={1} style={{ textAlign: "center" }}>Login</Title>
 
             <Formik
-                initialValues={{ email: "", password: "" }}
-                validationSchema={loginValidationSchema}
+                initialValues={initialValues}
+                validationSchema={LoginValidationSchema}
                 onSubmit={handleSubmit}
             >
                 {({ errors, touched }) => (
@@ -39,7 +70,7 @@ const Login = () => {
                         <Field name="password">
                             {({ field }: any) => (
                                 <div>
-                                    <InputForm {...field} placeholder="Enter your password" />
+                                    <InputFormHide {...field} placeholder="Enter your password" />
                                 </div>
                             )}
                         </Field>
