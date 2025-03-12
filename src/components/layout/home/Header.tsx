@@ -61,7 +61,7 @@ const Header = () => {
                 ]);
             }
         } else {
-            setMenuItems((prev) => prev.filter(item => item.key !== "logout"));
+            setMenuItems((prev) => prev.filter(item => item.key !== "logout" && item.key !== "/login"));
         }
     }, [open]);
     return (
