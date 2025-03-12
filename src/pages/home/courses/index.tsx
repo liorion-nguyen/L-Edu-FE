@@ -3,7 +3,7 @@ import Title from "antd/es/typography/Title";
 import { CourseType } from "../../../types/course";
 import SectionLayout from "../../../layouts/SectionLayout";
 import { EditOutlined, LockOutlined, LoginOutlined, SearchOutlined } from "@ant-design/icons";
-import { CSSProperties, useEffect } from "react";
+import { CSSProperties, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { dispatch, RootState, useSelector } from "../../../redux/store";
 import { getCourses } from "../../../redux/slices/courses";
@@ -11,6 +11,7 @@ import Loading from "../../../components/common/Loading";
 import { Mode } from "../../../enum/course.enum";
 import { Role } from "../../../enum/user.enum";
 import { useIsAdmin } from "../../../utils/auth";
+import ReturnPage from "../../../components/common/ReturnPage";
 
 const Text = Typography.Text;
 const { useBreakpoint } = Grid;
@@ -64,7 +65,11 @@ const ItemCourse = (item: CourseType) => {
 
 const Course = () => {
     const screens = useBreakpoint();
+    const [inpSearch, setInpSearch] = useState<string>("");
     const { courses, totalCourse, loading } = useSelector((state: RootState) => state.courses);
+    const handleSearch = () => {
+        dispatch(getCourses(0, 20, inpSearch));
+    }
     useEffect(() => {
         if (totalCourse === 0) {
             dispatch(getCourses());
@@ -79,8 +84,8 @@ const Course = () => {
                     <Row gutter={[20, 20]} justify="center" style={{ marginBottom: "30px" }}>
                         <Col lg={12} md={16} sm={24} xs={24}>
                             <div style={styles.form}>
-                                <Input placeholder="Enter what you want to search for...." style={styles.input} />
-                                <Button style={styles.button} icon={screens.md ? undefined : <SearchOutlined />}>
+                                <Input placeholder="Enter what you want to search for...." style={styles.input} value={inpSearch} onChange={(e) => {setInpSearch(e.target.value)}}/>
+                                <Button style={styles.button} icon={screens.md ? undefined : <SearchOutlined />} onClick={handleSearch}>
                                     {screens.md ? "Search" : ""}
                                 </Button>
                             </div>
@@ -92,7 +97,7 @@ const Course = () => {
                         <Col span={24}>
                             <Row gutter={[20, 20]}>
                                 {
-                                    courses && courses.map((course, index) => (
+                                    courses && courses.map((course: CourseType, index: number) => (
                                         course && <Col key={index} lg={8} md={12} sm={12} xs={24}>
                                             <ItemCourse {...course} />
                                         </Col>

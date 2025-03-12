@@ -4,7 +4,7 @@ import SectionLayout from "../../../layouts/SectionLayout";
 import { useParams } from "react-router-dom";
 import { initialValuesType } from "../../../types/session";
 import { dispatch, RootState } from "../../../redux/store";
-import { createSession, getSessionById, updateSession } from "../../../redux/slices/courses";
+import { getSessionById, updateSession } from "../../../redux/slices/courses";
 import { useSelector } from "react-redux";
 
 const { Option } = Select;

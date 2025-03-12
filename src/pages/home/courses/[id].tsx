@@ -1,7 +1,7 @@
 import { Button, Col, Flex, Grid, Row, Typography } from "antd";
 import SectionLayout from "../../../layouts/SectionLayout";
 import Title from "antd/es/typography/Title";
-import { EyeOutlined, LockOutlined, LogoutOutlined, PlusOutlined, ProductOutlined } from "@ant-design/icons";
+import { EyeOutlined, LockOutlined, LogoutOutlined, PlusOutlined, ProductOutlined, RollbackOutlined } from "@ant-design/icons";
 import { CSSProperties, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { dispatch, RootState, useSelector } from "../../../redux/store";
@@ -10,6 +10,8 @@ import Loading from "../../../components/common/Loading";
 import { Mode } from "../../../enum/course.enum";
 import { Role } from "../../../enum/user.enum";
 import { useIsAdmin } from "../../../utils/auth";
+import ReturnPage from "../../../components/common/ReturnPage";
+import { SessionResponse } from "../../../types/session";
 
 const Text = Typography.Text;
 const useBreakpoint = Grid.useBreakpoint;
@@ -45,13 +47,15 @@ const Session = ({ item, index }: { item: any; index: number }) => {
     return (
         <Row gutter={[0, 20]} style={styles.container}>
             <Col span={24}>
-                <Flex justify="space-between" align="center">
-                    <Title level={4} style={{ marginTop: "10px" }}>Lesson {item.sessionNumber}. {item.title}</Title>
-                    <Flex gap={5}>
+                <Row justify="space-between" align="middle" gutter={[10, 10]}>
+                    <Col xs={24} sm={24} md={20} lg={20}>
+                        <Title level={4} style={{ marginTop: "10px" }}>Lesson {item.sessionNumber}. {item.title}</Title>
+                    </Col>
+                    <Col xs={24} sm={24} md={4} lg={4} style={{ textAlign: "right" }}>
                         <EyeOutlined />
                         <Text>{item?.views || 0} views</Text>
-                    </Flex>
-                </Flex>
+                    </Col>
+                </Row>
             </Col>
             <Col span={24}>
                 <Row gutter={[20, 20]}>
@@ -117,6 +121,7 @@ const CourseDetail = () => {
         loading ? <Loading /> :
             course && <SectionLayout title={course.name}>
                 <Row style={{ marginBottom: "50px" }} gutter={[20, 20]}>
+                    <ReturnPage />
                     <Col span={24}>
                         <Flex justify="space-between" align="center">
                             <Title level={2}>{course.name}</Title>
@@ -130,7 +135,7 @@ const CourseDetail = () => {
                     <Col span={24}>
                         <Row gutter={[20, 40]}>
                             {
-                                course.sessions?.map((item, index) => (
+                                course.sessions?.map((item: any, index: number) => (
                                     <Col span={24} key={index}>
                                         <Session key={index} item={item} index={index} />
                                     </Col>

@@ -54,7 +54,7 @@ export const CoursesSlice = createSlice({
     },
 });
 
-export const getCourses = (page = 0, limit = 15, name = "") => {
+export const getCourses = (page = 0, limit = 20, name = "") => {
     return async () => {
         try {
             dispatch(CoursesSlice.actions.getRequest());

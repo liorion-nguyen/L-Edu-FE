@@ -1,4 +1,4 @@
-import { Col, Layout, Row } from "antd";
+import { Col, FloatButton, Layout, Row } from "antd";
 import Hero from "../../components/sections/Hero";
 import PartnerNetwork from "../../components/sections/PartnerNetwork";
 import ExploreCategories from "../../components/sections/ExploreCategories";

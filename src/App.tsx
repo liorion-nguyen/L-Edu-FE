@@ -10,6 +10,8 @@ import Document from "./pages/home/sessions/Document";
 import AddSession from "./pages/home/sessions/AddSession";
 import UpdateSession from "./pages/home/sessions/UpdateSession";
 import UpdateCourse from "./pages/home/courses/UpdateCourse";
+import AboutUs from "./pages/home/about";
+import NotFound from "./pages/NotFound";
 
 function App() {
   return (
@@ -21,6 +23,7 @@ function App() {
 
         {/* Home Pages */}
         <Route path="/" element={<MainLayout><LandingPage /></MainLayout>} />
+        <Route path="/aboutUs" element={<MainLayout><AboutUs /></MainLayout>} />
         <Route path="/course" element={<MainLayout><Course /></MainLayout>} />
         <Route path="/course/:id" element={<MainLayout><CourseDetail /></MainLayout>} />
         <Route path="/course/update/:id" element={<MainLayout><UpdateCourse /></MainLayout>} />
@@ -29,7 +32,7 @@ function App() {
         <Route path="/session/updateSession/:id" element={<MainLayout><UpdateSession /></MainLayout>} />
 
         {/* 404 Not Found */}
-        <Route path="*" element={<h1>404 Not Found</h1>} />
+        <Route path="*" element={<MainLayout><NotFound/></MainLayout>} />
 
       </Routes>
     </Router>

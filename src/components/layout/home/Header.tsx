@@ -5,23 +5,21 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { CSSProperties, useEffect, useState } from "react";
 import { MenuOutlined } from "@ant-design/icons";
 import UserMenu from "../UserMenu";
-import { UserType } from "../../../types/user";
-import { Role, Status } from "../../../enum/user.enum";
 import { dispatch, RootState, useSelector } from "../../../redux/store";
 import { getUser } from "../../../redux/slices/auth";
+import { envConfig, localStorageConfig } from "../../../config";
 
 const { useBreakpoint } = Grid;
-const menuItems = [
-    { key: "/", label: "Home" },
-    { key: "/about", label: "About" },
-    { key: "/course", label: "Course" },
-    { key: "/contact", label: "Contact" },
-];
 
 const Header = () => {
     const screens = useBreakpoint();
     const navigate = useNavigate();
     const location = useLocation();
+    const [menuItems, setMenuItems] = useState([
+        { key: "/", label: "Home" },
+        { key: "/aboutus", label: "About" },
+        { key: "/course", label: "Course" },
+    ]);
     const [open, setOpen] = useState(false);
     const getSizeScreen = () => {
         if (screens.md) return true;
@@ -42,6 +40,30 @@ const Header = () => {
             dispatch(getUser());
         }
     }, []);
+
+    const handleLogout = () => {
+        localStorage.removeItem(localStorageConfig.accessToken);
+        localStorage.removeItem(localStorageConfig.refreshToken);
+        navigate("/login");
+    };
+
+    useEffect(() => {
+        if (open) {
+            if (user) {
+                setMenuItems((prev: any) => [
+                    ...prev,
+                    { key: "logout", label: <p onClick={handleLogout}>Logout</p> }
+                ]);
+            } else {
+                setMenuItems((prev: any) => [
+                    ...prev,
+                    { key: "/login", label: "Login" },
+                ]);
+            }
+        } else {
+            setMenuItems((prev) => prev.filter(item => item.key !== "logout"));
+        }
+    }, [open]);
     return (
         <Layout.Header style={styles.header}>
             <SectionLayout>

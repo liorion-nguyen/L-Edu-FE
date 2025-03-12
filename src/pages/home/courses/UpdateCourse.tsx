@@ -8,6 +8,7 @@ import { useSelector } from "react-redux";
 import { Currency, Status, TypeDiscount } from "../../../enum/course.enum";
 import CustomSelectMultiple from "../../../components/common/CustomSelectMultiple";
 import { Role } from "../../../enum/user.enum";
+import ReturnPage from "../../../components/common/ReturnPage";
 
 const { Option } = Select;
 
@@ -76,6 +77,7 @@ const UpdateCourse = () => {
     return (
         <SectionLayout title="Cập Nhật Khóa Học">
             <Row style={{ margin: "50px 0" }} gutter={[20, 20]} justify="center">
+                <ReturnPage dir="center"/>
                 <Col span={12}>
                     <Form form={form} layout="vertical" onFinish={onFinish}>
                         <Form.Item label="Tên khóa học" name="name" rules={[{ required: true, message: "Vui lòng nhập tên khóa học!" }]}>

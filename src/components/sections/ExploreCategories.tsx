@@ -73,7 +73,7 @@ const ExploreCategories = () => {
                     <Row gutter={[20, 20]}>
                         {categories.map((category, index) => (
                             <Col xs={24} sm={12} md={8} lg={6} key={index}>
-                                <Row justify="space-between" align="middle" style={{ border: "1px solid #8B8A9D", borderRadius: "50px", padding: "10px 20px" }}>
+                                <Row gutter={[10, 10]} justify="space-between" align="middle" style={{ border: "1px solid #8B8A9D", borderRadius: "50px", padding: "10px 20px" }}>
                                     <Col style={{ width: "60px", height: "50px" }}>
                                         <img src={category.icon} alt={category.name} style={{ width: "100%", height: "100%" }} />
                                     </Col>

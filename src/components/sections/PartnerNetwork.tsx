@@ -6,6 +6,7 @@ const PartnerNetwork = () => {
     const customers = [
         { name: "Mindx", logo: "/images/landing/sections/overview/mindx.png", link: "https://mindx.edu.vn/" },
         { name: "Kite", logo: "/images/landing/sections/overview/kite.png", link: "http://americanstudy.edu.vn/" },
+        { name: "Fetch", logo: "/images/landing/sections/overview/fetch.png", link: "https://www.fetch.tech/" },
         { name: "Starack", logo: "/images/landing/sections/overview/starack.png", link: "https://starack.net/" },
         { name: "Hnue", logo: "/images/landing/sections/overview/hnue.png", link: "https://hnue.edu.vn/" },
     ];

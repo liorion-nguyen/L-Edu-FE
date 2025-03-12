@@ -7,6 +7,7 @@ import { dispatch, RootState, useSelector } from "../../../redux/store";
 import { getSessionById } from "../../../redux/slices/courses";
 import { useNavigate, useParams } from "react-router-dom";
 import Loading from "../../../components/common/Loading";
+import ReturnPage from "../../../components/common/ReturnPage";
 
 const Text = Typography.Text;
 const Document = () => {
@@ -19,11 +20,12 @@ const Document = () => {
         const check = await dispatch(getSessionById(id as string));
         if (!check) {
             navigate(-1);
-        } 
+        }
     }
     const { session, loading } = useSelector((state: RootState) => state.courses);
     return (
         <SectionLayout title={document.title}>
+            <ReturnPage />
             {
                 session && loading ? <Loading /> :
                     <Row style={{ margin: "50px 0" }} gutter={[20, 20]}>
