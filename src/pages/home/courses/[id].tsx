@@ -1,7 +1,7 @@
-import { Button, Col, Flex, Grid, Row, Typography } from "antd";
+import { Button, Col, Flex, Grid, Image, Row, Typography } from "antd";
 import SectionLayout from "../../../layouts/SectionLayout";
 import Title from "antd/es/typography/Title";
-import { EyeOutlined, LockOutlined, LogoutOutlined, PlusOutlined, ProductOutlined, RollbackOutlined } from "@ant-design/icons";
+import { EyeOutlined, LockOutlined, LogoutOutlined, PlusOutlined, ProductOutlined } from "@ant-design/icons";
 import { CSSProperties, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { dispatch, RootState, useSelector } from "../../../redux/store";
@@ -11,10 +11,10 @@ import { Mode } from "../../../enum/course.enum";
 import { Role } from "../../../enum/user.enum";
 import { useIsAdmin } from "../../../utils/auth";
 import ReturnPage from "../../../components/common/ReturnPage";
-import { SessionResponse } from "../../../types/session";
 
 const Text = Typography.Text;
 const useBreakpoint = Grid.useBreakpoint;
+
 const Session = ({ item, index }: { item: any; index: number }) => {
     const sections = [
         {
@@ -130,6 +130,9 @@ const CourseDetail = () => {
                                 <Button type="primary" icon={<PlusOutlined />} size="large" onClick={handleAddSession}>Add Session</Button>
                             }
                         </Flex>
+                    </Col>
+                    <Col span={24} style={{ textAlign: "center" }}>
+                        <Image src={course.cover || "/images/landing/sections/fakeImages/thumbnailCourse.png"} alt="Hero" style={{ borderRadius: "10px", width: "100%", height: "500px", objectFit: "cover"}} />
                     </Col>
                     <Col dangerouslySetInnerHTML={{ __html: course.description }} span={24} />
                     <Col span={24}>

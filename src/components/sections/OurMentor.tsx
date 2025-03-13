@@ -5,36 +5,31 @@ import SectionLayout from "../../layouts/SectionLayout";
 const OurMentor = () => {
     const mentors = [
         {
-            name: "John Doe",
-            title: "Mentor for React Native",
-            image: "/images/landing/sections/fakeImages/mentor1.png",
+            name: "Nguyễn Thanh Tùng",
+            title: "Mentor về React Native",
+            image: "https://png.pngtree.com/png-vector/20240314/ourmid/pngtree-cartoon-of-thai-male-teacher-holding-a-stick-in-front-of-png-image_11960362.png",
             handle: () => { }
         },
         {
-            name: "Wade Warren",
-            title: "Mentor for React",
-            image: "/images/landing/sections/fakeImages/mentor1.png",
+            name: "Trần Minh Đức",
+            title: "Mentor về React",
+            image: "https://png.pngtree.com/png-vector/20240314/ourmid/pngtree-cartoon-of-thai-male-teacher-holding-a-stick-in-front-of-png-image_11960363.png",
             handle: () => { }
         },
         {
-            name: "Darrell Steward",
-            title: "Menor for Website Basic",
-            image: "/images/landing/sections/fakeImages/mentor1.png",
+            name: "Lê Thị Hồng Nhung",
+            title: "Mentor về Lập trình Web cơ bản",
+            image: "https://img.pikbest.com/png-images/qiantu/original-cute-cartoon-teacher-classroom-hand-drawn-free-buckle-element_2732027.png!sw800",
             handle: () => { }
         },
         {
-            name: "Jeennie Kim",
-            title: "Mentor for Web Developer",
-            image: "/images/landing/sections/fakeImages/mentor1.png",
-            handle: () => { }
-        },
-        {
-            name: "Jane Doe",
-            title: "Mentor for App Producer",
-            image: "/images/landing/sections/fakeImages/mentor1.png",
+            name: "Phạm Gia Bảo",
+            title: "Mentor về Phát triển Web",
+            image: "https://png.pngtree.com/png-vector/20240314/ourmid/pngtree-cartoon-of-thai-male-teacher-holding-a-stick-in-front-of-png-image_11960364.png",
             handle: () => { }
         }
     ];
+    
     return (
         <SectionLayout>
             <Row gutter={[20, 20]}>

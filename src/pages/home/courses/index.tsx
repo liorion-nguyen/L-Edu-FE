@@ -11,7 +11,6 @@ import Loading from "../../../components/common/Loading";
 import { Mode } from "../../../enum/course.enum";
 import { Role } from "../../../enum/user.enum";
 import { useIsAdmin } from "../../../utils/auth";
-import ReturnPage from "../../../components/common/ReturnPage";
 
 const Text = Typography.Text;
 const { useBreakpoint } = Grid;
@@ -75,7 +74,8 @@ const Course = () => {
             dispatch(getCourses());
         }
     }, []);
-
+    console.log(loading);
+    
     return (
         <SectionLayout title="Courses">
             <Row gutter={[20, 20]} style={{ textAlign: "center", paddingBottom: "50px" }}>
@@ -93,7 +93,7 @@ const Course = () => {
                     </Row>
                 </Col>
                 {
-                    loading ? <Loading /> :
+                    !courses ? <Loading /> :
                         <Col span={24}>
                             <Row gutter={[20, 20]}>
                                 {

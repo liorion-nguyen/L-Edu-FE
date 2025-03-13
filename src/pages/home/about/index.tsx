@@ -7,21 +7,21 @@ const AboutUs = () => {
     const navigate = useNavigate();
     const team = [
         {
-            name: "Nguyen Van A",
-            image: '/images/landing/sections/fakeImages/mentor1.png',
-            description: "Là một lập trình viên tại L Edu, Nguyễn Văn A có nhiều năm kinh nghiệm trong phát triển web và ứng dụng. Với tư duy sáng tạo và kỹ năng chuyên môn vững vàng, anh luôn mang đến những bài giảng thực tế và dễ hiểu cho học viên.",
+            name: "Nguyễn Thanh Tùng",
+            image: 'https://png.pngtree.com/png-vector/20240314/ourmid/pngtree-cartoon-of-thai-male-teacher-holding-a-stick-in-front-of-png-image_11960362.png',
+            description: "Là một lập trình viên tại L Edu, Nguyễn Thanh Tùng có nhiều năm kinh nghiệm trong phát triển web và ứng dụng. Với tư duy sáng tạo và kỹ năng chuyên môn vững vàng, anh luôn mang đến những bài giảng thực tế và dễ hiểu cho học viên.",
             link: 'https://www.facebook.com/chungg.203',
         },
         {
-            name: "Nguyen Van B",
-            image: '/images/landing/sections/fakeImages/mentor1.png',
-            description: "Giảng viên Nguyễn Văn B tại L Edu không chỉ có nền tảng vững chắc về công nghệ mà còn có khả năng truyền đạt xuất sắc. Anh giúp học viên tiếp cận lập trình một cách dễ dàng, từ cơ bản đến nâng cao, với nhiều ví dụ thực tế.",
+            name: "Trần Minh Đức",
+            image: 'https://png.pngtree.com/png-vector/20240314/ourmid/pngtree-cartoon-of-thai-male-teacher-holding-a-stick-in-front-of-png-image_11960363.png',
+            description: "Giảng viên Trần Minh Đức tại L Edu không chỉ có nền tảng vững chắc về công nghệ mà còn có khả năng truyền đạt xuất sắc. Anh giúp học viên tiếp cận lập trình một cách dễ dàng, từ cơ bản đến nâng cao, với nhiều ví dụ thực tế.",
             link: 'https://www.facebook.com/chungg.203',
         },
         {
-            name: "Pham Van C",
-            image: '/images/landing/sections/fakeImages/mentor1.png',
-            description: "Phạm Văn C, Tech Lead tại L Edu, là chuyên gia trong lĩnh vực phát triển phần mềm. Với nhiều năm kinh nghiệm quản lý dự án và xây dựng hệ thống lớn, anh mang đến cho học viên những kiến thức chuyên sâu và kỹ năng thực chiến.",
+            name: "Lê Thị Hồng Nhung",
+            image: 'https://img.pikbest.com/png-images/qiantu/original-cute-cartoon-teacher-classroom-hand-drawn-free-buckle-element_2732027.png!sw800',
+            description: "Lê Thị Hồng Nhung, Tech Lead tại L Edu, là chuyên gia trong lĩnh vực phát triển phần mềm. Với nhiều năm kinh nghiệm quản lý dự án và xây dựng hệ thống lớn, anh mang đến cho học viên những kiến thức chuyên sâu và kỹ năng thực chiến.",
             link: 'https://www.facebook.com/chungg.203',
         },
     ];

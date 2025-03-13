@@ -8,24 +8,24 @@ const Text = Typography.Text;
 const Review = () => {
     const reviews = [
         {
-            name: "Jane Doe",
+            name: "Nguyễn Văn A",
             learn: "React Native",
-            review: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ut purus eget sapien egestas tincidunt. Nullam nec nunc nec libero ultricies ultricies. Nullam nec nunc nec libero ultricies ultricies.",
-            avatar: "/images/landing/sections/fakeImages/avatarStudent.png",
+            review: "Khoá học rất bổ ích! Giảng viên hướng dẫn chi tiết, giúp mình hiểu rõ cách xây dựng ứng dụng di động với React Native. Mình có thể tự tin làm một app cơ bản sau khi hoàn thành khoá học.",
+            avatar: "https://tranhtomau.mobi/upload/2024/05/100-hinh-anh-hoc-sinh-chibi-de-thuong-tai-ve-dien-thoai-mien-phi-2.webp",
         },
         {
-            name: "Jane Doe",
-            learn: "React Native",
-            review: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ut purus eget sapien egestas tincidunt. Nullam nec nunc nec libero ultricies ultricies. Nullam nec nunc nec libero ultricies ultricies.",
-            avatar: "/images/landing/sections/fakeImages/avatarStudent.png",
+            name: "Trần Thị Bích Ngọc",
+            learn: "ReactJs",
+            review: "Mình đã học nhiều khoá về lập trình trước đây nhưng đây là khoá React Native dễ hiểu nhất. Giảng viên dạy rất có tâm, nội dung bài học thực tế và có nhiều bài tập giúp mình thực hành ngay.",
+            avatar: "https://hoanghamobile.com/tin-tuc/wp-content/uploads/2024/05/anh-hoc-sinh-6.jpg",
         },
         {
-            name: "Jane Doe",
+            name: "Lê Minh Tuấn",
             learn: "React Native",
-            review: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ut purus eget sapien egestas tincidunt. Nullam nec nunc nec libero ultricies ultricies. Nullam nec nunc nec libero ultricies ultricies.",
-            avatar: "/images/landing/sections/fakeImages/avatarStudent.png",
+            review: "Khoá học tuyệt vời! Mình đã có chút kiến thức về JavaScript, sau khi học xong khoá này mình có thể tự viết ứng dụng React Native hoàn chỉnh. Cảm ơn đội ngũ giảng viên!",
+            avatar: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSX6AjH5X1zIydhSZCP4kzOGCqjl79IsT1Xzg&s",
         }
-    ]
+    ];    
     return (
         <SectionLayout bg="#6259E8">
             <Row style={{ paddingBottom: "50px" }} justify="center">
@@ -71,6 +71,8 @@ const styles: { card: CSSProperties, text: CSSProperties, avatar: CSSProperties 
     },
     avatar: {
         height: "100px", 
+        width: "100px",
+        objectFit: "cover",
         borderRadius: "50%",
         position: "absolute",
         top: "-50px",

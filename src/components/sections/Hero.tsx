@@ -30,9 +30,9 @@ const Hero = () => {
                             <Row justify="center" align="middle" style={{ flexDirection: "column", textAlign: "center" }}>
                                 <Col>
                                     <Avatar.Group>
-                                        <Avatar src="/images/landing/sections/hero/avatar1.png" style={styles.avatar} size={40} />
-                                        <Avatar src="/images/landing/sections/hero/avatar1.png" style={styles.avatar} size={40} />
-                                        <Avatar src="/images/landing/sections/hero/avatar1.png" style={styles.avatar} size={40} />
+                                        <Avatar src="https://pngimg.com/uploads/student/student_PNG62560.png" style={styles.avatar} size={40} />
+                                        <Avatar src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRZFKQxbj4IBPdrWQQcdv_c3hWHe-nwjXk6xJs77n11_p0KaE5ZUO2QuF9ge1aECWezbWs&usqp=CAU" style={styles.avatar} size={40} />
+                                        <Avatar src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ-t7aoG_itYbGrEkhCckwclpEfElHkxl1ScA&s" style={styles.avatar} size={40} />
                                     </Avatar.Group>
                                     <p style={styles.textCountEnrolled}>200k Enrolled Students</p>
                                 </Col>

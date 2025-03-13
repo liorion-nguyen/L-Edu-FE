@@ -9,6 +9,7 @@ import { showNotification } from '../../components/common/Toaster';
 import { ToasterType } from '../../enum/toaster';
 import { initialValuesType, SessionResponse } from '../../types/session';
 import { Role } from '../../enum/user.enum';
+import { get } from 'http';
 
 type GetCoursesSuccessAction = PayloadAction<{ courses: CourseType[] | null, totalCourse: number }>;
 type GetCoursesuccessAction = PayloadAction<{ course: CourseType }>;
@@ -30,6 +31,9 @@ export const CoursesSlice = createSlice({
     reducers: {
         getRequest: (state: CoursesState) => {
             state.loading = true;
+        },
+        getSuccess: (state: CoursesState) => {
+            state.loading = false;
         },
         getCoursesSuccess: (state: CoursesState, action: GetCoursesSuccessAction) => {
             state.loading = false;
@@ -174,6 +178,7 @@ export const updateSession = (id: string, values: initialValuesType) => {
                 "mode": values.mode
             });
             showNotification(ToasterType.success, 'Session updated successfully');
+            dispatch(CoursesSlice.actions.getSuccess());
         }
         catch (error: Error | any) {
             const errorMessage: string = error.response
