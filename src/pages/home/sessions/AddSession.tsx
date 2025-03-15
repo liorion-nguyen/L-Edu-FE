@@ -5,6 +5,7 @@ import { useParams } from "react-router-dom";
 import { initialValuesType } from "../../../types/session";
 import { dispatch } from "../../../redux/store";
 import { createSession } from "../../../redux/slices/courses";
+import ReturnPage from "../../../components/common/ReturnPage";
 
 const { Option } = Select;
 
@@ -20,6 +21,7 @@ const AddSession = () => {
     return (
         <SectionLayout title="Thêm Buổi Học">
             <Row style={{ margin: "50px 0" }} gutter={[20, 20]} justify="center">
+                <ReturnPage dir="center"/>
                 <Col span={12}>
                     <Form
                         form={form}

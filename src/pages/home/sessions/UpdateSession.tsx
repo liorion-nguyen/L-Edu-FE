@@ -6,6 +6,7 @@ import { initialValuesType } from "../../../types/session";
 import { dispatch, RootState } from "../../../redux/store";
 import { getSessionById, updateSession } from "../../../redux/slices/courses";
 import { useSelector } from "react-redux";
+import ReturnPage from "../../../components/common/ReturnPage";
 
 const { Option } = Select;
 
@@ -43,6 +44,7 @@ const UpdateSession = () => {
     return (
         <SectionLayout title="Thêm Buổi Học">
             <Row style={{ margin: "50px 0" }} gutter={[20, 20]} justify="center">
+            <ReturnPage dir="center"/>
                 <Col span={12}>
                     <Form
                         form={form}
