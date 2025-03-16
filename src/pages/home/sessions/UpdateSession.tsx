@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Row, Col, Form, Input, Button, Select, Flex } from "antd";
 import SectionLayout from "../../../layouts/SectionLayout";
 import { useParams } from "react-router-dom";
@@ -29,8 +29,7 @@ const UpdateSession = () => {
                 mode: session.mode ?? "CLOSE",
             });
         }
-    }
-        , [session]);
+    }, [session]);
 
     // Xử lý khi submit form
     const onFinish = async (values: initialValuesType) => {

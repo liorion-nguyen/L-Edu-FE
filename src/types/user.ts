@@ -32,3 +32,9 @@ export type IntructorType = {
   fullName: string;
   avatar?: string
 };
+
+export type UserCoreType = {
+  _id: string;
+  fullName: string;
+  avatar?: string;
+}

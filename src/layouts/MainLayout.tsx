@@ -2,6 +2,7 @@ import React from "react";
 import { FloatButton, Layout } from "antd";
 import Header from "../components/layout/home/Header";
 import Footer from "../components/layout/home/Footer";
+import ChatPopup from "../components/chatbox/ChatPopup";
 
 const { Content } = Layout;
 
@@ -18,6 +19,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
             </Content>
             <FloatButton.BackTop />
             <Footer />
+            <ChatPopup />
         </Layout>
     );
 };

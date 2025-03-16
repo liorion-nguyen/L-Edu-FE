@@ -7,7 +7,7 @@ import { MenuOutlined } from "@ant-design/icons";
 import UserMenu from "../UserMenu";
 import { dispatch, RootState, useSelector } from "../../../redux/store";
 import { getUser } from "../../../redux/slices/auth";
-import { envConfig, localStorageConfig } from "../../../config";
+import { localStorageConfig } from "../../../config";
 
 const { useBreakpoint } = Grid;
 
@@ -39,7 +39,7 @@ const Header = () => {
         if (!user) {
             dispatch(getUser());
         }
-    }, []);
+    }, [user]);
 
     const handleLogout = () => {
         localStorage.removeItem(localStorageConfig.accessToken);

@@ -7,7 +7,6 @@ import { AuthenticationState, LoginRequestType, LoginResponseType, RegisterReque
 import { envConfig, localStorageConfig } from '../../config';
 import { showNotification } from '../../components/common/Toaster';
 import { ToasterType } from '../../enum/toaster';
-import { jwtDecode } from 'jwt-decode';
 import { UserType } from '../../types/user';
 
 type RegisterFailureAction = PayloadAction<string>;

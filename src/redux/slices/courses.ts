@@ -9,7 +9,6 @@ import { showNotification } from '../../components/common/Toaster';
 import { ToasterType } from '../../enum/toaster';
 import { initialValuesType, SessionResponse } from '../../types/session';
 import { Role } from '../../enum/user.enum';
-import { get } from 'http';
 
 type GetCoursesSuccessAction = PayloadAction<{ courses: CourseType[] | null, totalCourse: number }>;
 type GetCoursesuccessAction = PayloadAction<{ course: CourseType }>;

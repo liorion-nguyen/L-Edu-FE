@@ -74,8 +74,6 @@ const Course = () => {
             dispatch(getCourses());
         }
     }, []);
-    console.log(loading);
-    
     return (
         <SectionLayout title="Courses">
             <Row gutter={[20, 20]} style={{ textAlign: "center", paddingBottom: "50px" }}>
