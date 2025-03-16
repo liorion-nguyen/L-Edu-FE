@@ -14,7 +14,7 @@ interface MessageProps {
 const Content = ({ message, isSender }: { message: string, isSender: UserCoreType | null }) => {
     return (
         <Flex style={{ flex: 1, justifyContent: isSender ? "start" : "end" }}>
-            <Text style={{ ...styles.conentText, textAlign: isSender ? "start" : "end" }}>{message}</Text>
+            <Text style={{ ...styles.conentText}}>{message}</Text>
         </Flex>
     );
 }

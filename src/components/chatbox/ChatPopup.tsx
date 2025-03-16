@@ -45,7 +45,6 @@ const ChatPopup = () => {
                 <ChatRoom messageBox={messageBox} />
               </Flex>
             </Flex>
-
           ) : <MessagesBox />
         }
       </Drawer>

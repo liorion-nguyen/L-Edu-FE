@@ -6,32 +6,39 @@ import { CSSProperties, useEffect, useRef, useState } from "react";
 import { dispatch, RootState, useSelector } from "../../redux/store";
 import Message from "./Message";
 import TextArea from "antd/es/input/TextArea";
-import { createMessage } from "../../redux/slices/messages";
+import { createMessage, getMessageBoxById, getMessagesBox } from "../../redux/slices/messages";
 
 const ChatRoom = ({ messageBox }: { messageBox: MessagesBoxType }) => {
     const { user } = useSelector((state: RootState) => state.auth);
     const [message, setMessage] = useState<string>("");
+    const [isSending, setIsSending] = useState<boolean>(false);
     const chatEndRef = useRef<HTMLDivElement | null>(null);
-
     const handleChangeText = (e: any) => {
         setMessage(e.target.value);
     };
 
     const handleEnterPress = (e: any) => {
-        if (!e.shiftKey) {
+        if (!e.shiftKey && !isSending) { // Chặn gửi nếu đang gửi tin nhắn trước đó
             e.preventDefault();
             sendMessage();
         }
     };
-
+    
     const sendMessage = async () => {
-        if (message.trim()) {
+        if (!message.trim() || isSending) return; // Ngăn gửi nếu đang gửi
+    
+        setIsSending(true); // Đánh dấu đang gửi tin nhắn
+    
+        try {
             await dispatch(createMessage({
                 message: message,
                 chatRoomId: messageBox._id
             }));
-            console.log("Sent message:", message);
-            setMessage("");
+            setMessage(""); // Xóa nội dung sau khi gửi thành công
+        } catch (error) {
+            console.error("Failed to send message:", error);
+        } finally {
+            setIsSending(false); // Cho phép gửi tiếp
         }
     };
 
@@ -39,7 +46,45 @@ const ChatRoom = ({ messageBox }: { messageBox: MessagesBoxType }) => {
         if (chatEndRef.current) {
             chatEndRef.current.scrollIntoView({ behavior: "smooth" });
         }
-    }, [messageBox.messages]);
+    }, []);
+
+    const [page, setPage] = useState<number>(0);
+    const [loading, setLoading] = useState<boolean>(false);
+    const chatContainerRef = useRef<HTMLDivElement>(null);
+
+    const handleScroll = () => {
+        if (!chatContainerRef.current) return;
+        const { scrollTop } = chatContainerRef.current;
+
+        if (scrollTop === 0 && !loading) {
+            setLoading(true);
+            setPage((prevPage) => prevPage + 1);
+        }
+    };
+
+    useEffect(() => {
+        if (page < 0) return; // ✅ Dừng useEffect khi page === -1
+
+        const fetchMessages = async () => {
+            setLoading(true);
+            try {
+                const results = await dispatch(getMessageBoxById(messageBox._id, page, 10));
+                if (!results || results.length === 0) {
+                    setPage(-1); 
+                }
+            } catch (error: any) {
+                if (error.name === "AbortError") {
+                    console.log("Request bị hủy.");
+                } else {
+                    console.error("Lỗi fetch tin nhắn:", error);
+                }
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        if (page > 0) fetchMessages();
+    }, [page]);
 
     return (
         <Flex vertical style={styles.chatRoom}>
@@ -53,10 +98,15 @@ const ChatRoom = ({ messageBox }: { messageBox: MessagesBoxType }) => {
                 </Col>
             </Row>
 
-            {/* Chat messages (scrollable) */}
-            <Flex style={styles.chatRoomBody} vertical gap={10}>
-                {
-                    messageBox.messages && messageBox.messages.map((msg: MessageType, index) => (
+            <div
+                ref={chatContainerRef}
+                style={{ overflowY: "scroll", flex: 1 }}
+                onScroll={handleScroll}
+            >
+                {page > 0 && loading && <div style={{ textAlign: "center", padding: "10px" }}>Loading...</div>}
+
+                <Flex style={styles.chatRoomBody} vertical gap={10}>
+                    {messageBox.messages && messageBox.messages.map((msg: MessageType, index) => (
                         <Row key={index} style={{ width: "100%" }}>
                             <Message
                                 message={msg.message}
@@ -64,10 +114,10 @@ const ChatRoom = ({ messageBox }: { messageBox: MessagesBoxType }) => {
                                 isSender={msg.senderId && msg.senderId._id === user?._id ? null : msg.senderId || null}
                             />
                         </Row>
-                    ))
-                }
-                <div ref={chatEndRef}></div>
-            </Flex>
+                    ))}
+                    <div ref={chatEndRef}></div>
+                </Flex>
+            </div>
 
             {/* Footer Input */}
             <Row align="middle" gutter={[10, 10]} style={styles.chatRoomFooter}>
@@ -83,6 +133,7 @@ const ChatRoom = ({ messageBox }: { messageBox: MessagesBoxType }) => {
                         value={message}
                         onChange={handleChangeText}
                         onPressEnter={handleEnterPress}
+                        style={styles.input}
                     />
                 </Col>
                 <Col>
@@ -99,7 +150,8 @@ const styles: {
     chatRoom: CSSProperties,
     chatRoomHeader: CSSProperties,
     chatRoomBody: CSSProperties,
-    chatRoomFooter: CSSProperties
+    chatRoomFooter: CSSProperties,
+    input: CSSProperties
 } = {
     chatRoom: {
         height: "100%",
@@ -124,5 +176,8 @@ const styles: {
     },
     title: {
         margin: 0
+    },
+    input: {
+        maxHeight: 200,
     }
 };

@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Input, List, Avatar, Button, Skeleton, Row, Col, Empty, Flex } from "antd";
+import { Input, List, Avatar, Button, Skeleton, Row, Col, Empty, Flex, Form, Modal } from "antd";
 import { EditOutlined } from "@ant-design/icons";
 import { dispatch, RootState, useSelector } from "../../redux/store";
 import { getMessageBoxById, getMessagesBox } from "../../redux/slices/messages";
+import { useIsAdmin } from "../../utils/auth";
+import CustomSelectMultiple from "../common/CustomSelectMultiple";
 
 const MessagesBox: React.FC = () => {
     const [search, setSearch] = useState<string>("");
@@ -28,6 +30,29 @@ const MessagesBox: React.FC = () => {
 
     const handleSelectRoom = (roomId: string) => {
         dispatch(getMessageBoxById(roomId));
+    };
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [form] = Form.useForm();
+
+    const showModal = () => {
+        setIsModalOpen(true);
+    };
+
+    const handleOk = async () => {
+        try {
+            const values = await form.validateFields(); // Lấy dữ liệu từ form
+            console.log("Room Data:", values);
+            setIsModalOpen(false);
+            form.resetFields(); // Reset form sau khi đóng
+        } catch (error) {
+            console.error("Validation Failed:", error);
+        }
+    };
+
+    const handleCancel = () => {
+        setIsModalOpen(false);
+        form.resetFields();
     };
 
     return (
@@ -80,16 +105,17 @@ const MessagesBox: React.FC = () => {
                     </List.Item>
                 )}
             />}
-
-            <Button
-                type="primary"
-                block
-                icon={<EditOutlined />}
-                style={{ marginTop: 16 }}
-                onClick={() => alert("Start a new chat")}
-            >
-                Create Room Chat
-            </Button>
+            {useIsAdmin() && (
+                <Button
+                    type="primary"
+                    block
+                    icon={<EditOutlined />}
+                    style={{ marginTop: 16 }}
+                    onClick={showModal}
+                >
+                    Create Room Chat
+                </Button>
+            )}
         </Flex>
     );
 };

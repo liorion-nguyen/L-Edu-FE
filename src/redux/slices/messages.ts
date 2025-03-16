@@ -7,8 +7,6 @@ import { envConfig } from '../../config';
 import { showNotification } from '../../components/common/Toaster';
 import { ToasterType } from '../../enum/toaster';
 import { MessagesBoxType, MessagesState, MessageType } from '../../types/message';
-import { get } from 'http';
-import { useSelector } from 'react-redux';
 
 type GetMessagesSuccessAction = PayloadAction<{ messagesBox: MessagesBoxType[] | null }>;
 type GetMessagesuccessAction = PayloadAction<{ messageBox: MessagesBoxType | null }>;
@@ -46,9 +44,12 @@ export const messagesSlice = createSlice({
         createReviewSuccess: (state: MessagesState) => {
             state.loading = false;
         },
-        addMessage: (state: MessagesState, action: PayloadAction<MessageType>) => {
+        addMessage: (state: MessagesState, action: PayloadAction<MessageType[] | MessageType>) => {
             if (state.messageBox) {
-                state.messageBox.messages?.push(action.payload);
+                state.messageBox.messages = state.messageBox.messages ?? [];
+                state.messageBox.messages = Array.isArray(action.payload)
+                    ? [...action.payload, ...state.messageBox.messages] 
+                    : [...state.messageBox.messages, action.payload]; 
             }
         }
     },
@@ -71,22 +72,28 @@ export const getMessagesBox = (page = 0, limit = 20, name = "", userIdJoin = "")
     };
 };
 
-export const getMessageBoxById = (id: string) => {
+export const getMessageBoxById = (id: string, page = 0, limit = 20) => {
     return async () => {
         try {
             dispatch(messagesSlice.actions.getRequest());
-            const result = await axios.get(`${envConfig.serverURL}/chat-room/${id}`);
+            const result = await axios.get(`${envConfig.serverURL}/chat-room/${id}?page=${page}&limit=${limit}`);
             const messageBox: MessagesBoxType = result.data.data;
-            dispatch(messagesSlice.actions.getMessagesuccess({ messageBox }));
-            return true;
-        } catch (error: Error | any) {
+
+            if (page === 0) {
+                dispatch(messagesSlice.actions.getMessagesuccess({ messageBox }));
+            } else if (messageBox.messages && messageBox.messages.length > 0) { 
+                dispatch(messagesSlice.actions.addMessage(messageBox.messages));
+            }
+            return messageBox.messages;
+        } catch (error: any) {
             const errorMessage = error.response ? error.response.data.message : 'Something went wrong';
             showNotification(ToasterType.error, 'Failed to fetch Message', errorMessage);
             dispatch(messagesSlice.actions.getFailure(errorMessage));
-            return false;
+            return null;
         }
     };
 };
+
 
 export const updateMessage = (id: string, Message: MessageType) => {
     return async () => {
@@ -118,5 +125,4 @@ export const createMessage = (message: Partial<MessageType>) => {
         }
     };
 };
-
 export default messagesSlice.reducer;
