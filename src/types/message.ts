@@ -1,20 +1,20 @@
 import { UserCoreType } from "./user";
 
 export type MessagesState = {
-    loading: boolean;
-    errorMessage: string,
-    messagesBox: MessagesBoxType[] | null,
-    messageBox: MessagesBoxType | null,
+  loading: boolean;
+  errorMessage: string,
+  messagesBox: MessagesBoxType[] | null,
+  messageBox: MessagesBoxType | null,
 };
 
 export type File = {
-    url: string;
-    type: string;
+  url: string;
+  type: string;
 };
 
 export enum TypeChatRoom {
-    PRIVATE = 'PRIVATE',
-    GROUP = 'GROUP'
+  PRIVATE = 'PRIVATE',
+  GROUP = 'GROUP'
 }
 
 export type MessageType = {
@@ -35,3 +35,10 @@ export type MessagesBoxType = {
   type: TypeChatRoom;
   createdBy: string;
 };
+
+export type CreateChatRoomType = {
+  _id?: string;
+  name: string;
+  membersId: string[];
+  type: TypeChatRoom;
+}

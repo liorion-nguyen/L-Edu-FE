@@ -2,9 +2,10 @@ import React, { useState, useEffect } from "react";
 import { Input, List, Avatar, Button, Skeleton, Row, Col, Empty, Flex, Form, Modal } from "antd";
 import { EditOutlined } from "@ant-design/icons";
 import { dispatch, RootState, useSelector } from "../../redux/store";
-import { getMessageBoxById, getMessagesBox } from "../../redux/slices/messages";
+import { createChatRoom, getMessageBoxById, getMessagesBox } from "../../redux/slices/messages";
 import { useIsAdmin } from "../../utils/auth";
-import CustomSelectMultiple from "../common/CustomSelectMultiple";
+import CreateChatRoom from "./CreateChatRoom";
+import { CreateChatRoomType } from "../../types/message";
 
 const MessagesBox: React.FC = () => {
     const [search, setSearch] = useState<string>("");
@@ -32,28 +33,14 @@ const MessagesBox: React.FC = () => {
         dispatch(getMessageBoxById(roomId));
     };
 
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [form] = Form.useForm();
+    const [modal2Open, setModal2Open] = useState(false);
 
-    const showModal = () => {
-        setIsModalOpen(true);
+    const handleCreateRoom = (data: CreateChatRoomType) => {
+        dispatch(createChatRoom({ name: data.name, membersId: data.membersId, type: data.type }));
+        setModal2Open(false); 
     };
 
-    const handleOk = async () => {
-        try {
-            const values = await form.validateFields(); // Lấy dữ liệu từ form
-            console.log("Room Data:", values);
-            setIsModalOpen(false);
-            form.resetFields(); // Reset form sau khi đóng
-        } catch (error) {
-            console.error("Validation Failed:", error);
-        }
-    };
 
-    const handleCancel = () => {
-        setIsModalOpen(false);
-        form.resetFields();
-    };
 
     return (
         <Flex vertical style={{ height: "100%" }}>
@@ -111,12 +98,23 @@ const MessagesBox: React.FC = () => {
                     block
                     icon={<EditOutlined />}
                     style={{ marginTop: 16 }}
-                    onClick={showModal}
+                    onClick={() => setModal2Open(true)}
                 >
                     Create Room Chat
                 </Button>
             )}
-        </Flex>
+            <Modal
+                title="Create Chat Room"
+                centered
+                visible={modal2Open}
+                onOk={() => setModal2Open(false)}
+                onCancel={() => setModal2Open(false)}
+                footer={[
+                ]}
+            >
+                <CreateChatRoom onSubmit={handleCreateRoom} />
+            </Modal>
+        </Flex >
     );
 };
 

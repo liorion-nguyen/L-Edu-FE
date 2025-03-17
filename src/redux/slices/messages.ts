@@ -6,7 +6,7 @@ import { dispatch, RootState } from '../store';
 import { envConfig } from '../../config';
 import { showNotification } from '../../components/common/Toaster';
 import { ToasterType } from '../../enum/toaster';
-import { MessagesBoxType, MessagesState, MessageType } from '../../types/message';
+import { CreateChatRoomType, MessagesBoxType, MessagesState, MessageType } from '../../types/message';
 
 type GetMessagesSuccessAction = PayloadAction<{ messagesBox: MessagesBoxType[] | null }>;
 type GetMessagesuccessAction = PayloadAction<{ messageBox: MessagesBoxType | null }>;
@@ -48,9 +48,12 @@ export const messagesSlice = createSlice({
             if (state.messageBox) {
                 state.messageBox.messages = state.messageBox.messages ?? [];
                 state.messageBox.messages = Array.isArray(action.payload)
-                    ? [...action.payload, ...state.messageBox.messages] 
-                    : [...state.messageBox.messages, action.payload]; 
+                    ? [...action.payload, ...state.messageBox.messages]
+                    : [...state.messageBox.messages, action.payload];
             }
+        },
+        addChatRoom: (state: MessagesState, action: PayloadAction<MessagesBoxType>) => {
+            state.messagesBox = state.messagesBox ? [action.payload, ...state.messagesBox] : [action.payload];
         }
     },
 });
@@ -81,7 +84,7 @@ export const getMessageBoxById = (id: string, page = 0, limit = 20) => {
 
             if (page === 0) {
                 dispatch(messagesSlice.actions.getMessagesuccess({ messageBox }));
-            } else if (messageBox.messages && messageBox.messages.length > 0) { 
+            } else if (messageBox.messages && messageBox.messages.length > 0) {
                 dispatch(messagesSlice.actions.addMessage(messageBox.messages));
             }
             return messageBox.messages;
@@ -125,4 +128,38 @@ export const createMessage = (message: Partial<MessageType>) => {
         }
     };
 };
+
+export const createChatRoom = (data: CreateChatRoomType) => {
+    return async () => {
+        try {
+            dispatch(messagesSlice.actions.getRequest());
+            const resData = await axios.post(`${envConfig.serverURL}/chat-room`, data);
+            showNotification(ToasterType.success, 'Chat room created successfully');
+            dispatch(messagesSlice.actions.addChatRoom(resData.data.data));
+        }
+        catch (error: Error | any) {
+            const errorMessage: string = error.response ? error.response.data.message : 'Something went wrong';
+            showNotification(ToasterType.error, 'Create failed', errorMessage);
+            dispatch(messagesSlice.actions.getFailure(errorMessage));
+        }
+    };
+};
+
+export const getInformationChatRoom = (id: string) => {
+    return async () => {
+        try {
+            dispatch(messagesSlice.actions.getRequest());
+            const resData = await axios.get(`${envConfig.serverURL}/chat-room/information/${id}`);
+            showNotification(ToasterType.success, 'Chat room information fetched successfully');
+            return resData.data.data;
+        }
+        catch (error: Error | any) {
+            const errorMessage: string = error.response ? error.response.data.message : 'Something went wrong';
+            showNotification(ToasterType.error, 'Fetch failed', errorMessage);
+            dispatch(messagesSlice.actions.getFailure(errorMessage));
+            return null;
+        }
+    };
+};
+
 export default messagesSlice.reducer;

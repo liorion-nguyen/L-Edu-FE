@@ -1,4 +1,4 @@
-import { Avatar, Button, Col, Flex, Row, Tooltip } from "antd";
+import { Avatar, Button, Col, Flex, Modal, Row, Tooltip } from "antd";
 import Title from "antd/es/typography/Title";
 import { MessagesBoxType, MessageType } from "../../types/message";
 import { FileAddOutlined, SendOutlined } from "@ant-design/icons";
@@ -7,6 +7,7 @@ import { dispatch, RootState, useSelector } from "../../redux/store";
 import Message from "./Message";
 import TextArea from "antd/es/input/TextArea";
 import { createMessage, getMessageBoxById, getMessagesBox } from "../../redux/slices/messages";
+import UpdateChatRoom from "./UpdateChatRoom";
 
 const ChatRoom = ({ messageBox }: { messageBox: MessagesBoxType }) => {
     const { user } = useSelector((state: RootState) => state.auth);
@@ -23,12 +24,12 @@ const ChatRoom = ({ messageBox }: { messageBox: MessagesBoxType }) => {
             sendMessage();
         }
     };
-    
+
     const sendMessage = async () => {
         if (!message.trim() || isSending) return; // Ngăn gửi nếu đang gửi
-    
+
         setIsSending(true); // Đánh dấu đang gửi tin nhắn
-    
+
         try {
             await dispatch(createMessage({
                 message: message,
@@ -70,7 +71,7 @@ const ChatRoom = ({ messageBox }: { messageBox: MessagesBoxType }) => {
             try {
                 const results = await dispatch(getMessageBoxById(messageBox._id, page, 10));
                 if (!results || results.length === 0) {
-                    setPage(-1); 
+                    setPage(-1);
                 }
             } catch (error: any) {
                 if (error.name === "AbortError") {
@@ -86,12 +87,30 @@ const ChatRoom = ({ messageBox }: { messageBox: MessagesBoxType }) => {
         if (page > 0) fetchMessages();
     }, [page]);
 
+    const [modal2Open, setModal2Open] = useState(false);
+
+    const handleUpdateChatRoom = (data: any) => {
+        // dispatch(createChatRoom({ name: data.name, membersId: data.membersId, type: data.type }));
+        setModal2Open(false);
+    };
+    
     return (
         <Flex vertical style={styles.chatRoom}>
             {/* Header */}
             <Row align="middle" gutter={[10, 10]} style={styles.chatRoomHeader}>
                 <Col>
-                    <Avatar style={{ backgroundColor: '#fde3cf', color: '#f56a00' }}>{messageBox.name}</Avatar>
+                    <Avatar style={{ backgroundColor: '#fde3cf', color: '#f56a00' }} onClick={() => setModal2Open(true)}>{messageBox.name}</Avatar>
+                    <Modal
+                        title="Update Chat Room"
+                        centered
+                        visible={modal2Open}
+                        onOk={() => setModal2Open(false)}
+                        onCancel={() => setModal2Open(false)}
+                        footer={[
+                        ]}
+                    >
+                        <UpdateChatRoom onSubmit={handleUpdateChatRoom} id={messageBox._id} />
+                    </Modal>
                 </Col>
                 <Col>
                     <Title level={3} style={styles.title}>{messageBox.name}</Title>

@@ -146,7 +146,7 @@ const UpdateCourse = () => {
                                     defaultValue={course?.students}
                                 />
                             }
-                        </Form.Item>
+                        </Form.Item> 
 
                         <Form.Item label="Giáo viên" name="instructorId">
                             {
