@@ -1,19 +1,20 @@
-import { Avatar, Button, Col, Flex, Modal, Row, Tooltip } from "antd";
+import { Avatar, Button, Col, Flex, Image, Modal, Row, Tooltip } from "antd";
 import Title from "antd/es/typography/Title";
-import { MessagesBoxType, MessageType } from "../../types/message";
-import { FileAddOutlined, SendOutlined } from "@ant-design/icons";
+import { CreateChatRoomType, MessagesBoxType, MessageType } from "../../types/message";
+import { DeleteOutlined, FileAddOutlined, SendOutlined } from "@ant-design/icons";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { dispatch, RootState, useSelector } from "../../redux/store";
 import Message from "./Message";
 import TextArea from "antd/es/input/TextArea";
-import { createMessage, getMessageBoxById, getMessagesBox } from "../../redux/slices/messages";
+import { addMessageRealTime, createMessage, getMessageBoxById, updateChatRoom } from "../../redux/slices/messages";
 import UpdateChatRoom from "./UpdateChatRoom";
+import { Socket } from "socket.io-client";
 
 const ChatRoom = ({ messageBox }: { messageBox: MessagesBoxType }) => {
-    const { user } = useSelector((state: RootState) => state.auth);
     const [message, setMessage] = useState<string>("");
     const [isSending, setIsSending] = useState<boolean>(false);
     const chatEndRef = useRef<HTMLDivElement | null>(null);
+    const { user } = useSelector((state: RootState) => state.auth);
     const handleChangeText = (e: any) => {
         setMessage(e.target.value);
     };
@@ -25,21 +26,29 @@ const ChatRoom = ({ messageBox }: { messageBox: MessagesBoxType }) => {
         }
     };
 
+    // const sendMessage = () => {
+    //     const message = { sender: "User", content: "Hello WebSocket!" };
+    //     socket.emit("sendMessage", message);
+    // };
+
+
     const sendMessage = async () => {
-        if (!message.trim() || isSending) return; // Ngăn gửi nếu đang gửi
-
-        setIsSending(true); // Đánh dấu đang gửi tin nhắn
-
+        if ((!file && !message.trim()) || isSending) return;
+        setIsSending(true);
         try {
             await dispatch(createMessage({
-                message: message,
-                chatRoomId: messageBox._id
-            }));
-            setMessage(""); // Xóa nội dung sau khi gửi thành công
+                chatRoomId: messageBox._id,
+                message,
+            }, file));
+            setMessage(""); 
+            setFile(null);
+            setPreviewUrl(null);
+            setFileType("");
+            // Socket.mit("sendMessage", message);
         } catch (error) {
             console.error("Failed to send message:", error);
         } finally {
-            setIsSending(false); // Cho phép gửi tiếp
+            setIsSending(false);
         }
     };
 
@@ -64,7 +73,7 @@ const ChatRoom = ({ messageBox }: { messageBox: MessagesBoxType }) => {
     };
 
     useEffect(() => {
-        if (page < 0) return; // ✅ Dừng useEffect khi page === -1
+        if (page < 0) return;
 
         const fetchMessages = async () => {
             setLoading(true);
@@ -89,11 +98,47 @@ const ChatRoom = ({ messageBox }: { messageBox: MessagesBoxType }) => {
 
     const [modal2Open, setModal2Open] = useState(false);
 
-    const handleUpdateChatRoom = (data: any) => {
-        // dispatch(createChatRoom({ name: data.name, membersId: data.membersId, type: data.type }));
+    const handleUpdateChatRoom = (data: CreateChatRoomType) => {
+        dispatch(updateChatRoom(messageBox._id, { name: data.name, membersId: data.membersId, type: data.type }));
         setModal2Open(false);
     };
-    
+
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    const [file, setFile] = useState<File | null>(null);
+    const [fileType, setFileType] = useState<string>("");
+
+    const handleButtonClick = () => {
+        fileInputRef.current?.click();
+    };
+
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const selectedFile = event.target.files ? event.target.files[0] : null;
+        if (selectedFile) {
+            setFile(selectedFile);
+            setFileType(selectedFile.type);
+
+            if (selectedFile.type.startsWith("image/")) {
+                const url = URL.createObjectURL(selectedFile);
+                setPreviewUrl(url);
+            } else if (selectedFile.type.startsWith("video/")) {
+                const url = URL.createObjectURL(selectedFile);
+                setPreviewUrl(url);
+            } else {
+                setPreviewUrl(null);
+            }
+        }
+    };
+
+    const handleDeleteFile = () => {
+        setFile(null);
+        setPreviewUrl(null);
+        setFileType("");
+        if (fileInputRef.current) {
+            fileInputRef.current.value = "";
+        }
+    };
+
     return (
         <Flex vertical style={styles.chatRoom}>
             {/* Header */}
@@ -140,10 +185,57 @@ const ChatRoom = ({ messageBox }: { messageBox: MessagesBoxType }) => {
 
             {/* Footer Input */}
             <Row align="middle" gutter={[10, 10]} style={styles.chatRoomFooter}>
-                <Col>
-                    <Tooltip title="Upload File">
-                        <Button shape="circle" icon={<FileAddOutlined style={{ color: "black" }} />} />
-                    </Tooltip>
+                <Col style={{ maxWidth: 100 }}>
+                    <Flex vertical gap={10}>
+                        {file && (
+                            <div style={{ marginTop: 10, position: "relative", display: "inline-block" }}>
+                                {/* Nếu là ảnh */}
+                                {fileType.startsWith("image/") && (
+                                    <img src={previewUrl!} width={50} height={50} alt="preview" />
+                                )}
+
+                                {/* Nếu là video */}
+                                {fileType.startsWith("video/") && (
+                                    <video width={50} height={50} controls>
+                                        <source src={previewUrl!} type={fileType} />
+                                        Your browser does not support the video tag.
+                                    </video>
+                                )}
+
+                                {/* Nếu là file khác */}
+                                {!fileType.startsWith("image/") && !fileType.startsWith("video/") && (
+                                    <div style={{ padding: "10px", border: "1px solid #ccc", borderRadius: "5px" }}>
+                                        📄 {file.name}
+                                    </div>
+                                )}
+
+                                {/* Nút xóa file */}
+                                <Button
+                                    shape="circle"
+                                    icon={<DeleteOutlined />}
+                                    size="small"
+                                    danger
+                                    onClick={handleDeleteFile}
+                                    style={{ position: "absolute", top: -10, right: -10 }}
+                                />
+                            </div>
+                        )}
+
+                        <Tooltip title="Upload File">
+                            <Button
+                                shape="circle"
+                                icon={<FileAddOutlined style={{ color: "black" }} />}
+                                onClick={handleButtonClick}
+                            />
+                        </Tooltip>
+
+                        <input
+                            type="file"
+                            ref={fileInputRef}
+                            style={{ display: "none" }}
+                            onChange={handleFileChange}
+                        />
+                    </Flex>
                 </Col>
                 <Col style={{ flex: 1 }}>
                     <TextArea

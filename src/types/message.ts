@@ -1,3 +1,4 @@
+import { TypeFileR } from "../enum/message.enum";
 import { UserCoreType } from "./user";
 
 export type MessagesState = {
@@ -7,9 +8,9 @@ export type MessagesState = {
   messageBox: MessagesBoxType | null,
 };
 
-export type File = {
+export type FileType = {
   url: string;
-  type: string;
+  type: TypeFileR;
 };
 
 export enum TypeChatRoom {
@@ -18,11 +19,11 @@ export enum TypeChatRoom {
 }
 
 export type MessageType = {
-  _id: string;
+  _id?: string;
   chatRoomId?: string;
   senderId?: UserCoreType;
   message?: string;
-  file?: File;
+  file?: FileType;
   createdAt?: Date;
   updatedAt?: Date;
 };
@@ -38,7 +39,13 @@ export type MessagesBoxType = {
 
 export type CreateChatRoomType = {
   _id?: string;
-  name: string;
-  membersId: string[];
-  type: TypeChatRoom;
+  name?: string;
+  membersId?: string[];
+  type?: TypeChatRoom;
+}
+
+export type CreateMessageType = {
+  chatRoomId: string;
+  message?: string;
+  file?: File;
 }

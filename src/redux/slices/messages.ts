@@ -6,7 +6,7 @@ import { dispatch, RootState } from '../store';
 import { envConfig } from '../../config';
 import { showNotification } from '../../components/common/Toaster';
 import { ToasterType } from '../../enum/toaster';
-import { CreateChatRoomType, MessagesBoxType, MessagesState, MessageType } from '../../types/message';
+import { CreateChatRoomType, CreateMessageType, MessagesBoxType, MessagesState, MessageType } from '../../types/message';
 
 type GetMessagesSuccessAction = PayloadAction<{ messagesBox: MessagesBoxType[] | null }>;
 type GetMessagesuccessAction = PayloadAction<{ messageBox: MessagesBoxType | null }>;
@@ -81,7 +81,6 @@ export const getMessageBoxById = (id: string, page = 0, limit = 20) => {
             dispatch(messagesSlice.actions.getRequest());
             const result = await axios.get(`${envConfig.serverURL}/chat-room/${id}?page=${page}&limit=${limit}`);
             const messageBox: MessagesBoxType = result.data.data;
-
             if (page === 0) {
                 dispatch(messagesSlice.actions.getMessagesuccess({ messageBox }));
             } else if (messageBox.messages && messageBox.messages.length > 0) {
@@ -113,13 +112,24 @@ export const updateMessage = (id: string, Message: MessageType) => {
     }
 };
 
-export const createMessage = (message: Partial<MessageType>) => {
+export const createMessage = (message: CreateMessageType, file: File | null) => {
     return async () => {
         try {
-            dispatch(messagesSlice.actions.getRequest());
-            const resMessage = await axios.post(`${envConfig.serverURL}/message`, message);
-            showNotification(ToasterType.success, 'Message created successfully');
-            dispatch(messagesSlice.actions.addMessage(resMessage.data.data));
+            const formData = new FormData();
+            if (file) {
+                formData.append('file', file);
+            }
+            formData.append('chatRoomId', message.chatRoomId);
+            if (message.message?.trim()) {
+                formData.append('message', message.message);
+            }
+
+            const response = await axios.post(`${envConfig.serverURL}/message`, formData, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+            });
+
+            // showNotification(ToasterType.success, 'Message created successfully');
+            dispatch(messagesSlice.actions.addMessage(response.data.data));
         }
         catch (error: Error | any) {
             const errorMessage: string = error.response ? error.response.data.message : 'Something went wrong';
@@ -145,12 +155,27 @@ export const createChatRoom = (data: CreateChatRoomType) => {
     };
 };
 
+export const updateChatRoom = (id: string, data: CreateChatRoomType) => {
+    return async () => {
+        try {
+            dispatch(messagesSlice.actions.getRequest());
+            await axios.put(`${envConfig.serverURL}/chat-room/${id}`, data);
+            showNotification(ToasterType.success, 'Chat room updated successfully');        
+        }
+        catch (error: Error | any) {    
+            const errorMessage: string = error.response ? error.response.data.message : 'Something went wrong';
+            showNotification(ToasterType.error, 'Update failed', errorMessage);
+            dispatch(messagesSlice.actions.getFailure(errorMessage));
+        }
+    };
+};
+
 export const getInformationChatRoom = (id: string) => {
     return async () => {
         try {
             dispatch(messagesSlice.actions.getRequest());
             const resData = await axios.get(`${envConfig.serverURL}/chat-room/information/${id}`);
-            showNotification(ToasterType.success, 'Chat room information fetched successfully');
+            // showNotification(ToasterType.success, 'Chat room information fetched successfully');
             return resData.data.data;
         }
         catch (error: Error | any) {
@@ -158,6 +183,30 @@ export const getInformationChatRoom = (id: string) => {
             showNotification(ToasterType.error, 'Fetch failed', errorMessage);
             dispatch(messagesSlice.actions.getFailure(errorMessage));
             return null;
+        }
+    };
+};
+
+export const deleteChatRoom = (id: string) => {
+    return async () => {
+        try {
+            dispatch(messagesSlice.actions.getRequest());
+            await axios.delete(`${envConfig.serverURL}/chat-room/${id}`);
+            showNotification(ToasterType.success, 'Chat room deleted successfully');
+        }
+        catch (error: Error | any) {
+            const errorMessage: string = error.response ? error.response.data.message : 'Something went wrong';
+            showNotification(ToasterType.error, 'Delete failed', errorMessage);
+            dispatch(messagesSlice.actions.getFailure(errorMessage));
+        }
+    };
+}
+
+export const addMessageRealTime = (message: MessageType) => {
+    return (dispatch: any, getState: () => RootState) => {
+        const state = getState();
+        if (state.messages.messageBox) {
+            dispatch(messagesSlice.actions.addMessage(message));
         }
     };
 };

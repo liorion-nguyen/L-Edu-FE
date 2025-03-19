@@ -6,7 +6,7 @@ import { dispatch } from "../../redux/store";
 import { getUsersCore } from "../../redux/slices/courses";
 import { Role } from "../../enum/user.enum";
 import { UserCoreType } from "../../types/user";
-import { getInformationChatRoom } from "../../redux/slices/messages";
+import { deleteChatRoom, getInformationChatRoom } from "../../redux/slices/messages";
 import ChatRoom from "./ChatRoom";
 
 const { Option } = Select;
@@ -31,7 +31,7 @@ const UpdateChatRoom = ({ onSubmit, id }: { onSubmit: (data: CreateChatRoomType)
     const fetchData = async () => {
         const resChatRoom = await dispatch(getInformationChatRoom(id));
         console.log(resChatRoom);
-        
+
         setChatRoom(resChatRoom);
 
         const students = await dispatch(getUsersCore(Role.STUDENT));
@@ -49,6 +49,10 @@ const UpdateChatRoom = ({ onSubmit, id }: { onSubmit: (data: CreateChatRoomType)
         }));
 
         setOptionsuUers([...uniqueOptionsStudent, ...uniqueOptionsTeacher]);
+    };
+
+    const handleDelete = () => {
+        dispatch(deleteChatRoom(id));
     };
     return (
         <Row style={{ marginTop: "20px" }} gutter={[20, 20]} justify="center">
@@ -89,8 +93,11 @@ const UpdateChatRoom = ({ onSubmit, id }: { onSubmit: (data: CreateChatRoomType)
 
 
                         <Form.Item style={{ textAlign: "center" }}>
+                            <Button type="primary" color="orange" onClick={handleDelete}>
+                                Xoá Phòng Chat
+                            </Button>
                             <Button type="primary" htmlType="submit">
-                                Tạo Phòng Chat
+                                Cập Nhật Phòng Chat
                             </Button>
                         </Form.Item>
                     </Form>
