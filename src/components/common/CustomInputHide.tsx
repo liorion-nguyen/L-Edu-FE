@@ -18,7 +18,11 @@ const InputFormHide: React.FC<CustomInputProps> = ({ label, name, type = "text",
                 placeholder={placeholder}
                 {...field}
                 type={type}
-                style={{ fontSize: "15px" }}
+                style={{ fontSize: "15px", background: "rgba(78, 205, 196, 0.05)", // Teal undertone for glassmorphism
+                    border: "1px solid rgba(78, 205, 196, 0.2)", // Teal border
+                    color: "#B0E0E6", // Pale teal for text
+                    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.5), 0 0 10px rgba(78, 205, 196, 0.2)", // Teal glow
+                     }}
                 iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
             />
             {meta.touched && meta.error && (

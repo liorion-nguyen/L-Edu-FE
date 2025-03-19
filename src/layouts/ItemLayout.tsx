@@ -12,9 +12,9 @@ interface ItemLayoutProps {
     icon?: string;
 }
 
-const ItemLayout: React.FC<ItemLayoutProps> = ({ children, bg = "#ffffff", title = "L EDU", icon = "/images/icons/common/logo.png" }) => {
+const ItemLayout: React.FC<ItemLayoutProps> = ({ children, title = "L EDU", icon = "/logo_icon.png" }) => {
     return (
-        <Layout style={{ background: bg }}>
+        <Layout style={{  }}>
             <Helmet>
                 <title>{title}</title>
                 <link rel="icon" href={icon} />

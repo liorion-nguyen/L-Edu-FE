@@ -1,5 +1,6 @@
 import { Row, Col, Typography, Card, Button, Carousel, Flex } from 'antd';
 import { useNavigate } from 'react-router-dom';
+import SectionLayout from '../../../layouts/SectionLayout';
 
 const { Title, Paragraph } = Typography;
 
@@ -26,7 +27,7 @@ const AboutUs = () => {
         },
     ];
     return (
-        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '2rem' }}>
+        <SectionLayout title='About Us' style={styles.container}>
             <Title level={1} style={{ textAlign: "center" }}>About Us</Title>
             <Title level={4}>Welcome to our programming learning platform! 🚀</Title>
             <Paragraph>We are committed to helping you master web development, Python, and various other programming disciplines. Whether you're a beginner taking your first steps in coding or an experienced developer looking to enhance your skills, our platform provides comprehensive tutorials, hands-on projects, and expert guidance to support your journey.</Paragraph>
@@ -104,8 +105,23 @@ Each lesson is designed to be engaging and easy to follow, ensuring you learn no
 
             </div>
 
-        </div>
+        </SectionLayout>
     );
 };
 
 export default AboutUs;
+
+const styles: {
+    container: React.CSSProperties;
+} = {
+    container: {
+        minHeight: "100vh",
+        background: "linear-gradient(135deg, #0A2E2E 0%, #1A4A4A 100%)", // Dark teal gradient
+        position: "relative",
+        overflow: "hidden",
+        padding: "40px 20px",
+        // Subtle circuit pattern in lighter teal
+        backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath d='M10 10h80v80H10z' fill='none' stroke='%234ECDC4' stroke-opacity='0.05' stroke-width='1'/%3E%3Cpath d='M20 20h60v60H20z' fill='none' stroke='%234ECDC4' stroke-opacity='0.05' stroke-width='1'/%3E%3C/svg%3E")`,
+        backgroundSize: "200px 200px",
+    },
+};

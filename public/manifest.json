@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "L Edu",
+  "name": "L Edu - Learn Coding, Build Future",
   "icons": [
     {
       "src": "favicon.ico",
@@ -8,7 +8,7 @@
       "type": "image/x-icon"
     },
     {
-      "src": "logo192.png",
+      "src": "logo.png",
       "type": "image/png",
       "sizes": "192x192"
     },
@@ -18,8 +18,9 @@
       "sizes": "512x512"
     }
   ],
-  "start_url": ".",
+  "start_url": "/",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "theme_color": "#003366",
+  "background_color": "#f5f5f5",
+  "description": "L Edu - Nền tảng học lập trình hàng đầu giúp bạn thành thạo Web Development, Python và nhiều công nghệ khác. Học tập thực tiễn với hướng dẫn từ chuyên gia!"
 }

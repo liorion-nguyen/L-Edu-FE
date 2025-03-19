@@ -73,7 +73,6 @@ const styles: {
 } = {
   sectionLayout: {
     background: "linear-gradient(135deg, #0A2E2E 0%, #1A4A4A 100%)", // Dark teal gradient
-    padding: "80px 0",
     position: "relative",
     overflow: "hidden",
     // Subtle circuit pattern in lighter teal

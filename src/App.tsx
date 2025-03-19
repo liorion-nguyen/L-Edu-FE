@@ -12,6 +12,7 @@ import UpdateSession from "./pages/home/sessions/UpdateSession";
 import UpdateCourse from "./pages/home/courses/UpdateCourse";
 import AboutUs from "./pages/home/about";
 import NotFound from "./pages/NotFound";
+import Profile from "./pages/home/profile";
 
 function App() {
   return (
@@ -22,8 +23,9 @@ function App() {
         <Route path="/signup" element={<AuthLayout><SignUp /></AuthLayout>} />
 
         {/* Home Pages */}
-        <Route path="/" element={<MainLayout><LandingPage /></MainLayout>} />
+        <Route path="/" element={<><LandingPage /></>} />
         <Route path="/aboutUs" element={<MainLayout><AboutUs /></MainLayout>} />
+        <Route path="/profile/:id" element={<MainLayout><Profile /></MainLayout>} />
         <Route path="/course" element={<MainLayout><Course /></MainLayout>} />
         <Route path="/course/:id" element={<MainLayout><CourseDetail /></MainLayout>} />
         <Route path="/course/update/:id" element={<MainLayout><UpdateCourse /></MainLayout>} />

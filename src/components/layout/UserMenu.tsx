@@ -17,7 +17,7 @@ const UserMenu = ({ user }: { user: any }) => {
   }
   const menu = (
     <Menu>
-      <Menu.Item key="profile" icon={<UserOutlined />}>
+      <Menu.Item key="profile" icon={<UserOutlined />} onClick={() => navigate(`/profile/${user?._id}`)}>
         {user?.fullName}
       </Menu.Item>
       <Menu.Divider />

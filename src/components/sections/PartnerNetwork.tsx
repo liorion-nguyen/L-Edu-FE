@@ -45,9 +45,9 @@ const styles: {
 } = {
   sectionLayout: {
     background: "linear-gradient(135deg, #0A2E2E 0%, #1A4A4A 100%)", // Dark teal gradient
-    padding: "60px 0",
     position: "relative",
     overflow: "hidden",
+    padding: "30px 0",
     // Subtle circuit pattern in lighter teal
     backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath d='M10 10h80v80H10z' fill='none' stroke='%234ECDC4' stroke-opacity='0.05' stroke-width='1'/%3E%3Cpath d='M20 20h60v60H20z' fill='none' stroke='%234ECDC4' stroke-opacity='0.05' stroke-width='1'/%3E%3C/svg%3E")`,
     backgroundSize: "200px 200px",

@@ -25,6 +25,7 @@ export type UserType = {
   status?: Status;
   createdAt?: Date;
   updatedAt?: Date;
+  bio: string;
 };
 
 export type IntructorType = {

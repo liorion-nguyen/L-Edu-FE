@@ -31,3 +31,32 @@ export const SignUpValidationSchema = Yup.object().shape({
     agree: Yup.boolean()
         .oneOf([true], "Please agree to the terms and conditions"),
 });
+
+export const UpdateUserValidationSchema = Yup.object({
+    email: Yup.string()
+        .email("Must be a valid email")
+        .max(255, "Email must be at most 255 characters")
+        .required("Email is required"),
+    fullName: Yup.string()
+        .max(255, "Full name must be at most 255 characters")
+        .required("Full name is required"),
+    password: Yup.string()
+        .min(7, "Password must be at least 7 characters")
+        .max(255, "Password must be at most 255 characters")
+        .required("Password is required"),
+    confirmPassword: Yup.string().required("Confirm password is required"),
+    policy: Yup.boolean().oneOf([true], "This field must be checked"),
+    dateOfBirth: Yup.date().required("Date of birth is required"),
+    address: Yup.object({
+        province: Yup.string().required("Province is required"),
+        district: Yup.string().required("District is required"),
+        ward: Yup.string().required("Ward is required"),
+    }),
+    phone: Yup.object({
+        country: Yup.string().required("Country code is required"),
+        number: Yup.string()
+            .max(9, "Number phone must be at most 9 characters")
+            .matches(/^\d{8,11}$/, "Phone number must be between 8 and 11 digits")
+            .required("Phone number is required"),
+    }),
+});
