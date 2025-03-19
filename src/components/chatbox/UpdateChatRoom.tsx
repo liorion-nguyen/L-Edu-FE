@@ -93,7 +93,7 @@ const UpdateChatRoom = ({ onSubmit, id }: { onSubmit: (data: CreateChatRoomType)
 
 
                         <Form.Item style={{ textAlign: "center" }}>
-                            <Button type="primary" color="orange" onClick={handleDelete}>
+                            <Button type="primary" color="orange" onClick={handleDelete} style={{ marginRight: "20px" }}>
                                 Xoá Phòng Chat
                             </Button>
                             <Button type="primary" htmlType="submit">

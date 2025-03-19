@@ -40,7 +40,7 @@ const CourseCard = ({ course }: { course: CourseType }) => {
               <Tooltip title={course.instructor.fullName} placement="top">
                 <Avatar
                   src={course.instructor.avatar || "/images/landing/sections/fakeImages/avatarStudent.png"}
-                  style={{ width: "100%", height: "100%", border: "2px solid #40C4FF" }}
+                  style={{ width: "100%", height: "100%", border: "2px solid #4ECDC4" }}
                 />
               </Tooltip>
             </a>
@@ -161,47 +161,46 @@ const styles: {
   updateButton: CSSProperties;
 } = {
   sectionLayout: {
-    background: "linear-gradient(135deg, #0D1B2A 0%, #1B263B 100%)",
+    background: "linear-gradient(135deg, #0A2E2E 0%, #1A4A4A 100%)", // Dark teal gradient
     padding: "60px 0",
     position: "relative",
     overflow: "hidden",
-    // Adding a subtle circuit pattern as a background overlay
-    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath d='M10 10h80v80H10z' fill='none' stroke='%2340C4FF' stroke-opacity='0.1' stroke-width='1'/%3E%3Cpath d='M20 20h60v60H20z' fill='none' stroke='%2340C4FF' stroke-opacity='0.1' stroke-width='1'/%3E%3C/svg%3E")`,
+    // Subtle circuit pattern in lighter teal
+    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath d='M10 10h80v80H10z' fill='none' stroke='%234ECDC4' stroke-opacity='0.05' stroke-width='1'/%3E%3Cpath d='M20 20h60v60H20z' fill='none' stroke='%234ECDC4' stroke-opacity='0.05' stroke-width='1'/%3E%3C/svg%3E")`,
     backgroundSize: "200px 200px",
   },
   sectionTitle: {
     fontSize: "36px",
     fontWeight: 700,
-    color: "#E0E0E0",
-    textShadow: "0 0 10px rgba(64, 196, 255, 0.5)",
+    color: "#B0E0E6", // Pale teal for primary text
+    textShadow: "0 0 10px rgba(78, 205, 196, 0.3)", // Subtle teal glow
     marginBottom: "30px",
   },
   searchInput: {
     borderRadius: "12px",
-    background: "rgba(255, 255, 255, 0.1)",
+    background: "rgba(78, 205, 196, 0.05)", // Teal undertone for glassmorphism
     backdropFilter: "blur(10px)",
-    border: "1px solid rgba(255, 255, 255, 0.2)",
-    color: "#E0E0E0",
+    border: "1px solid rgba(78, 205, 196, 0.2)", // Teal border
+    color: "#B0E0E6", // Pale teal text
   },
   searchButton: {
-    background: "linear-gradient(45deg, #40C4FF, #536DFE)",
+    background: "linear-gradient(45deg, #4ECDC4, #1A4A4A)", // Teal gradient
     border: "none",
-    borderRadius: "8px",
-    boxShadow: "0 0 15px rgba(64, 196, 255, 0.5)",
+    boxShadow: "0 0 15px rgba(78, 205, 196, 0.5)", // Teal glow
     transition: "box-shadow 0.3s",
   },
   card: {
     borderRadius: "16px",
     overflow: "hidden",
-    background: "rgba(255, 255, 255, 0.05)",
+    background: "rgba(78, 205, 196, 0.05)", // Teal undertone for glassmorphism
     backdropFilter: "blur(15px)",
-    border: "1px solid rgba(255, 255, 255, 0.2)",
-    boxShadow: "0 8px 24px rgba(0, 0, 0, 0.5), 0 0 15px rgba(64, 196, 255, 0.2)",
+    border: "1px solid rgba(78, 205, 196, 0.2)", // Teal border
+    boxShadow: "0 8px 24px rgba(0, 0, 0, 0.5), 0 0 15px rgba(78, 205, 196, 0.2)", // Teal glow
     transition: "transform 0.3s, box-shadow 0.3s",
   },
   cardCover: {
     position: "relative",
-    borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
+    borderBottom: "1px solid rgba(78, 205, 196, 0.1)", // Subtle teal border
   },
   thumbnail: {
     width: "100%",
@@ -215,12 +214,12 @@ const styles: {
     position: "absolute",
     top: "16px",
     right: "16px",
-    background: "rgba(64, 196, 255, 0.2)",
+    background: "rgba(78, 205, 196, 0.2)", // Teal background
     padding: "6px 12px",
     borderRadius: "20px",
-    color: "#40C4FF",
+    color: "#4ECDC4", // Brighter teal text
     fontWeight: 500,
-    border: "1px solid rgba(64, 196, 255, 0.5)",
+    border: "1px solid rgba(78, 205, 196, 0.5)", // Teal border
   },
   avtTeacher: {
     position: "absolute",
@@ -228,37 +227,37 @@ const styles: {
     left: "16px",
     width: "40px",
     height: "40px",
-    background: "rgba(255, 255, 255, 0.1)",
+    background: "rgba(78, 205, 196, 0.1)", // Subtle teal background
     borderRadius: "50%",
     padding: "2px",
-    boxShadow: "0 0 10px rgba(64, 196, 255, 0.5)",
+    boxShadow: "0 0 10px rgba(78, 205, 196, 0.5)", // Teal glow
   },
   nameCourse: {
     fontSize: "20px",
     fontWeight: 600,
-    color: "#E0E0E0",
+    color: "#B0E0E6", // Pale teal text
     marginBottom: "20px",
     textAlign: "center",
-    textShadow: "0 0 5px rgba(255, 255, 255, 0.3)",
+    textShadow: "0 0 5px rgba(78, 205, 196, 0.3)", // Subtle teal glow
   },
   cardBody: {
     padding: "24px",
-    background: "rgba(255, 255, 255, 0.05)",
+    background: "rgba(78, 205, 196, 0.05)", // Subtle teal undertone
   },
   joinButton: {
-    background: "linear-gradient(45deg, #40C4FF, #536DFE)",
+    background: "linear-gradient(45deg, #4ECDC4, #1A4A4A)", // Teal gradient
     border: "none",
     borderRadius: "8px",
-    boxShadow: "0 0 15px rgba(64, 196, 255, 0.5)",
+    boxShadow: "0 0 15px rgba(78, 205, 196, 0.5)", // Teal glow
     transition: "box-shadow 0.3s",
     fontWeight: 500,
   },
   updateButton: {
     background: "transparent",
-    border: "1px solid #E0E0E0",
+    border: "1px solid #B0E0E6", // Pale teal border
     borderRadius: "8px",
-    color: "#E0E0E0",
-    boxShadow: "0 0 10px rgba(255, 255, 255, 0.2)",
+    color: "#B0E0E6", // Pale teal text
+    boxShadow: "0 0 10px rgba(78, 205, 196, 0.2)", // Subtle teal glow
     transition: "box-shadow 0.3s",
     fontWeight: 500,
   },
