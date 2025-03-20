@@ -17,7 +17,7 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => {
         <Col xs={0} sm={0} md={12} lg={16} style={styles.graphicSection}>
           <div style={styles.graphicContainer}>
             <img
-              src="/images/auth/auth-bg.png" // Placeholder for a tech-inspired graphic (e.g., circuit board, coding symbols)
+              src="/images/auth/auth-bg.png" 
               alt="Tech Illustration"
               style={styles.graphic}
             />
@@ -25,13 +25,7 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => {
         </Col>
 
         {/* Form Section */}
-        <Col
-          xs={24}
-          sm={24}
-          md={12}
-          lg={8}
-          style={styles.formSection}
-        >
+        <Col xs={24} sm={24} md={12} lg={8} style={styles.formSection}>
           <div style={styles.logoContainer}>
             <img src="/logo.png" style={styles.logo} alt="logo" />
           </div>
@@ -74,17 +68,14 @@ const styles: {
     width: "100%",
     height: "100%",
     overflow: "hidden",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
   },
   graphicContainer: {
     width: "100%",
+    height: "100%",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
-    height: "100%",
   },
   graphic: {
     width: "100%",

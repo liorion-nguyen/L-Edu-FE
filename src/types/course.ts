@@ -1,6 +1,7 @@
 import { Currency, Status, TypeDiscount } from "../enum/course.enum";
+import { Role } from "../enum/user.enum";
 import { SessionCoreResponse, SessionResponse } from "./session";
-import { IntructorType } from "./user";
+import { IntructorType, UserCoreType } from "./user";
 
 export type CoursesState = {
     loading: boolean;
@@ -9,6 +10,7 @@ export type CoursesState = {
     course: CourseType | null,
     session: SessionResponse | null
     totalCourse: number;
+    myCourses: MyCourseResponse[] | null;
 };
 
 export type Discount = {
@@ -39,4 +41,13 @@ export type CourseType = {
     instructor?: IntructorType | null;
     mode?: string;
 };
+
+export type MyCourseResponse = {
+    _id: string;
+    name: string;
+    instructor: UserCoreType | null;
+    duration: number;
+    numberOfSessionCurrent: number;
+    role: Role;
+}
 

@@ -6,29 +6,14 @@ import { RootState, useSelector, dispatch } from "../../../redux/store";
 import SectionLayout from "../../../layouts/SectionLayout";
 import { useParams } from "react-router-dom";
 import UpdateProfile from "./UpdateProfile";
-import ItemLayout from "../../../layouts/ItemLayout";
+import { getMyCourses } from "../../../redux/slices/courses";
 // import { updateUser } from "../../../redux/slices/auth"; 
 
 const { Title, Text } = Typography;
 
-// Mock enrolled courses data
-const enrolledCourses = [
-    {
-        name: "Website Basic (T4)",
-        progress: 75,
-        instructor: "Jane Smith",
-        duration: "8 weeks",
-    },
-    {
-        name: "React Native (THU 2)",
-        progress: 40,
-        instructor: "Michael Brown",
-        duration: "6 weeks",
-    },
-];
-
 const Profile: React.FC = () => {
     const { user } = useSelector((state: RootState) => state.auth);
+    const { myCourses } = useSelector((state: RootState) => state.courses);
     const { id } = useParams();
     const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -36,6 +21,7 @@ const Profile: React.FC = () => {
         if (user && id !== user._id) {
             // Fetch user data if viewing another user's profile (not implemented here)
         }
+        dispatch(getMyCourses());
     }, [id, user]);
 
     const handleUpdateProfile = (updatedData: any) => {
@@ -118,7 +104,7 @@ const Profile: React.FC = () => {
 
                 {/* Enrolled Courses */}
                 <Col xs={24} md={12}>
-                    {enrolledCourses.map((course, index) => (
+                    {myCourses && myCourses.map((course, index) => (
                         <Card key={index} style={styles.courseCard}>
                             <Row gutter={[16, 16]}>
                                 <Col span={24}>
@@ -126,13 +112,13 @@ const Profile: React.FC = () => {
                                         {course.name}
                                     </Title>
                                     <Text style={styles.courseInfo}>
-                                        Instructor: {course.instructor}
+                                        Instructor: {course.instructor?.fullName}
                                     </Text>
                                     <Text style={styles.courseInfo}>
                                         Duration: {course.duration}
                                     </Text>
                                     <Progress
-                                        percent={course.progress}
+                                        percent={Math.floor(course.numberOfSessionCurrent/course.duration * 100)}
                                         strokeColor="#4ECDC4"
                                         trailColor="rgba(78, 205, 196, 0.2)"
                                         style={styles.progress}
@@ -162,23 +148,7 @@ const Profile: React.FC = () => {
 export default Profile;
 
 const styles: {
-    container: CSSProperties;
-    profileCard: CSSProperties;
-    avatar: CSSProperties;
-    fullName: CSSProperties;
-    roleTag: CSSProperties;
-    divider: CSSProperties;
-    infoText: CSSProperties;
-    icon: CSSProperties;
-    editButton: CSSProperties;
-    sectionTitle: CSSProperties;
-    courseCard: CSSProperties;
-    courseTitle: CSSProperties;
-    courseInfo: CSSProperties;
-    progress: CSSProperties;
-    modal: CSSProperties;
-    modalTitle: CSSProperties;
-    modalBody: CSSProperties;
+    [key: string]: CSSProperties;
 } = {
     container: {
         minHeight: "100vh",

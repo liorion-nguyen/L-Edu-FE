@@ -2,7 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import { CoursesState, CourseType } from '../../types/course';
+import { CoursesState, CourseType, MyCourseResponse } from '../../types/course';
 import { dispatch } from '../store';
 import { envConfig } from '../../config';
 import { showNotification } from '../../components/common/Toaster';
@@ -20,6 +20,7 @@ const initialState: CoursesState = {
     errorMessage: '',
     courses: null,
     course: null,
+    myCourses: null,
     session: null,
     totalCourse: 0,
 };
@@ -54,6 +55,10 @@ export const CoursesSlice = createSlice({
         createReviewSuccess: (state: CoursesState) => {
             state.loading = false;
         },
+        getMyCoursesSuccess: (state: CoursesState, action: PayloadAction<{ myCourses: MyCourseResponse[] }>) => {
+            state.loading = false;
+            state.myCourses = action.payload.myCourses;
+        }
     },
 });
 
@@ -202,5 +207,21 @@ export const getUsersCore = (role: Role) => {
         }
     };
 }
+
+export const getMyCourses = () => {
+    return async () => {
+        try {
+            dispatch(CoursesSlice.actions.getRequest());
+            const result = await axios.get(`${envConfig.serverURL}/courses/myCourse`);
+            dispatch(CoursesSlice.actions.getMyCoursesSuccess({ myCourses: result.data.data }));
+            return result.data.data;
+        }
+        catch (error: Error | any) {
+            const errorMessage = error.response ? error.response.data.message : 'Something went wrong';
+            toast.error(errorMessage);
+            dispatch(CoursesSlice.actions.getFailure(errorMessage));
+        }
+    };
+};
 
 export default CoursesSlice.reducer;
