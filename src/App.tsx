@@ -13,6 +13,7 @@ import UpdateCourse from "./pages/home/courses/UpdateCourse";
 import AboutUs from "./pages/home/about";
 import NotFound from "./pages/NotFound";
 import Profile from "./pages/home/profile";
+import Video from "./pages/home/sessions/Video";
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
         <Route path="/course/:id" element={<MainLayout><CourseDetail /></MainLayout>} />
         <Route path="/course/update/:id" element={<MainLayout><UpdateCourse /></MainLayout>} />
         <Route path="course/document/:id" element={<MainLayout><Document /></MainLayout>} />
+        <Route path="course/video/:id" element={<MainLayout><Video /></MainLayout>} />
         <Route path="/session/addSession/:id" element={<MainLayout><AddSession /></MainLayout>} />
         <Route path="/session/updateSession/:id" element={<MainLayout><UpdateSession /></MainLayout>} />
 

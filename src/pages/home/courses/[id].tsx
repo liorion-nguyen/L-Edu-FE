@@ -173,24 +173,7 @@ const CourseDetail = () => {
 export default CourseDetail;
 
 const styles: {
-  sectionLayout: CSSProperties;
-  courseTitle: CSSProperties;
-  addButton: CSSProperties;
-  coverImage: CSSProperties;
-  description: CSSProperties;
-  container: CSSProperties;
-  sessionTitle: CSSProperties;
-  viewIcon: CSSProperties;
-  viewText: CSSProperties;
-  boxSession: CSSProperties;
-  icon: CSSProperties;
-  sectionText: CSSProperties;
-  boxButton: CSSProperties;
-  button: CSSProperties;
-  updateButton: CSSProperties;
-  lock: CSSProperties;
-  lockIcon: CSSProperties;
-  lockText: CSSProperties;
+  [key: string]: CSSProperties;
 } = {
   sectionLayout: {
     background: "linear-gradient(135deg, #0A2E2E 0%, #1A4A4A 100%)", // Dark teal gradient
