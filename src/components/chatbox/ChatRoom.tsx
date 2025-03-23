@@ -9,6 +9,7 @@ import TextArea from "antd/es/input/TextArea";
 import { addMessageRealTime, createMessage, getMessageBoxById, updateChatRoom } from "../../redux/slices/messages";
 import UpdateChatRoom from "./UpdateChatRoom";
 import { Role } from "../../enum/user.enum";
+import { pusher } from "../../config/pusher";
 
 const ChatRoom = ({ messageBox }: { messageBox: MessagesBoxType }) => {
   const [message, setMessage] = useState<string>("");
@@ -40,6 +41,7 @@ const ChatRoom = ({ messageBox }: { messageBox: MessagesBoxType }) => {
           file
         )
       );
+
       setMessage("");
       setFile(null);
       setPreviewUrl(null);
@@ -137,6 +139,39 @@ const ChatRoom = ({ messageBox }: { messageBox: MessagesBoxType }) => {
       fileInputRef.current.value = "";
     }
   };
+
+  useEffect(() => {
+    if (!messageBox._id) return;
+
+    const channelName = `chat-room-${messageBox._id}`;
+    console.log('Subscribing to channel:', channelName); // Log kênh đăng ký
+
+    const channel = pusher.subscribe(channelName);
+
+    channel.bind('new-message', (message: MessageType) => {
+      console.log('New message received:', message); // Log tin nhắn nhận được
+      let req = {}
+      if (message.file) {
+        req = { ...req, file: message.file };
+      }
+      if (message.message) {
+        req = { ...req, message: message.message };
+      }
+      dispatch(addMessageRealTime({
+        ...req,
+        _id: message._id,
+        chatRoomId: message.chatRoomId,
+        senderId: message.senderId
+      }));
+    });
+
+    return () => {
+      console.log('Unsubscribing from channel:', channelName); // Log khi hủy đăng ký
+      channel.unbind_all();
+      channel.unsubscribe();
+    };
+  }, [messageBox._id]);
+
 
   return (
     <Flex vertical style={styles.chatRoom}>

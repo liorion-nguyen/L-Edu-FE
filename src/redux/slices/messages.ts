@@ -115,29 +115,45 @@ export const updateMessage = (id: string, Message: MessageType) => {
 export const createMessage = (message: CreateMessageType, file: File | null) => {
     return async () => {
         try {
+            dispatch(messagesSlice.actions.getRequest());
+
+            // Tạo `FormData` để gửi file và message.
             const formData = new FormData();
             if (file) {
                 formData.append('file', file);
             }
             formData.append('chatRoomId', message.chatRoomId);
             if (message.message?.trim()) {
-                formData.append('message', message.message);
+                formData.append('message', message.message.trim());
             }
 
+            // Gửi message đến server.
             const response = await axios.post(`${envConfig.serverURL}/message`, formData, {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
 
-            // showNotification(ToasterType.success, 'Message created successfully');
+            // Thêm message mới vào store Redux.
             dispatch(messagesSlice.actions.addMessage(response.data.data));
-        }
-        catch (error: Error | any) {
-            const errorMessage: string = error.response ? error.response.data.message : 'Something went wrong';
+
+            // Gửi sự kiện qua Pusher.
+            await axios.post(`${envConfig.serverURL}/pusher`, {
+                channel: `chat-room-${message.chatRoomId}`,
+                event: 'new-message',
+                data: {
+                    message: response.data.data,
+                },
+            });
+
+            dispatch(messagesSlice.actions.getSuccess());
+        } catch (error: Error | any) {
+            // Xử lý lỗi
+            const errorMessage: string = error.response?.data?.message || 'Something went wrong';
             showNotification(ToasterType.error, 'Create failed', errorMessage);
             dispatch(messagesSlice.actions.getFailure(errorMessage));
         }
     };
 };
+
 
 export const createChatRoom = (data: CreateChatRoomType) => {
     return async () => {
