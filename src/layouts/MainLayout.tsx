@@ -31,13 +31,15 @@ const styles: {
         minHeight: "100vh",
         background: COLORS.background.primary,
         position: "relative",
-        overflow: "hidden",
+        overflow: "visible",
     },
     content: {
         padding: "0",
         background: "transparent",
         minHeight: "80vh",
         marginTop: "64px",
+        position: "relative",
+        zIndex: 1,
     },
     divider: {
         height: "1px",

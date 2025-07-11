@@ -52,20 +52,47 @@ const Header = () => {
   useEffect(() => {
     if (open) {
       if (user) {
-        setMenuItems((prev: any) => [
-          ...prev,
-          { key: "logout", label: <Text style={styles.menuItem} onClick={handleLogout}>Logout</Text> },
-        ]);
+        setMenuItems((prev: any) => {
+          const hasLogout = prev.find((item: any) => item.key === "logout");
+          if (!hasLogout) {
+            return [...prev, { key: "logout", label: "Logout" }];
+          }
+          return prev;
+        });
       } else {
-        setMenuItems((prev: any) => [
-          ...prev,
-          { key: "/login", label: <Text style={styles.menuItem}>Login</Text> },
-        ]);
+        setMenuItems((prev: any) => {
+          const hasLogin = prev.find((item: any) => item.key === "/login");
+          if (!hasLogin) {
+            return [...prev, { key: "/login", label: "Login" }];
+          }
+          return prev;
+        });
       }
     } else {
       setMenuItems((prev) => prev.filter((item) => item.key !== "logout" && item.key !== "/login"));
     }
-  }, [open, user, handleLogout]);
+  }, [open, user]);
+
+  const handleMenuClick = ({ key }: { key: string }) => {
+    console.log('Menu clicked:', key);
+    if (key === "logout") {
+      handleLogout();
+    } else {
+      console.log('Navigating to:', key);
+      navigate(key);
+    }
+  };
+
+  const handleDrawerMenuClick = ({ key }: { key: string }) => {
+    console.log('Drawer menu clicked:', key);
+    if (key === "logout") {
+      handleLogout();
+    } else {
+      console.log('Navigating to:', key);
+      navigate(key);
+    }
+    setOpen(false);
+  };
 
   return (
     <Layout.Header style={styles.header}>
@@ -87,7 +114,7 @@ const Header = () => {
                 ...item,
                 label: <Text style={styles.menuItem}>{item.label}</Text>,
               }))}
-              onClick={({ key }) => navigate(key)}
+              onClick={handleMenuClick}
               style={styles.menu}
             />
           </Col>
@@ -137,10 +164,7 @@ const Header = () => {
             ...item,
             label: <Text style={styles.menuItem}>{item.label}</Text>,
           }))}
-          onClick={({ key }) => {
-            navigate(key);
-            setOpen(false);
-          }}
+          onClick={handleDrawerMenuClick}
           style={styles.drawerMenu}
         />
       </Drawer>

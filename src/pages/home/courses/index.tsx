@@ -86,6 +86,13 @@ const Course = () => {
   const { courses, totalCourse, loading } = useSelector((state: RootState) => state.courses);
 
   useEffect(() => {
+    console.log('Course component mounted/rendered');
+    return () => {
+      console.log('Course component unmounted');
+    };
+  }, []);
+
+  useEffect(() => {
     if (totalCourse === 0) {
       dispatch(getCourses({}));
     }

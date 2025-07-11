@@ -1,4 +1,5 @@
 import { Col, Row } from "antd";
+import { useEffect } from "react";
 import CourseOverview from "../../components/sections/CourseOverview";
 import ExploreCategories from "../../components/sections/ExploreCategories";
 import Hero from "../../components/sections/Hero";
@@ -22,6 +23,13 @@ const sections = [
 ];
 
 const LandingPage = () => {
+  useEffect(() => {
+    console.log('LandingPage component mounted/rendered');
+    return () => {
+      console.log('LandingPage component unmounted');
+    };
+  }, []);
+
   return (
     <Row gutter={[0, 80]} justify="center" style={{ marginBottom: "30px" }}>
       {sections.map((Section, index) => (

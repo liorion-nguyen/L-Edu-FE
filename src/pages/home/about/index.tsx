@@ -1,4 +1,5 @@
 import { Button, Card, Carousel, Col, Row, Typography } from 'antd';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SectionLayout from '../../../layouts/SectionLayout';
 
@@ -6,6 +7,14 @@ const { Title, Paragraph } = Typography;
 
 const AboutUs = () => {
     const navigate = useNavigate();
+    
+    useEffect(() => {
+        console.log('AboutUs component mounted/rendered');
+        return () => {
+            console.log('AboutUs component unmounted');
+        };
+    }, []);
+
     const team = [
         {
             name: "Nguyễn Thanh Tùng",
