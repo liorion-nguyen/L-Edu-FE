@@ -1,11 +1,11 @@
-import { Row, Col, Form, Input, Button, Select, Flex } from "antd";
-import { CreateChatRoomType, TypeChatRoom } from "../../types/message";
-import CustomSelectMultiple from "../common/CustomSelectMultiple";
+import { Button, Col, Form, Input, Row, Select } from "antd";
 import { useEffect, useState } from "react";
-import { dispatch } from "../../redux/store";
-import { getUsersCore } from "../../redux/slices/courses";
 import { Role } from "../../enum/user.enum";
+import { getUsersCore } from "../../redux/slices/courses";
+import { dispatch } from "../../redux/store";
+import { CreateChatRoomType, TypeChatRoom } from "../../types/message";
 import { UserCoreType } from "../../types/user";
+import CustomSelectMultiple from "../common/CustomSelectMultiple";
 
 const { Option } = Select;
 type OptionsType = {
@@ -26,21 +26,27 @@ const CreateChatRoom = ({ onSubmit }: { onSubmit: (data: CreateChatRoomType) => 
     const [optionsUser, setOptionsuUers] = useState<OptionsType[]>([]);
 
     const fetchData = async () => {
-        const students = await dispatch(getUsersCore(Role.STUDENT));
-        const teachers = await dispatch(getUsersCore(Role.TEACHER));
-        if (!teachers || !students) return;
+        const studentsResult = await dispatch(getUsersCore(Role.STUDENT));
+        const teachersResult = await dispatch(getUsersCore(Role.TEACHER));
+        
+        if (getUsersCore.fulfilled.match(studentsResult) && getUsersCore.fulfilled.match(teachersResult)) {
+            const students = studentsResult.payload;
+            const teachers = teachersResult.payload;
+            
+            if (!teachers || !students) return;
 
-        const uniqueOptionsStudent = students.map((item: UserCoreType) => ({
-            label: `${item.fullName} [${item.email}]`,
-            value: item._id
-        }));
+            const uniqueOptionsStudent = students.map((item: UserCoreType) => ({
+                label: `${item.fullName} [${item.email}]`,
+                value: item._id
+            }));
 
-        const uniqueOptionsTeacher = teachers.map((item: UserCoreType) => ({
-            label: `${item.fullName} [${item.email}]`,
-            value: item._id
-        }));
+            const uniqueOptionsTeacher = teachers.map((item: UserCoreType) => ({
+                label: `${item.fullName} [${item.email}]`,
+                value: item._id
+            }));
 
-        setOptionsuUers([...uniqueOptionsStudent, ...uniqueOptionsTeacher]);
+            setOptionsuUers([...uniqueOptionsStudent, ...uniqueOptionsTeacher]);
+        }
     };
     return (
         <Row style={{ marginTop: "20px" }} gutter={[20, 20]} justify="center">

@@ -1,12 +1,11 @@
-import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { dispatch } from '../store';
 import toast from 'react-hot-toast';
-import { AuthenticationState, LoginRequestType, LoginResponseType, RegisterRequestType } from '../../types/auth';
-import { envConfig, localStorageConfig } from '../../config';
 import { showNotification } from '../../components/common/Toaster';
+import { envConfig, localStorageConfig } from '../../config';
 import { ToasterType } from '../../enum/toaster';
+import { AuthenticationState, LoginRequestType, LoginResponseType, RegisterRequestType } from '../../types/auth';
 import { UserType } from '../../types/user';
 
 type RegisterFailureAction = PayloadAction<string>;
@@ -23,6 +22,135 @@ const initialState: AuthenticationState = {
     open: '',
     user: null
 };
+
+// Async thunks
+export const register = createAsyncThunk(
+    'auth/register',
+    async (registerData: RegisterRequestType, { rejectWithValue }) => {
+        try {
+            await axios.post(`${envConfig.serverURL}/auth/signup`, registerData);
+            showNotification(ToasterType.success, 'Registration saved! Please check your email for confirmation.');
+            return true;
+        } catch (error: Error | any) {
+            const errorMessage: string = error.response
+                ? error.response.data.message
+                : 'Something went wrong';
+            showNotification(ToasterType.error, 'Registration failed', errorMessage);
+            return rejectWithValue(errorMessage);
+        }
+    }
+);
+
+export const login = createAsyncThunk(
+    'auth/login',
+    async (loginData: LoginRequestType, { dispatch, rejectWithValue }) => {
+        try {
+            const result = await axios.post(`${envConfig.serverURL}/auth/login`, loginData);
+            const data: LoginResponseType = result.data ? result.data.data : null;
+            showNotification(ToasterType.success, 'Login successful');
+            if (data) {
+                localStorage.setItem(localStorageConfig.accessToken, data.access_token);
+                localStorage.setItem(localStorageConfig.refreshToken, data?.refresh_token || '');
+                await dispatch(getUser());
+                return true;
+            }
+            return false;
+        } catch (error: Error | any) {
+            const errorMessage: string = error.response
+                ? error.response.data.message
+                : 'Something went wrong';
+            showNotification(ToasterType.error, 'Invalid email or password');
+            return rejectWithValue(errorMessage);
+        }
+    }
+);
+
+export const logout = createAsyncThunk(
+    'auth/logout',
+    async (_, { rejectWithValue }) => {
+        try {
+            await axios.post(`${envConfig.serverURL}/auth/logout`, {
+                refresh_token: localStorage.getItem(localStorageConfig.refreshToken),
+            });
+            localStorage.removeItem(localStorageConfig.accessToken);
+            localStorage.removeItem(localStorageConfig.refreshToken);
+            showNotification(ToasterType.success, 'Logout successful');
+            return true;
+        } catch (error) {
+            showNotification(ToasterType.error, 'Logout failed');
+            return rejectWithValue('Logout failed');
+        }
+    }
+);
+
+export const forgotPassword = createAsyncThunk(
+    'auth/forgotPassword',
+    async (email: string, { rejectWithValue }) => {
+        try {
+            await axios.post(`${envConfig.serverURL}/auth/forgot-password`, { email });
+            toast.success('Code has been sent to your email');
+            return true;
+        } catch (error: Error | any) {
+            const errorMessage: string = error.response
+                ? error.response.data.message
+                : 'Something went wrong';
+            toast.error(errorMessage);
+            return rejectWithValue(errorMessage);
+        }
+    }
+);
+
+export const verifyCode = createAsyncThunk(
+    'auth/verifyCode',
+    async (verifyCodeRequest: { email: string, code: string }, { rejectWithValue }) => {
+        try {
+            await axios.post(`${envConfig.serverURL}/auth/verify-code`, verifyCodeRequest);
+            toast.success('New password has been sent to your email');
+            return true;
+        } catch (error: Error | any) {
+            const errorMessage: string = error.response
+                ? error.response.data.message
+                : 'Something went wrong';
+            toast.error(errorMessage);
+            return rejectWithValue(errorMessage);
+        }
+    }
+);
+
+export const resetPassword = createAsyncThunk(
+    'auth/resetPassword',
+    async ({ key, newPassword }: { key: string, newPassword: string }, { rejectWithValue }) => {
+        try {
+            await axios.post(`/auth/reset/reset-password/${key}`, {
+                password: newPassword,
+            });
+            toast.success('Your password has been successfully updated!');
+            return true;
+        } catch (error: Error | any) {
+            const errorMessage: string = error.response
+                ? error.response.data.message
+                : 'Something went wrong';
+            toast.error(errorMessage);
+            return rejectWithValue(errorMessage);
+        }
+    }
+);
+
+export const getUser = createAsyncThunk(
+    'auth/getUser',
+    async (_, { rejectWithValue }) => {
+        try {
+            const result = await axios.get(`${envConfig.serverURL}/users`);
+            return result.data.data;
+        } catch (error: Error | any) {
+            const errorMessage: string = error.response
+                ? error.response.data.message
+                : 'Something went wrong';
+            showNotification(ToasterType.error, 'User not found', errorMessage);
+            return rejectWithValue(errorMessage);
+        }
+    }
+);
 
 export const authenticationSlice = createSlice({
     name: 'auth',
@@ -52,7 +180,7 @@ export const authenticationSlice = createSlice({
             state.errorMessage = action.payload;
         },
         // LOGOUT
-        logout: (state: AuthenticationState) => {
+        logoutAction: (state: AuthenticationState) => {
             state.isAuthenticated = false;
         },
         // FORGOT PASSWORD
@@ -84,137 +212,91 @@ export const authenticationSlice = createSlice({
             state.user = action.payload;
         },
     },
+    extraReducers: (builder) => {
+        builder
+            // Register
+            .addCase(register.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(register.fulfilled, (state) => {
+                state.loading = false;
+            })
+            .addCase(register.rejected, (state, action) => {
+                state.loading = false;
+                state.errorMessage = action.payload as string;
+            })
+            // Login
+            .addCase(login.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(login.fulfilled, (state) => {
+                state.loading = false;
+                state.isAuthenticated = true;
+            })
+            .addCase(login.rejected, (state, action) => {
+                state.loading = false;
+                state.errorMessage = action.payload as string;
+            })
+            // Logout
+            .addCase(logout.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(logout.fulfilled, (state) => {
+                state.loading = false;
+                state.isAuthenticated = false;
+            })
+            .addCase(logout.rejected, (state) => {
+                state.loading = false;
+            })
+            // Forgot Password
+            .addCase(forgotPassword.pending, (state) => {
+                state.loading = true;
+                state.forgotEmailSent = false;
+            })
+            .addCase(forgotPassword.fulfilled, (state) => {
+                state.loading = false;
+                state.forgotEmailSent = true;
+            })
+            .addCase(forgotPassword.rejected, (state, action) => {
+                state.loading = false;
+                state.errorMessage = action.payload as string;
+            })
+            // Verify Code
+            .addCase(verifyCode.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(verifyCode.fulfilled, (state) => {
+                state.loading = false;
+                state.forgotEmailSent = true;
+            })
+            .addCase(verifyCode.rejected, (state, action) => {
+                state.loading = false;
+                state.errorMessage = action.payload as string;
+            })
+            // Reset Password
+            .addCase(resetPassword.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(resetPassword.fulfilled, (state) => {
+                state.loading = false;
+            })
+            .addCase(resetPassword.rejected, (state, action) => {
+                state.loading = false;
+                state.errorMessage = action.payload as string;
+            })
+            // Get User
+            .addCase(getUser.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(getUser.fulfilled, (state, action) => {
+                state.loading = false;
+                state.user = action.payload;
+            })
+            .addCase(getUser.rejected, (state, action) => {
+                state.loading = false;
+                state.errorMessage = action.payload as string;
+            });
+    },
 });
-
-export const register = (registerData: RegisterRequestType) => {
-    return async () => {
-        try {
-            dispatch(authenticationSlice.actions.registerRequest());
-            await axios.post(`${envConfig.serverURL}/auth/signup`, registerData);
-            dispatch(authenticationSlice.actions.registerSuccess());
-            showNotification(ToasterType.success, 'Registration saved! Please check your email for confirmation.');
-            return true;
-        } catch (error: Error | any) {
-            const errorMessage: string = error.response
-                ? error.response.data.message
-                : 'Something went wrong';
-            showNotification(ToasterType.error, 'Registration failed', errorMessage);
-            dispatch(authenticationSlice.actions.registerFailure(errorMessage));
-            return false;
-        }
-    };
-};
-
-export const login = (loginData: LoginRequestType) => {
-    return async () => {
-        try {
-            dispatch(authenticationSlice.actions.loginRequest());
-            const result = await axios.post(`${envConfig.serverURL}/auth/login`, loginData);
-            const data: LoginResponseType = result.data ? result.data.data : null;
-            showNotification(ToasterType.success, 'Login successful');
-            if (data) {
-                localStorage.setItem(localStorageConfig.accessToken, data.access_token);
-                localStorage.setItem(localStorageConfig.refreshToken, data?.refresh_token || '');
-                await dispatch(getUser());
-                return true;
-            }
-            return false;
-        } catch (error: Error | any) {
-            const errorMessage: string = error.response
-                ? error.response.data.message
-                : 'Something went wrong';
-            showNotification(ToasterType.error, 'Invalid email or password');
-            dispatch(authenticationSlice.actions.loginFailure(errorMessage));
-            return false;
-        }
-    };
-};
-
-export const logout = () => {
-    return async () => {
-        try {
-            dispatch(authenticationSlice.actions.logout());
-            await axios.post(`${envConfig.serverURL}/auth/logout`, {
-                refresh_token: localStorage.getItem(localStorageConfig.refreshToken),
-            });
-            localStorage.removeItem(localStorageConfig.accessToken);
-            localStorage.removeItem(localStorageConfig.refreshToken);
-            showNotification(ToasterType.success, 'Logout successful');
-            return true;
-        } catch (error) {
-            showNotification(ToasterType.error, 'Logout failed');
-            return false;
-        }
-    };
-};
-
-export const forgotPassword = (email: string) => {
-    return async () => {
-        try {
-            dispatch(authenticationSlice.actions.forgotPasswordRequest());
-            await axios.post(`${envConfig.serverURL}/auth/forgot-password`, { email });
-            dispatch(authenticationSlice.actions.forgotPasswordSuccess());
-            toast.success('Code has been sent to your email');
-        } catch (error: Error | any) {
-            const errorMessage: string = error.response
-                ? error.response.data.message
-                : 'Something went wrong';
-            toast.error(errorMessage);
-            dispatch(authenticationSlice.actions.forgotPasswordFailure(errorMessage));
-        }
-    };
-};
-
-export const verifyCode = (verifyCodeRequest: { email: string, code: string }) => {
-    return async () => {
-        try {
-            dispatch(authenticationSlice.actions.forgotPasswordRequest());
-            await axios.post(`${envConfig.serverURL}/auth/verify-code`, verifyCodeRequest);
-            dispatch(authenticationSlice.actions.forgotPasswordSuccess());
-            toast.success('New password has been sent to your email');
-            // dispatch(authenticationSlice.actions.setDiaLog('login'));
-        } catch (error: Error | any) {
-            const errorMessage: string = error.response
-                ? error.response.data.message
-                : 'Something went wrong';
-            toast.error(errorMessage);
-            dispatch(authenticationSlice.actions.forgotPasswordFailure(errorMessage));
-        }
-    };
-};
-
-export const resetPassword = (key: string, newPassword: string) => {
-    return async () => {
-        try {
-            dispatch(authenticationSlice.actions.resetPasswordRequest());
-            await axios.post(`/auth/reset/reset-password/${key}`, {
-                password: newPassword,
-            });
-            dispatch(authenticationSlice.actions.resetPasswordSuccess());
-            toast.success('Your password has been successfully updated!');
-        } catch (error: Error | any) {
-            const errorMessage: string = error.response
-                ? error.response.data.message
-                : 'Something went wrong';
-            toast.error(errorMessage);
-            dispatch(authenticationSlice.actions.resetPasswordFailure(errorMessage));
-        }
-    };
-};
-
-export const getUser = () => {
-    return async () => {
-        try {
-            const result = await axios.get(`${envConfig.serverURL}/users`);
-            dispatch(authenticationSlice.actions.setUser(result.data.data));
-        }
-        catch (error: Error | any) {
-            const errorMessage: string = error.response
-                ? error.response.data.message
-                : 'Something went wrong';
-            showNotification(ToasterType.error, 'User not found', errorMessage);
-        }   
-    }
-};
 
 export default authenticationSlice.reducer;

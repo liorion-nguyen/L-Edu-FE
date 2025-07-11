@@ -1,16 +1,17 @@
-import { Button, Col, Flex, Grid, Image, Row, Typography } from "antd";
-import SectionLayout from "../../../layouts/SectionLayout";
-import Title from "antd/es/typography/Title";
 import { EyeOutlined, LockOutlined, LogoutOutlined, PlusOutlined, ProductOutlined } from "@ant-design/icons";
+import { Button, Col, Flex, Grid, Image, Row, Typography } from "antd";
+import Title from "antd/es/typography/Title";
 import { CSSProperties, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { dispatch, RootState, useSelector } from "../../../redux/store";
-import { getCourseById } from "../../../redux/slices/courses";
 import Loading from "../../../components/common/Loading";
+import ReturnPage from "../../../components/common/ReturnPage";
+import { COLORS } from "../../../constants/colors";
 import { Mode } from "../../../enum/course.enum";
 import { Role } from "../../../enum/user.enum";
+import SectionLayout from "../../../layouts/SectionLayout";
+import { getCourseById } from "../../../redux/slices/courses";
+import { RootState, useDispatch, useSelector } from "../../../redux/store";
 import { useIsAdmin } from "../../../utils/auth";
-import ReturnPage from "../../../components/common/ReturnPage";
 
 const { Text } = Typography;
 const useBreakpoint = Grid.useBreakpoint;
@@ -99,16 +100,21 @@ const Session = ({ item, index }: { item: any; index: number }) => {
 const CourseDetail = () => {
   const navigate = useNavigate();
   const { id } = useParams();
+  const dispatch = useDispatch();
   const { course, loading } = useSelector((state: RootState) => state.courses);
   const { user } = useSelector((state: RootState) => state.auth);
 
   useEffect(() => {
     fetch();
-  }, [id]);
+  }, [id, dispatch]);
 
   const fetch = async () => {
-    const check = await dispatch(getCourseById(id as string));
-    if (!check) {
+    try {
+      const result = await dispatch(getCourseById(id as string));
+      if (getCourseById.rejected.match(result)) {
+        navigate(-1);
+      }
+    } catch (error) {
       navigate(-1);
     }
   };
@@ -176,150 +182,109 @@ const styles: {
   [key: string]: CSSProperties;
 } = {
   sectionLayout: {
-    background: "linear-gradient(135deg, #0A2E2E 0%, #1A4A4A 100%)", // Dark teal gradient
+    background: COLORS.background.secondary,
     padding: "60px 0",
     position: "relative",
     overflow: "hidden",
-    // Subtle circuit pattern in lighter teal
-    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath d='M10 10h80v80H10z' fill='none' stroke='%234ECDC4' stroke-opacity='0.05' stroke-width='1'/%3E%3Cpath d='M20 20h60v60H20z' fill='none' stroke='%234ECDC4' stroke-opacity='0.05' stroke-width='1'/%3E%3C/svg%3E")`,
-    backgroundSize: "200px 200px",
   },
   courseTitle: {
     fontSize: "36px",
     fontWeight: 700,
-    color: "#B0E0E6", // Pale teal for the title
-    textShadow: "0 0 10px rgba(78, 205, 196, 0.3)", // Subtle teal glow
+    color: COLORS.text.heading,
     marginBottom: "20px",
   },
   addButton: {
-    background: "linear-gradient(45deg, #4ECDC4, #1A4A4A)", // Teal gradient
+    background: COLORS.primary[500],
+    color: COLORS.background.primary,
     border: "none",
     borderRadius: "8px",
-    boxShadow: "0 0 15px rgba(78, 205, 196, 0.5)", // Teal glow
-    transition: "box-shadow 0.3s",
     fontWeight: 500,
   },
   coverImage: {
-    borderRadius: "16px",
+    borderRadius: "12px",
     width: "100%",
     height: "500px",
     objectFit: "cover",
-    filter: "brightness(0.7)",
-    transition: "filter 0.3s",
-    boxShadow: "0 8px 24px rgba(0, 0, 0, 0.5), 0 0 15px rgba(78, 205, 196, 0.2)", // Teal glow
   },
   description: {
-    color: "#B0E0E6", // Pale teal for description text
+    color: COLORS.text.primary,
     fontSize: "16px",
     lineHeight: "1.8",
-    background: "rgba(78, 205, 196, 0.05)", // Teal undertone for glassmorphism
-    backdropFilter: "blur(10px)",
+    background: COLORS.background.primary,
     padding: "20px",
     borderRadius: "12px",
-    border: "1px solid rgba(78, 205, 196, 0.2)", // Teal border
+    border: `1px solid ${COLORS.neutral[200]}`,
     margin: "20px 0",
   },
   container: {
     padding: "20px",
-    background: "rgba(78, 205, 196, 0.05)", // Teal undertone for glassmorphism
-    backdropFilter: "blur(15px)",
-    borderRadius: "20px",
-    border: "1px solid rgba(78, 205, 196, 0.2)", // Teal border
-    boxShadow: "0 8px 24px rgba(0, 0, 0, 0.5), 0 0 15px rgba(78, 205, 196, 0.2)", // Teal glow
+    background: COLORS.background.primary,
+    borderRadius: "12px",
+    border: `1px solid ${COLORS.neutral[200]}`,
     position: "relative",
-    transition: "transform 0.3s, box-shadow 0.3s",
   },
   sessionTitle: {
     fontSize: "20px",
     fontWeight: 600,
-    color: "#B0E0E6", // Pale teal for session title
-    textShadow: "0 0 5px rgba(78, 205, 196, 0.3)", // Subtle teal glow
+    color: COLORS.text.heading,
     marginTop: "10px",
   },
   viewIcon: {
-    color: "#4ECDC4", // Brighter teal for icon
+    color: COLORS.primary[500],
     marginRight: "8px",
   },
   viewText: {
-    color: "#B0E0E6", // Pale teal for view count
+    color: COLORS.text.secondary,
     fontSize: "14px",
   },
   boxSession: {
     padding: "10px",
-    background: "rgba(78, 205, 196, 0.1)", // Slightly darker teal for session box
-    borderRadius: "10px",
-    border: "1px solid rgba(78, 205, 196, 0.3)", // Teal border
-    transition: "background 0.3s, border 0.3s",
+    background: COLORS.background.tertiary,
+    borderRadius: "8px",
+    border: `1px solid ${COLORS.neutral[200]}`,
   },
   icon: {
     width: "30px",
     height: "30px",
-    filter: "brightness(0.8) hue-rotate(180deg)", // Adjust icon color to match teal theme
   },
   sectionText: {
-    color: "#B0E0E6", // Pale teal for section text
+    color: COLORS.text.primary,
     fontSize: "16px",
   },
   boxButton: {
     textAlign: "right",
   },
   button: {
-    background: "linear-gradient(45deg, #4ECDC4, #1A4A4A)", // Teal gradient
+    background: COLORS.primary[500],
+    color: COLORS.background.primary,
     border: "none",
     borderRadius: "8px",
-    boxShadow: "0 0 10px rgba(78, 205, 196, 0.3)", // Subtle teal glow
-    transition: "box-shadow 0.3s",
     fontWeight: 500,
   },
   updateButton: {
-    background: "linear-gradient(45deg, #4ECDC4, #1A4A4A)", // Teal gradient
+    background: COLORS.primary[500],
+    color: COLORS.background.primary,
     border: "none",
     borderRadius: "8px",
-    boxShadow: "0 0 15px rgba(78, 205, 196, 0.5)", // Teal glow
-    transition: "box-shadow 0.3s",
     fontWeight: 500,
   },
   lock: {
     position: "absolute",
     top: 0,
     right: 0,
-    color: "#B0E0E6", // Pale teal for lock text
+    color: COLORS.text.secondary,
     width: "100%",
     height: "100%",
-    background: "rgba(0, 0, 0, 0.7)", // Dark overlay
+    background: "rgba(0, 0, 0, 0.7)",
     opacity: 0.8,
-    borderRadius: "20px",
+    borderRadius: "12px",
     zIndex: 1,
   },
   lockIcon: {
     fontSize: "30px",
-    color: "#4ECDC4", // Brighter teal for lock icon
+    color: COLORS.primary[500],
   },
   lockText: {
-    color: "#B0E0E6", // Pale teal for lock text
-    textShadow: "0 0 5px rgba(78, 205, 196, 0.3)", // Subtle teal glow
+    color: COLORS.text.primary,
   },
 };
-
-// Add hover effects using CSS
-const styleSheet = document.createElement("style");
-styleSheet.innerText = `
-  .course-session-container:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6), 0 0 20px rgba(78, 205, 196, 0.4);
-  }
-  .course-session-box:hover {
-    background: rgba(78, 205, 196, 0.2);
-    border: 1px solid rgba(78, 205, 196, 0.5);
-  }
-  .course-cover-image:hover {
-    filter: brightness(1);
-  }
-  .course-button:hover {
-    box-shadow: 0 0 20px rgba(78, 205, 196, 0.7);
-  }
-  .course-update-button:hover {
-    box-shadow: 0 0 20px rgba(78, 205, 196, 0.7);
-  }
-`;
-document.head.appendChild(styleSheet);

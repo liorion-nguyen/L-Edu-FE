@@ -1,20 +1,19 @@
-import { Avatar, Dropdown, Menu } from "antd";
 import { LogoutOutlined, UserOutlined } from "@ant-design/icons";
-import { dispatch } from "../../redux/store";
-import { logout } from "../../redux/slices/auth";
+import { Avatar, Dropdown, Menu } from "antd";
 import { useNavigate } from "react-router-dom";
+import { logout } from "../../redux/slices/auth";
+import { useDispatch } from "../../redux/store";
 
 const UserMenu = ({ user }: { user: any }) => {
   const navigate = useNavigate();
-  const handleLogout = () => {
-    fetch();
-  };
-  const fetch = async () => {
-    const check = await dispatch(logout());
-    if (check) {
+  const dispatch = useDispatch();
+  
+  const handleLogout = async () => {
+    const response = await dispatch(logout());
+    if (response.payload) {
       navigate("/login");
     }
-  }
+  };
   const menu = (
     <Menu>
       <Menu.Item key="profile" icon={<UserOutlined />} onClick={() => navigate(`/profile/${user?._id}`)}>

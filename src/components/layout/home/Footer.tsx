@@ -1,5 +1,6 @@
 import { Col, Layout, Row, Space, Typography } from "antd";
 import { CSSProperties } from "react";
+import { COLORS } from "../../../constants/colors";
 import SectionLayout from "../../../layouts/SectionLayout";
 
 const { Title, Text } = Typography;
@@ -28,9 +29,9 @@ const Footer = () => {
           {/* Logo & Socials */}
           <Col lg={6} md={12} sm={24} xs={24} style={styles.center}>
             <Title level={3} style={styles.logo}>
-              Educare
+              L-Edu
             </Title>
-            <Text style={styles.text}>In tincidunt maecenas tellus</Text>
+            <Text style={styles.text}>Nền tảng học lập trình toàn diện</Text>
             <Space size="middle">
               {socials.map((social, index) => (
                 <a key={index} href={social.link} style={styles.socialLink}>
@@ -112,31 +113,26 @@ const styles: {
   footer: {
     textAlign: "center",
     padding: 0,
-    background: "transparent", // Let SectionLayout handle the background
+    background: "transparent",
   },
   sectionLayout: {
-    background: "linear-gradient(135deg, #0A2E2E 0%, #1A4A4A 100%)", // Dark teal gradient
+    background: COLORS.background.tertiary,
     padding: "0",
     position: "relative",
     overflow: "hidden",
-    // Subtle circuit pattern in lighter teal
-    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath d='M10 10h80v80H10z' fill='none' stroke='%234ECDC4' stroke-opacity='0.05' stroke-width='1'/%3E%3Cpath d='M20 20h60v60H20z' fill='none' stroke='%234ECDC4' stroke-opacity='0.05' stroke-width='1'/%3E%3C/svg%3E")`,
-    backgroundSize: "200px 200px",
   },
   center: {
     textAlign: "center",
   },
   logo: {
-    fontWeight: "bold",
-    color: "#B0E0E6", // Pale teal for logo
-    textShadow: "0 0 10px rgba(78, 205, 196, 0.3)", // Subtle teal glow
+    fontWeight: 700,
+    color: COLORS.text.heading,
     marginBottom: "20px",
   },
   title: {
     fontSize: "18px",
-    fontWeight: "bold",
-    color: "#B0E0E6", // Pale teal for titles
-    textShadow: "0 0 5px rgba(78, 205, 196, 0.3)", // Subtle teal glow
+    fontWeight: 600,
+    color: COLORS.text.heading,
     marginBottom: "20px",
   },
   list: {
@@ -146,7 +142,7 @@ const styles: {
     fontSize: "16px",
   },
   text: {
-    color: "#B0E0E6", // Pale teal for text
+    color: COLORS.text.secondary,
     fontSize: "16px",
     display: "block",
     marginBottom: "20px",
@@ -154,17 +150,13 @@ const styles: {
   icon: {
     width: "24px",
     height: "24px",
-    filter: "brightness(0.7)",
-    transition: "filter 0.3s, transform 0.3s",
   },
   socialLink: {
     display: "inline-block",
-    transition: "transform 0.3s",
   },
   link: {
-    color: "#B0E0E6", // Pale teal for links
+    color: COLORS.text.secondary,
     textDecoration: "none",
-    transition: "color 0.3s",
     display: "block",
     marginBottom: "10px",
   },
@@ -173,45 +165,17 @@ const styles: {
     alignItems: "center",
     justifyContent: "center",
     marginBottom: "15px",
-    background: "rgba(78, 205, 196, 0.05)", // Teal undertone for glassmorphism
-    backdropFilter: "blur(10px)",
+    background: COLORS.background.primary,
     borderRadius: "8px",
     padding: "10px",
-    border: "1px solid rgba(78, 205, 196, 0.2)", // Teal border
-    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.5), 0 0 10px rgba(78, 205, 196, 0.2)", // Teal glow
-    transition: "transform 0.3s, box-shadow 0.3s",
+    border: `1px solid ${COLORS.border.light}`,
   },
   contactIcon: {
     width: "20px",
     marginRight: "10px",
-    filter: "brightness(0.7) hue-rotate(180deg)", // Adjust icon color to match teal theme
-    transition: "filter 0.3s",
   },
   contactText: {
-    color: "#B0E0E6", // Pale teal for contact text
-    fontSize: "16px",
+    color: COLORS.text.primary,
+    fontSize: "14px",
   },
 };
-
-// Add hover effects using CSS
-const styleSheetFooter = document.createElement("style");
-styleSheetFooter.innerText = `
-  .footer-social-link:hover img {
-    filter: brightness(1);
-    transform: scale(1.2);
-  }
-  .footer-social-link:hover {
-    transform: scale(1.1);
-  }
-  .footer-link:hover {
-    color: #4ECDC4;
-  }
-  .footer-contact-item:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.6), 0 0 15px rgba(78, 205, 196, 0.4);
-  }
-  .footer-contact-item:hover img {
-    filter: brightness(1) hue-rotate(180deg);
-  }
-`;
-document.head.appendChild(styleSheetFooter);

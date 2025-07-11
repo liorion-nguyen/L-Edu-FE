@@ -1,13 +1,13 @@
-import { Avatar, Button, Card, Col, Input, Row, Skeleton, Space, Tooltip, Typography } from "antd";
 import { EditOutlined, LockOutlined, LoginOutlined, SearchOutlined } from "@ant-design/icons";
+import { Avatar, Button, Card, Col, Input, Row, Skeleton, Space, Tooltip, Typography } from "antd";
 import { CSSProperties, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSelector, dispatch } from "../../../redux/store";
-import { getCourses } from "../../../redux/slices/courses";
-import { CourseType } from "../../../types/course";
-import { RootState } from "../../../redux/store";
-import SectionLayout from "../../../layouts/SectionLayout";
+import { COLORS } from "../../../constants/colors";
 import { Mode } from "../../../enum/course.enum";
+import SectionLayout from "../../../layouts/SectionLayout";
+import { getCourses } from "../../../redux/slices/courses";
+import { RootState, useDispatch, useSelector } from "../../../redux/store";
+import { CourseType } from "../../../types/course";
 import { useIsAdmin } from "../../../utils/auth";
 
 const { Title, Text } = Typography;
@@ -40,7 +40,7 @@ const CourseCard = ({ course }: { course: CourseType }) => {
               <Tooltip title={course.instructor.fullName} placement="top">
                 <Avatar
                   src={course.instructor.avatar || "/images/landing/sections/fakeImages/avatarStudent.png"}
-                  style={{ width: "100%", height: "100%", border: "2px solid #4ECDC4" }}
+                  style={{ width: "100%", height: "100%", border: `2px solid ${COLORS.primary[500]}` }}
                 />
               </Tooltip>
             </a>
@@ -82,16 +82,17 @@ const CourseCard = ({ course }: { course: CourseType }) => {
 
 const Course = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const dispatch = useDispatch();
   const { courses, totalCourse, loading } = useSelector((state: RootState) => state.courses);
 
   useEffect(() => {
     if (totalCourse === 0) {
-      dispatch(getCourses());
+      dispatch(getCourses({}));
     }
-  }, [totalCourse]);
+  }, [totalCourse, dispatch]);
 
   const handleSearch = () => {
-    dispatch(getCourses(0, 20, searchQuery));
+    dispatch(getCourses({ page: 0, limit: 20, name: searchQuery }));
   };
 
   return (
@@ -161,65 +162,55 @@ const styles: {
   updateButton: CSSProperties;
 } = {
   sectionLayout: {
-    background: "linear-gradient(135deg, #0A2E2E 0%, #1A4A4A 100%)", // Dark teal gradient
+    background: COLORS.background.secondary,
     padding: "60px 0",
     position: "relative",
     overflow: "hidden",
-    // Subtle circuit pattern in lighter teal
-    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath d='M10 10h80v80H10z' fill='none' stroke='%234ECDC4' stroke-opacity='0.05' stroke-width='1'/%3E%3Cpath d='M20 20h60v60H20z' fill='none' stroke='%234ECDC4' stroke-opacity='0.05' stroke-width='1'/%3E%3C/svg%3E")`,
-    backgroundSize: "200px 200px",
   },
   sectionTitle: {
     fontSize: "36px",
     fontWeight: 700,
-    color: "#B0E0E6", // Pale teal for primary text
-    textShadow: "0 0 10px rgba(78, 205, 196, 0.3)", // Subtle teal glow
+    color: COLORS.text.heading,
     marginBottom: "30px",
   },
   searchInput: {
-    borderRadius: "12px",
-    background: "rgba(78, 205, 196, 0.05)", // Teal undertone for glassmorphism
-    backdropFilter: "blur(10px)",
-    border: "1px solid rgba(78, 205, 196, 0.2)", // Teal border
-    color: "#B0E0E6", // Pale teal text
+    borderRadius: "8px",
+    background: COLORS.background.primary,
+    border: `1px solid ${COLORS.neutral[200]}`,
+    color: COLORS.text.primary,
   },
   searchButton: {
-    background: "linear-gradient(45deg, #4ECDC4, #1A4A4A)", // Teal gradient
+    background: COLORS.primary[500],
+    color: COLORS.background.primary,
     border: "none",
-    boxShadow: "0 0 15px rgba(78, 205, 196, 0.5)", // Teal glow
-    transition: "box-shadow 0.3s",
+    borderRadius: "8px",
   },
   card: {
-    borderRadius: "16px",
+    borderRadius: "12px",
     overflow: "hidden",
-    background: "rgba(78, 205, 196, 0.05)", // Teal undertone for glassmorphism
-    backdropFilter: "blur(15px)",
-    border: "1px solid rgba(78, 205, 196, 0.2)", // Teal border
-    boxShadow: "0 8px 24px rgba(0, 0, 0, 0.5), 0 0 15px rgba(78, 205, 196, 0.2)", // Teal glow
-    transition: "transform 0.3s, box-shadow 0.3s",
+    background: COLORS.background.primary,
+    border: `1px solid ${COLORS.neutral[200]}`,
   },
   cardCover: {
     position: "relative",
-    borderBottom: "1px solid rgba(78, 205, 196, 0.1)", // Subtle teal border
+    borderBottom: `1px solid ${COLORS.neutral[200]}`,
   },
   thumbnail: {
     width: "100%",
     height: "200px",
     objectFit: "cover",
-    borderRadius: "16px 16px 0 0",
-    filter: "brightness(0.7)",
-    transition: "filter 0.3s",
+    borderRadius: "12px 12px 0 0",
   },
   countLesson: {
     position: "absolute",
     top: "16px",
     right: "16px",
-    background: "rgba(78, 205, 196, 0.2)", // Teal background
+    background: COLORS.accent[100],
     padding: "6px 12px",
     borderRadius: "20px",
-    color: "#4ECDC4", // Brighter teal text
+    color: COLORS.accent[600],
     fontWeight: 500,
-    border: "1px solid rgba(78, 205, 196, 0.5)", // Teal border
+    border: `1px solid ${COLORS.accent[200]}`,
   },
   avtTeacher: {
     position: "absolute",
@@ -227,38 +218,33 @@ const styles: {
     left: "16px",
     width: "40px",
     height: "40px",
-    background: "rgba(78, 205, 196, 0.1)", // Subtle teal background
+    background: COLORS.background.primary,
     borderRadius: "50%",
     padding: "2px",
-    boxShadow: "0 0 10px rgba(78, 205, 196, 0.5)", // Teal glow
   },
   nameCourse: {
     fontSize: "20px",
     fontWeight: 600,
-    color: "#B0E0E6", // Pale teal text
+    color: COLORS.text.heading,
     marginBottom: "20px",
     textAlign: "center",
-    textShadow: "0 0 5px rgba(78, 205, 196, 0.3)", // Subtle teal glow
   },
   cardBody: {
     padding: "24px",
-    background: "rgba(78, 205, 196, 0.05)", // Subtle teal undertone
+    background: COLORS.background.primary,
   },
   joinButton: {
-    background: "linear-gradient(45deg, #4ECDC4, #1A4A4A)", // Teal gradient
+    background: COLORS.primary[500],
+    color: COLORS.background.primary,
     border: "none",
     borderRadius: "8px",
-    boxShadow: "0 0 15px rgba(78, 205, 196, 0.5)", // Teal glow
-    transition: "box-shadow 0.3s",
     fontWeight: 500,
   },
   updateButton: {
     background: "transparent",
-    border: "1px solid #B0E0E6", // Pale teal border
+    border: `1px solid ${COLORS.primary[500]}`,
     borderRadius: "8px",
-    color: "#B0E0E6", // Pale teal text
-    boxShadow: "0 0 10px rgba(78, 205, 196, 0.2)", // Subtle teal glow
-    transition: "box-shadow 0.3s",
+    color: COLORS.primary[500],
     fontWeight: 500,
   },
 };

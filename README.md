@@ -26,23 +26,54 @@ L Edu giúp học viên tiếp cận kiến thức một cách có hệ thống,
 
 ## **Tính Năng UI/UX Mới:**
 
+### **🎨 Elegant Design System**
+- **Sophisticated Color Palette**: Sử dụng bảng màu indigo/slate tinh tế thay vì teal sáng chói
+- **Consistent Design Language**: Hệ thống màu sắc và typography thống nhất trên toàn bộ ứng dụng
+- **Refined Shadows**: Giảm thiểu box-shadow để tạo cảm giác nhẹ nhàng và sang trọng hơn
+- **Premium Typography**: Font chữ và spacing được tối ưu cho trải nghiệm đọc tốt nhất
+
 ### **🌓 Adaptive Theme Support**
 - **Tự động phát hiện theme**: Hệ thống tự động phát hiện và áp dụng theme sáng/tối dựa trên thiết lập của người dùng
 - **Markdown responsive**: Nội dung markdown tự động chuyển đổi màu sắc phù hợp với theme
 - **Syntax highlighting thông minh**: Code blocks sử dụng GitHub theme tương ứng (github/github-dark)
 
-### **🎨 Enhanced Styling**
-- **Glassmorphism effects**: Hiệu ứng kính mờ hiện đại cho các component
-- **Elegant color palette**: Bảng màu teal thanh lịch, ít chói mắt hơn
-- **Smooth transitions**: Chuyển đổi mượt mà giữa các trạng thái
-- **Responsive design**: Tối ưu cho mọi kích thước màn hình
+### **💎 Enhanced Styling**
+- **Subtle Glassmorphism**: Hiệu ứng kính mờ tinh tế cho các component
+- **Elegant Indigo Palette**: Bảng màu indigo/slate sang trọng và dễ chịu
+- **Smooth Micro-interactions**: Chuyển đổi mượt mà giữa các trạng thái
+- **Responsive Design**: Tối ưu cho mọi kích thước màn hình
 
 ### **📝 Markdown Features**
 - **Theme-aware colors**: Màu sắc tự động thích ứng với theme
 - **Enhanced typography**: Font chữ và spacing được tối ưu
-- **Beautiful code blocks**: Syntax highlighting với border và shadow
+- **Beautiful code blocks**: Syntax highlighting với border và shadow tinh tế
 - **Styled tables**: Bảng với border rounded và striped rows
-- **Interactive elements**: Links và buttons với hover effects
+- **Interactive elements**: Links và buttons với hover effects mượt mà
+
+## **Color Palette:**
+
+### **Primary Colors**
+```css
+/* Elegant Indigo/Slate */
+--primary-50: #F8FAFC
+--primary-500: #5A67D8 /* Main Primary */
+--primary-600: #4C51BF /* Primary Dark */
+```
+
+### **Accent Colors**
+```css
+/* Sophisticated Purple */
+--accent-500: #9F7AEA /* Main Accent */
+--accent-400: #C084FC /* Light Accent */
+```
+
+### **Neutral Colors**
+```css
+/* Warm Grays */
+--neutral-50: #FAFAFA
+--neutral-500: #71717A
+--neutral-900: #18181B
+```
 
 ## **Công Nghệ Sử Dụng:**
 
@@ -98,21 +129,39 @@ Dự án sẽ chạy trên `http://localhost:3000/` cho frontend và `http://loc
 
 ---
 
-## **Tùy Chỉnh Theme**
+## **Design System**
 
-### **CSS Custom Properties**
-Hệ thống sử dụng CSS custom properties để hỗ trợ theme switching:
+### **Color Constants**
+Hệ thống sử dụng color constants để đảm bảo tính nhất quán:
 
-```css
-/* Light theme */
---markdown-bg: rgba(255, 255, 255, 0.95);
---markdown-text: #2c3e50;
---markdown-border: rgba(78, 205, 196, 0.2);
+```typescript
+// src/constants/colors.ts
+export const COLORS = {
+  primary: {
+    500: '#5A67D8', // Main primary color
+    400: '#667EEA', // Hover state
+    600: '#4C51BF', // Active state
+  },
+  text: {
+    primary: '#1F2937',
+    secondary: '#6B7280',
+    heading: '#111827',
+  },
+  background: {
+    primary: '#FFFFFF',
+    secondary: '#FAFAFA',
+    tertiary: '#F4F4F5',
+  }
+}
+```
 
-/* Dark theme */
---markdown-bg: rgba(26, 74, 74, 0.95);
---markdown-text: #B0E0E6;
---markdown-border: rgba(78, 205, 196, 0.3);
+### **Shadow System**
+```typescript
+export const SHADOWS = {
+  sm: '0 1px 3px rgba(0, 0, 0, 0.05)',
+  md: '0 4px 6px rgba(0, 0, 0, 0.05)',
+  lg: '0 10px 15px rgba(0, 0, 0, 0.08)',
+}
 ```
 
 ### **Responsive Breakpoints**
@@ -128,6 +177,26 @@ Hệ thống sử dụng CSS custom properties để hỗ trợ theme switching:
 }
 ```
 
+## **Architecture**
+
+### **Component Structure**
+```
+src/
+├── components/
+│   ├── common/          # Reusable UI components
+│   ├── layout/          # Layout components
+│   └── sections/        # Page sections
+├── constants/
+│   └── colors.ts        # Color system constants
+├── theme.ts             # Ant Design theme configuration
+└── pages/               # Page components
+```
+
+### **Theme Configuration**
+- **Consistent Design Tokens**: Centralized color, spacing, and typography tokens
+- **Component Theming**: Customized Ant Design components with brand colors
+- **Dark Mode Support**: Automatic theme switching based on system preference
+
 ## **Đóng Góp**
 Nếu bạn muốn đóng góp vào dự án, vui lòng tạo Pull Request hoặc liên hệ với chúng tôi qua email: **ledu.support@gmail.com**.
 
@@ -135,5 +204,15 @@ Nếu bạn muốn đóng góp vào dự án, vui lòng tạo Pull Request hoặ
 📍 **Địa chỉ:** Hà Nội, Việt Nam  
 📧 **Email:** liorion.nguyen@gmail.com  
 📞 **Điện thoại:** (+84) 708-200-334
+
+---
+
+### **Changelog**
+- **v2.0.0**: Elegant Design System
+  - Refined color palette with indigo/slate tones
+  - Reduced shadow intensity for softer appearance
+  - Enhanced typography and spacing
+  - Improved dark mode support
+  - Centralized color constants system
 
 Cảm ơn bạn đã quan tâm đến **L Edu**! 🚀

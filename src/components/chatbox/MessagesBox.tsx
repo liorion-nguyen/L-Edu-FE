@@ -1,11 +1,11 @@
-import React, { useState, useEffect, CSSProperties } from "react";
-import { Input, List, Avatar, Button, Skeleton, Row, Col, Empty, Flex, Form, Modal } from "antd";
 import { EditOutlined } from "@ant-design/icons";
-import { dispatch, RootState, useSelector } from "../../redux/store";
+import { Avatar, Button, Empty, Flex, Input, List, Modal, Skeleton } from "antd";
+import React, { CSSProperties, useEffect, useState } from "react";
 import { createChatRoom, getMessageBoxById, getMessagesBox } from "../../redux/slices/messages";
+import { dispatch, RootState, useSelector } from "../../redux/store";
+import { CreateChatRoomType } from "../../types/message";
 import { useIsAdmin } from "../../utils/auth";
 import CreateChatRoom from "./CreateChatRoom";
-import { CreateChatRoomType } from "../../types/message";
 
 const MessagesBox: React.FC = () => {
   const [search, setSearch] = useState<string>("");
@@ -25,18 +25,18 @@ const MessagesBox: React.FC = () => {
   const { loading, messagesBox } = useSelector((state: RootState) => state.messages);
   useEffect(() => {
     if (!messagesBox) {
-      dispatch(getMessagesBox());
+      dispatch(getMessagesBox({}));
     }
   }, []);
 
   const handleSelectRoom = (roomId: string) => {
-    dispatch(getMessageBoxById(roomId));
+    dispatch(getMessageBoxById({ id: roomId }));
   };
 
   const [modal2Open, setModal2Open] = useState(false);
 
   const handleCreateRoom = (data: CreateChatRoomType) => {
-    dispatch(createChatRoom({ name: data.name, membersId: data.membersId, type: data.type }));
+    dispatch(createChatRoom(data));
     setModal2Open(false);
   };
 

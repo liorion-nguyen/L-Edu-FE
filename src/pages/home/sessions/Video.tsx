@@ -1,13 +1,12 @@
-import { Button, Card, Col, Row, Space, Typography } from "antd";
-import SectionLayout from "../../../layouts/SectionLayout";
-import ReturnPage from "../../../components/common/ReturnPage";
-import { useNavigate, useParams } from "react-router-dom";
-import { useEffect } from "react";
-import { dispatch, RootState, useSelector } from "../../../redux/store";
-import { getSessionById } from "../../../redux/slices/courses";
-import { Mode } from "../../../enum/course.enum";
 import { EyeOutlined } from "@ant-design/icons";
-import { CSSProperties } from "react";
+import { Card, Row, Space, Typography } from "antd";
+import { CSSProperties, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import ReturnPage from "../../../components/common/ReturnPage";
+import { Mode } from "../../../enum/course.enum";
+import SectionLayout from "../../../layouts/SectionLayout";
+import { getSessionById } from "../../../redux/slices/courses";
+import { RootState, useDispatch, useSelector } from "../../../redux/store";
 
 const { Title, Text } = Typography;
 
@@ -24,22 +23,26 @@ const formatDate = (dateString?: string) => {
 const Video = () => {
     const { id } = useParams();
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const { session, loading } = useSelector((state: RootState) => state.courses);
 
     useEffect(() => {
         fetch();
-    }, [id]);
+    }, [id, dispatch]);
 
     const fetch = async () => {
         if (session) {
             return;
         }
-        const check = await dispatch(getSessionById(id as string));
-        if (!check) {
+        try {
+            const result = await dispatch(getSessionById(id as string));
+            if (getSessionById.rejected.match(result)) {
+                navigate(-1);
+            }
+        } catch (error) {
             navigate(-1);
         }
     };
-
-    const { session, loading } = useSelector((state: RootState) => state.courses);
 
     if (loading) {
         return (

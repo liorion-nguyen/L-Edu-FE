@@ -1,28 +1,35 @@
-import { Col, Flex, Row, Typography } from "antd";
-import SectionLayout from "../../../layouts/SectionLayout";
-import MarkdownViewer from "../../../components/common/MarkdownViewer";
 import { EyeOutlined } from "@ant-design/icons";
+import { Col, Flex, Row, Typography } from "antd";
 import { useEffect } from "react";
-import { dispatch, RootState, useSelector } from "../../../redux/store";
-import { getSessionById } from "../../../redux/slices/courses";
 import { useNavigate, useParams } from "react-router-dom";
 import Loading from "../../../components/common/Loading";
+import MarkdownViewer from "../../../components/common/MarkdownViewer";
 import ReturnPage from "../../../components/common/ReturnPage";
+import SectionLayout from "../../../layouts/SectionLayout";
+import { getSessionById } from "../../../redux/slices/courses";
+import { RootState, useDispatch, useSelector } from "../../../redux/store";
 
 const Text = Typography.Text;
 const Document = () => {
     const { id } = useParams();
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const { session, loading } = useSelector((state: RootState) => state.courses);
+    
     useEffect(() => {
         fetch();
     }, [id, dispatch]);
+    
     const fetch = async () => {
-        const check = await dispatch(getSessionById(id as string));
-        if (!check) {
+        try {
+            const result = await dispatch(getSessionById(id as string));
+            if (getSessionById.rejected.match(result)) {
+                navigate(-1);
+            }
+        } catch (error) {
             navigate(-1);
         }
     }
-    const { session, loading } = useSelector((state: RootState) => state.courses);
     return (
         <SectionLayout title={document.title}>
             <ReturnPage />

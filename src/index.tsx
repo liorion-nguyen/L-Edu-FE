@@ -1,15 +1,15 @@
+import { ConfigProvider } from "antd";
 import React from "react";
 import ReactDOM from "react-dom/client";
-import "./index.css";
-import App from "./App";
-import reportWebVitals from "./reportWebVitals";
 import { HelmetProvider } from "react-helmet-async";
-import { ConfigProvider } from "antd";
-import theme from "./theme";
 import { Provider } from "react-redux";
-import { store } from "./redux/store";
+import App from "./App";
 import { Toaster } from "./components/common/Toaster";
 import setupAxiosInterceptors from "./config/axios-interceptor";
+import "./index.css";
+import { store } from "./redux/store";
+import reportWebVitals from "./reportWebVitals";
+import getAntdTheme from "./theme";
 
 setupAxiosInterceptors(() => {});
 
@@ -18,7 +18,7 @@ const root = ReactDOM.createRoot(
 );
 
 root.render(
-  <ConfigProvider theme={theme}>
+  <ConfigProvider theme={getAntdTheme()}>
     <HelmetProvider>
       <React.StrictMode>
         <Provider store={store}>

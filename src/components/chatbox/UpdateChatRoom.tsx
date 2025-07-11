@@ -1,13 +1,12 @@
-import { Row, Col, Form, Input, Button, Select } from "antd";
-import { CreateChatRoomType, TypeChatRoom } from "../../types/message";
-import CustomSelectMultiple from "../common/CustomSelectMultiple";
+import { Button, Col, Form, Input, Row, Select } from "antd";
 import { useEffect, useState } from "react";
-import { dispatch } from "../../redux/store";
-import { getUsersCore } from "../../redux/slices/courses";
 import { Role } from "../../enum/user.enum";
-import { UserCoreType } from "../../types/user";
+import { getUsersCore } from "../../redux/slices/courses";
 import { deleteChatRoom, getInformationChatRoom } from "../../redux/slices/messages";
-import ChatRoom from "./ChatRoom";
+import { dispatch } from "../../redux/store";
+import { CreateChatRoomType, TypeChatRoom } from "../../types/message";
+import { UserCoreType } from "../../types/user";
+import CustomSelectMultiple from "../common/CustomSelectMultiple";
 
 const { Option } = Select;
 type OptionsType = {
@@ -29,26 +28,35 @@ const UpdateChatRoom = ({ onSubmit, id }: { onSubmit: (data: CreateChatRoomType)
     const [optionsUser, setOptionsuUers] = useState<OptionsType[]>([]);
 
     const fetchData = async () => {
-        const resChatRoom = await dispatch(getInformationChatRoom(id));
-        console.log(resChatRoom);
+        const resChatRoomResult = await dispatch(getInformationChatRoom(id));
+        
+        if (getInformationChatRoom.fulfilled.match(resChatRoomResult)) {
+            const resChatRoom = resChatRoomResult.payload;
+            console.log(resChatRoom);
+            setChatRoom(resChatRoom);
+        }
 
-        setChatRoom(resChatRoom);
+        const studentsResult = await dispatch(getUsersCore(Role.STUDENT));
+        const teachersResult = await dispatch(getUsersCore(Role.TEACHER));
+        
+        if (getUsersCore.fulfilled.match(studentsResult) && getUsersCore.fulfilled.match(teachersResult)) {
+            const students = studentsResult.payload;
+            const teachers = teachersResult.payload;
+            
+            if (!teachers || !students) return;
 
-        const students = await dispatch(getUsersCore(Role.STUDENT));
-        const teachers = await dispatch(getUsersCore(Role.TEACHER));
-        if (!teachers || !students) return;
+            const uniqueOptionsStudent = students.map((item: UserCoreType) => ({
+                label: `${item.fullName} [${item.email}]`,
+                value: item._id
+            }));
 
-        const uniqueOptionsStudent = students.map((item: UserCoreType) => ({
-            label: `${item.fullName} [${item.email}]`,
-            value: item._id
-        }));
+            const uniqueOptionsTeacher = teachers.map((item: UserCoreType) => ({
+                label: `${item.fullName} [${item.email}]`,
+                value: item._id
+            }));
 
-        const uniqueOptionsTeacher = teachers.map((item: UserCoreType) => ({
-            label: `${item.fullName} [${item.email}]`,
-            value: item._id
-        }));
-
-        setOptionsuUers([...uniqueOptionsStudent, ...uniqueOptionsTeacher]);
+            setOptionsuUers([...uniqueOptionsStudent, ...uniqueOptionsTeacher]);
+        }
     };
 
     const handleDelete = () => {

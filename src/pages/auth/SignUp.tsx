@@ -1,14 +1,14 @@
 import { Card, Checkbox, Divider, Typography } from "antd";
-import { Formik, Form, Field } from "formik";
-import { SignUpValidationSchema } from "../../validations/authValidation";
+import { Field, Form, Formik } from "formik";
 import { Helmet } from "react-helmet-async";
-import { dispatch } from "../../redux/store";
-import { register } from "../../redux/slices/auth";
 import { useNavigate } from "react-router-dom";
-import { CSSProperties } from "react";
+import ButtonForm from "../../components/common/CustomButton";
 import InputForm from "../../components/common/CustomInput";
 import InputFormHide from "../../components/common/CustomInputHide";
-import ButtonForm from "../../components/common/CustomButton";
+import { COLORS, RADIUS, SPACING } from "../../constants/colors";
+import { register } from "../../redux/slices/auth";
+import { useDispatch } from "../../redux/store";
+import { SignUpValidationSchema } from "../../validations/authValidation";
 
 const { Title, Text } = Typography;
 
@@ -30,88 +30,91 @@ const initialValues: SignUpValues = {
 
 const SignUp = () => {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     const handleSubmit = async (values: SignUpValues) => {
-        const check = await dispatch(
+        const response = await dispatch(
             register({
                 fullName: values.fullName,
                 email: values.email,
                 password: values.password,
             })
         );
-        if (check) {
+        if (response.payload) {
             navigate("/login");
         }
     };
 
     return (
-        <Card style={styles.card}>
-            <Helmet>
-                <title>Sign Up | L-Edu</title>
-            </Helmet>
+        <div style={styles.container}>
+            <Card style={styles.card}>
+                <Helmet>
+                    <title>Sign Up | L-Edu</title>
+                </Helmet>
 
-            <Title level={1} style={styles.title}>
-                Sign Up
-            </Title>
+                <Title level={1} style={styles.title}>
+                    Đăng ký
+                </Title>
 
-            <Formik
-                initialValues={initialValues}
-                validationSchema={SignUpValidationSchema}
-                onSubmit={handleSubmit}
-            >
-                {({ errors, touched }) => (
-                    <Form>
-                        <Field name="fullName">
-                            {({ field }: any) => (
-                                <InputForm {...field} placeholder="Enter your full name" />
-                            )}
-                        </Field>
+                <Formik
+                    initialValues={initialValues}
+                    validationSchema={SignUpValidationSchema}
+                    onSubmit={handleSubmit}
+                >
+                    {({ errors, touched }) => (
+                        <Form>
+                            <Field name="fullName">
+                                {({ field }: any) => (
+                                    <InputForm {...field} placeholder="Nhập họ và tên" />
+                                )}
+                            </Field>
 
-                        <Field name="email">
-                            {({ field }: any) => (
-                                <InputForm {...field} placeholder="Enter your email" />
-                            )}
-                        </Field>
+                            <Field name="email">
+                                {({ field }: any) => (
+                                    <InputForm {...field} placeholder="Nhập email" />
+                                )}
+                            </Field>
 
-                        <Field name="password">
-                            {({ field }: any) => (
-                                <InputFormHide {...field} placeholder="Enter your password" />
-                            )}
-                        </Field>
+                            <Field name="password">
+                                {({ field }: any) => (
+                                    <InputFormHide {...field} placeholder="Nhập mật khẩu" />
+                                )}
+                            </Field>
 
-                        <Field name="cfPassword">
-                            {({ field }: any) => (
-                                <InputFormHide {...field} placeholder="Confirm your password" />
-                            )}
-                        </Field>
+                            <Field name="cfPassword">
+                                {({ field }: any) => (
+                                    <InputFormHide {...field} placeholder="Xác nhận mật khẩu" />
+                                )}
+                            </Field>
 
-                        <Checkbox style={styles.checkbox}>
-                            <Text style={styles.checkboxLabel}>
-                                Agree to terms{" "}
-                                <Text style={styles.link}>
-                                    L-Edu
+                            <Checkbox style={styles.checkbox}>
+                                <Text style={styles.checkboxLabel}>
+                                    Tôi đồng ý với{" "}
+                                    <Text style={styles.link}>
+                                        điều khoản L-Edu
+                                    </Text>
                                 </Text>
-                            </Text>
-                        </Checkbox>
+                            </Checkbox>
 
-                        <div style={{ display: "flex", justifyContent: "center" }}>
-                            <ButtonForm label="Sign Up" type="submit" />
-                        </div>
+                            <div style={{ display: "flex", justifyContent: "center" }}>
+                                <ButtonForm label="Đăng ký" type="submit" />
+                            </div>
 
-                        <Divider style={styles.divider}></Divider>
+                            <Divider style={styles.divider}>Hoặc</Divider>
 
-                        <div style={styles.loginLink}>
-                            <Text style={styles.text}>
-                                Already have an account?{" "}
-                                <Text style={styles.link}>
-                                    <a href="/login">Sign in</a>
+                            <div style={styles.loginLink}>
+                                <Text style={styles.text}>
+                                    Đã có tài khoản?{" "}
+                                    <Text style={styles.link}>
+                                        <a href="/login">Đăng nhập</a>
+                                    </Text>
                                 </Text>
-                            </Text>
-                        </div>
-                    </Form>
-                )}
-            </Formik>
-        </Card>
+                            </div>
+                        </Form>
+                    )}
+                </Formik>
+            </Card>
+        </div>
     );
 };
 
@@ -120,92 +123,47 @@ export default SignUp;
 const styles: {
     [key: string]: React.CSSProperties;
 } = {
+    container: {
+        width: "100%",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        padding: "20px",
+    },
     card: {
-        background: "rgba(78, 205, 196, 0.05)", // Teal undertone for glassmorphism
-        backdropFilter: "blur(10px)",
-        border: "1px solid rgba(78, 205, 196, 0.2)", // Teal border
-        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.5), 0 0 10px rgba(78, 205, 196, 0.2)", // Teal glow
-        borderRadius: 16,
-        padding: 20,
-        transition: "box-shadow 0.3s, transform 0.3s",
-        margin: "0 auto",
+        background: COLORS.background.primary,
+        border: `1px solid ${COLORS.border.light}`,
+        borderRadius: RADIUS.xl,
+        padding: SPACING['2xl'],
+        width: "100%",
+        maxWidth: "400px",
     },
     title: {
-        color: "#B0E0E6", // Pale teal for text
-        textShadow: "0 0 5px rgba(78, 205, 196, 0.3)", // Subtle teal glow
+        color: COLORS.text.heading,
         textAlign: "center",
-        marginBottom: 20,
-    },
-    input: {
-        background: "rgba(78, 205, 196, 0.05)", // Teal undertone for glassmorphism
-        border: "1px solid rgba(78, 205, 196, 0.2)", // Teal border
-        color: "#B0E0E6", // Pale teal for text
-        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.5), 0 0 10px rgba(78, 205, 196, 0.2)", // Teal glow
-        marginBottom: 20,
+        marginBottom: SPACING.lg,
+        fontWeight: 600,
     },
     checkbox: {
-        margin: "0 0 30px 0",
-        color: "#B0E0E6", // Pale teal for checkbox
+        margin: `0 0 ${SPACING.lg} 0`,
     },
     checkboxLabel: {
-        color: "#B0E0E6", // Pale teal for text
+        color: COLORS.text.primary,
     },
     link: {
-        color: "#4ECDC4", // Brighter teal for links
-        textShadow: "0 0 5px rgba(78, 205, 196, 0.3)", // Subtle teal glow
-    },
-    button: {
-        background: "linear-gradient(45deg, #4ECDC4, #1A4A4A)", // Teal gradient
-        border: "none",
-        color: "#B0E0E6", // Pale teal for text
-        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.5), 0 0 10px rgba(78, 205, 196, 0.2)", // Teal glow
-        transition: "box-shadow 0.3s",
-        width: "100%",
+        color: COLORS.primary[500],
+        fontWeight: 500,
     },
     loginLink: {
         textAlign: "center",
-        marginTop: 20,
+        marginTop: SPACING.lg,
     },
     text: {
-        color: "#B0E0E6", // Pale teal for text
+        color: COLORS.text.secondary,
+        fontSize: "14px",
     },
     divider: {
-        background: "linear-gradient(90deg, transparent, #4ECDC4, transparent)", // Teal gradient for divider
-        boxShadow: "0 0 15px rgba(78, 205, 196, 0.5)", // Glowing teal shadow
-        margin: "20px 0",
+        margin: `${SPACING.lg} 0`,
+        borderColor: COLORS.border.light,
     },
 };
-
-// Add hover effects and animations using CSS
-const styleSheetSignUp = document.createElement("style");
-styleSheetSignUp.innerText = `
-  .ant-card:hover {
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.6), 0 0 15px rgba(78, 205, 196, 0.4);
-    transform: translateY(-5px);
-  }
-  .signup-button:hover {
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.6), 0 0 15px rgba(78, 205, 196, 0.4);
-  }
-  .divider::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(78, 205, 196, 0.7), transparent);
-    animation: glow 3s infinite;
-  }
-  @keyframes glow {
-    0% {
-      left: -100%;
-    }
-    50% {
-      left: 100%;
-    }
-    100% {
-      left: -100%;
-    }
-  }
-`;
-document.head.appendChild(styleSheetSignUp);

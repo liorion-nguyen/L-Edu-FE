@@ -1,7 +1,8 @@
 import { Col, Row } from "antd";
 import Title from "antd/es/typography/Title";
-import SectionLayout from "../../layouts/SectionLayout";
 import { CSSProperties } from "react";
+import { COLORS, RADIUS, SPACING } from "../../constants/colors";
+import SectionLayout from "../../layouts/SectionLayout";
 
 const PartnerNetwork = () => {
   const customers = [
@@ -44,19 +45,17 @@ const styles: {
   logo: CSSProperties;
 } = {
   sectionLayout: {
-    background: "linear-gradient(135deg, #0A2E2E 0%, #1A4A4A 100%)", // Dark teal gradient
+    background: COLORS.background.secondary,
     position: "relative",
     overflow: "hidden",
-    padding: "30px 0",
-    // Subtle circuit pattern in lighter teal
-    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath d='M10 10h80v80H10z' fill='none' stroke='%234ECDC4' stroke-opacity='0.05' stroke-width='1'/%3E%3Cpath d='M20 20h60v60H20z' fill='none' stroke='%234ECDC4' stroke-opacity='0.05' stroke-width='1'/%3E%3C/svg%3E")`,
-    backgroundSize: "200px 200px",
+    padding: `${SPACING.xl} 0`,
   },
   title: {
     textAlign: "center",
-    color: "#B0E0E6", // Pale teal for title
-    textShadow: "0 0 10px rgba(78, 205, 196, 0.3)", // Subtle teal glow
-    marginBottom: "40px",
+    color: COLORS.text.heading,
+    marginBottom: SPACING.xl,
+    fontSize: "2.5rem",
+    fontWeight: 600,
   },
   logoContainer: {
     display: "flex",
@@ -65,24 +64,13 @@ const styles: {
     justifyContent: "center",
   },
   logoLink: {
-    transition: "transform 0.3s",
+    borderRadius: RADIUS.lg,
+    padding: SPACING.sm,
+    background: COLORS.background.primary,
+    border: `1px solid ${COLORS.border.light}`,
   },
   logo: {
-    height: "100px",
-    filter: "brightness(0.7)",
-    transition: "filter 0.3s, transform 0.3s",
+    height: "80px",
+    filter: "grayscale(0%)",
   },
 };
-
-// Add hover effects using CSS
-const styleSheetPartner = document.createElement("style");
-styleSheetPartner.innerText = `
-  .partner-logo-link:hover img {
-    filter: brightness(1);
-    transform: scale(1.1);
-  }
-  .partner-logo-link:hover {
-    transform: scale(1.1);
-  }
-`;
-document.head.appendChild(styleSheetPartner);

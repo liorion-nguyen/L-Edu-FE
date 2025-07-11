@@ -1,8 +1,9 @@
+import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 import { Button, Col, Row, Space, Typography } from "antd";
 import Title from "antd/es/typography/Title";
-import SectionLayout from "../../layouts/SectionLayout";
-import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 import { CSSProperties } from "react";
+import { COLORS } from "../../constants/colors";
+import SectionLayout from "../../layouts/SectionLayout";
 
 const { Text } = Typography;
 
@@ -95,66 +96,48 @@ const styles: {
   cardDescription: CSSProperties;
 } = {
   section: {
-    background: "linear-gradient(135deg, #0A2E2E 0%, #1A4A4A 100%)", // Dark teal gradient
+    background: COLORS.background.secondary,
     padding: "50px 0",
-    // Subtle circuit pattern in lighter teal
-    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath d='M10 10h80v80H10z' fill='none' stroke='%234ECDC4' stroke-opacity='0.05' stroke-width='1'/%3E%3Cpath d='M20 20h60v60H20z' fill='none' stroke='%234ECDC4' stroke-opacity='0.05' stroke-width='1'/%3E%3C/svg%3E")`,
-    backgroundSize: "200px 200px",
   },
   subTitle: {
-    color: "#B0E0E6", // Pale teal for text
+    color: COLORS.accent[600],
     fontSize: "16px",
-    textShadow: "0 0 5px rgba(78, 205, 196, 0.3)", // Subtle teal glow
+    fontWeight: 500,
   },
   title: {
-    color: "#B0E0E6", // Pale teal for text
-    textShadow: "0 0 5px rgba(78, 205, 196, 0.3)", // Subtle teal glow
+    color: COLORS.text.heading,
+    fontSize: "28px",
+    fontWeight: 600,
   },
   description: {
-    color: "#B0E0E6", // Pale teal for text
+    color: COLORS.text.secondary,
     fontSize: "15px",
+    lineHeight: "1.6",
   },
   navButton: {
-    background: "rgba(78, 205, 196, 0.05)", // Teal undertone for glassmorphism
-    border: "1px solid rgba(78, 205, 196, 0.2)", // Teal border
-    color: "#B0E0E6", // Pale teal for icons
-    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.5), 0 0 10px rgba(78, 205, 196, 0.2)", // Teal glow
-    transition: "box-shadow 0.3s",
+    background: COLORS.background.primary,
+    border: `1px solid ${COLORS.border.light}`,
+    color: COLORS.text.primary,
   },
   card: {
-    background: "rgba(78, 205, 196, 0.05)", // Teal undertone for glassmorphism
-    backdropFilter: "blur(10px)",
-    border: "1px solid rgba(78, 205, 196, 0.2)", // Teal border
-    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.5), 0 0 10px rgba(78, 205, 196, 0.2)", // Teal glow
-    borderRadius: 16,
-    padding: 20,
-    transition: "box-shadow 0.3s, transform 0.3s",
+    background: COLORS.background.primary,
+    border: `1px solid ${COLORS.border.light}`,
+    borderRadius: "12px",
+    padding: "20px",
   },
   img: {
-    borderRadius: "10px",
+    borderRadius: "8px",
     width: "100%",
-    filter: "drop-shadow(0 0 5px rgba(78, 205, 196, 0.3))", // Teal glow
   },
   cardTitle: {
-    color: "#B0E0E6", // Pale teal for text
-    textShadow: "0 0 5px rgba(78, 205, 196, 0.3)", // Subtle teal glow
-    marginTop: 10,
+    color: COLORS.text.heading,
+    marginTop: "10px",
+    fontSize: "20px",
+    fontWeight: 600,
   },
   cardDescription: {
-    color: "#B0E0E6", // Pale teal for text
+    color: COLORS.text.primary,
     fontSize: "15px",
+    lineHeight: "1.6",
   },
 };
-
-// Add hover effects and animations using CSS
-const styleSheetOurBlog = document.createElement("style");
-styleSheetOurBlog.innerText = `
-  .blog-card:hover {
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.6), 0 0 15px rgba(78, 205, 196, 0.4);
-    transform: translateY(-5px);
-  }
-  .nav-button:hover {
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.6), 0 0 15px rgba(78, 205, 196, 0.4);
-  }
-`;
-document.head.appendChild(styleSheetOurBlog);

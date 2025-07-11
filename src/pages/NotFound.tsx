@@ -1,31 +1,75 @@
-import { Button, Typography, Row, Col, Card } from 'antd';
+import { Button, Result } from "antd";
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import { COLORS, RADIUS, SPACING } from "../constants/colors";
 
-const { Title, Paragraph } = Typography;
+const NotFound: React.FC = () => {
+  const navigate = useNavigate();
 
-const NotFound = () => {
-    return (
-        <Row justify="center" align="middle" style={{ height: '100vh', backgroundColor: '#fff', textAlign: 'center' }}>
-            <Col xs={24} sm={20} md={16} lg={12}>
-                <Card style={{ padding: 24, borderRadius: 8, boxShadow: '0px 4px 10px rgba(0,0,0,0.1)' }}>
-                    <div style={{ 
-                        backgroundImage: "url('https://cdn.dribbble.com/users/285475/screenshots/2083086/dribbble_1.gif')",
-                        height: 300,
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        borderRadius: 8,
-                    }} />
+  const handleGoHome = () => {
+    navigate("/");
+  };
 
-                    <Title level={1} style={{ color: '#003366', marginTop: 20 }}>404</Title>
-                    <Title level={3}>Oops! Looks like you're lost</Title>
-                    <Paragraph>The page you are looking for is not available!</Paragraph>
+  return (
+    <div style={styles.container}>
+      <div style={styles.card}>
+        <Result
+          status="404"
+          title="404"
+          subTitle="Trang bạn tìm kiếm không tồn tại"
+          style={styles.result}
+          extra={
+            <Button
+              type="primary"
+              size="large"
+              onClick={handleGoHome}
+              style={styles.button}
+            >
+              Về trang chủ
+            </Button>
+          }
+        />
+      </div>
+    </div>
+  );
+};
 
-                    <Button type="primary" href="/" size="large" style={{ marginTop: 20 }}>
-                        Go to Home
-                    </Button>
-                </Card>
-            </Col>
-        </Row>
-    );
-}
+const styles: {
+  container: React.CSSProperties;
+  card: React.CSSProperties;
+  result: React.CSSProperties;
+  button: React.CSSProperties;
+} = {
+  container: {
+    minHeight: "100vh",
+    background: COLORS.background.secondary,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: SPACING.lg,
+  },
+  card: {
+    background: COLORS.background.primary,
+    borderRadius: RADIUS.xl,
+    padding: SPACING['2xl'],
+    textAlign: "center",
+    maxWidth: "500px",
+    width: "100%",
+    border: `1px solid ${COLORS.border.light}`,
+  },
+  result: {
+    padding: 0,
+  },
+  button: {
+    background: COLORS.primary[500],
+    borderColor: COLORS.primary[500],
+    color: COLORS.text.inverse,
+    height: "48px",
+    fontSize: "16px",
+    fontWeight: 500,
+    borderRadius: RADIUS.md,
+    padding: `0 ${SPACING.xl}`,
+  },
+};
 
 export default NotFound;

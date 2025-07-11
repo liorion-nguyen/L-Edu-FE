@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
 import { Role } from "../enum/user.enum";
-import { RootState, useSelector } from "../redux/store";
+import { RootState } from "../redux/store";
 
 export const useIsAdmin = () => {
     const { user } = useSelector((state: RootState) => state.auth);

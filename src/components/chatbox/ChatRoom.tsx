@@ -1,15 +1,15 @@
-import { Avatar, Button, Col, Flex, Image, Modal, Row, Tooltip } from "antd";
-import Title from "antd/es/typography/Title";
-import { CreateChatRoomType, MessagesBoxType, MessageType } from "../../types/message";
 import { DeleteOutlined, FileAddOutlined, SendOutlined } from "@ant-design/icons";
-import { CSSProperties, useEffect, useRef, useState } from "react";
-import { dispatch, RootState, useSelector } from "../../redux/store";
-import Message from "./Message";
+import { Avatar, Button, Col, Flex, Modal, Row, Tooltip } from "antd";
 import TextArea from "antd/es/input/TextArea";
-import { addMessageRealTime, createMessage, getMessageBoxById, updateChatRoom } from "../../redux/slices/messages";
-import UpdateChatRoom from "./UpdateChatRoom";
-import { Role } from "../../enum/user.enum";
+import Title from "antd/es/typography/Title";
+import { CSSProperties, useEffect, useRef, useState } from "react";
 import { pusher } from "../../config/pusher";
+import { Role } from "../../enum/user.enum";
+import { addMessageRealTime, createMessage, getMessageBoxById, updateChatRoom } from "../../redux/slices/messages";
+import { dispatch, RootState, useSelector } from "../../redux/store";
+import { CreateChatRoomType, MessagesBoxType, MessageType } from "../../types/message";
+import Message from "./Message";
+import UpdateChatRoom from "./UpdateChatRoom";
 
 const ChatRoom = ({ messageBox }: { messageBox: MessagesBoxType }) => {
   const [message, setMessage] = useState<string>("");
@@ -33,13 +33,13 @@ const ChatRoom = ({ messageBox }: { messageBox: MessagesBoxType }) => {
     setIsSending(true);
     try {
       await dispatch(
-        createMessage(
-          {
+        createMessage({
+          message: {
             chatRoomId: messageBox._id,
             message,
           },
           file
-        )
+        })
       );
 
       setMessage("");
@@ -79,9 +79,11 @@ const ChatRoom = ({ messageBox }: { messageBox: MessagesBoxType }) => {
     const fetchMessages = async () => {
       setLoading(true);
       try {
-        const results = await dispatch(getMessageBoxById(messageBox._id, page, 10));
-        if (!results || results.length === 0) {
-          setPage(-1);
+        const results = await dispatch(getMessageBoxById({ id: messageBox._id, page, limit: 10 }));
+        if (getMessageBoxById.fulfilled.match(results)) {
+          if (!results.payload.messageBox.messages || results.payload.messageBox.messages.length === 0) {
+            setPage(-1);
+          }
         }
       } catch (error: any) {
         if (error.name === "AbortError") {
@@ -100,7 +102,7 @@ const ChatRoom = ({ messageBox }: { messageBox: MessagesBoxType }) => {
   const [modal2Open, setModal2Open] = useState(false);
 
   const handleUpdateChatRoom = (data: CreateChatRoomType) => {
-    dispatch(updateChatRoom(messageBox._id, { name: data.name, membersId: data.membersId, type: data.type }));
+    dispatch(updateChatRoom({ id: messageBox._id, data }));
     setModal2Open(false);
   };
 

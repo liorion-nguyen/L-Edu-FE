@@ -1,19 +1,12 @@
-import { createSlice } from '@reduxjs/toolkit';
-import type { PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import { CoursesState, CourseType, MyCourseResponse } from '../../types/course';
-import { dispatch } from '../store';
-import { envConfig } from '../../config';
 import { showNotification } from '../../components/common/Toaster';
+import { envConfig } from '../../config';
 import { ToasterType } from '../../enum/toaster';
-import { initialValuesType, SessionResponse } from '../../types/session';
 import { Role } from '../../enum/user.enum';
-
-type GetCoursesSuccessAction = PayloadAction<{ courses: CourseType[] | null, totalCourse: number }>;
-type GetCoursesuccessAction = PayloadAction<{ course: CourseType }>;
-type GetFailureAction = PayloadAction<string>;
-type GetSessionSuccessAction = PayloadAction<SessionResponse>;
+import { CoursesState, CourseType } from '../../types/course';
+import { initialValuesType, SessionResponse } from '../../types/session';
 
 const initialState: CoursesState = {
     loading: false,
@@ -25,96 +18,58 @@ const initialState: CoursesState = {
     totalCourse: 0,
 };
 
-export const CoursesSlice = createSlice({
-    name: 'courses',
-    initialState,
-    reducers: {
-        getRequest: (state: CoursesState) => {
-            state.loading = true;
-        },
-        getSuccess: (state: CoursesState) => {
-            state.loading = false;
-        },
-        getCoursesSuccess: (state: CoursesState, action: GetCoursesSuccessAction) => {
-            state.loading = false;
-            state.courses = action.payload.courses;
-            state.totalCourse = action.payload.totalCourse;
-        },
-        getSessionSuccess: (state: CoursesState, action: GetSessionSuccessAction) => {
-            state.loading = false;
-            state.session = action.payload;
-        },
-        getFailure: (state: CoursesState, action: GetFailureAction) => {
-            state.loading = false;
-            state.errorMessage = action.payload;
-        },
-        getCoursesuccess: (state: CoursesState, action: GetCoursesuccessAction) => {
-            state.loading = false;
-            state.course = action.payload.course;
-        },
-        createReviewSuccess: (state: CoursesState) => {
-            state.loading = false;
-        },
-        getMyCoursesSuccess: (state: CoursesState, action: PayloadAction<{ myCourses: MyCourseResponse[] }>) => {
-            state.loading = false;
-            state.myCourses = action.payload.myCourses;
-        }
-    },
-});
-
-export const getCourses = (page = 0, limit = 20, name = "") => {
-    return async () => {
+// Async thunks
+export const getCourses = createAsyncThunk(
+    'courses/getCourses',
+    async ({ page = 0, limit = 20, name = "" }: { page?: number; limit?: number; name?: string }) => {
         try {
-            dispatch(CoursesSlice.actions.getRequest());
             const result = await axios.get(
                 `${envConfig.serverURL}/courses/search?page=${page}&limit=${limit}&name=${name}`
             );
             const courses: CourseType[] = Array.isArray(result.data.data.data) ? result.data.data.data : [];
-            dispatch(CoursesSlice.actions.getCoursesSuccess({ courses, totalCourse: result.data.data.total }));
+            return { courses, totalCourse: result.data.data.total };
         } catch (error: Error | any) {
             const errorMessage = error.response ? error.response.data.message : 'Something went wrong';
             toast.error(errorMessage);
-            dispatch(CoursesSlice.actions.getFailure(errorMessage));
+            throw error;
         }
-    };
-};
+    }
+);
 
-export const getCourseById = (id: string) => {
-    return async () => {
+export const getCourseById = createAsyncThunk(
+    'courses/getCourseById',
+    async (id: string) => {
         try {
-            dispatch(CoursesSlice.actions.getRequest());
             const result = await axios.get(`${envConfig.serverURL}/courses/${id}`);
             const course: CourseType = result.data.data;
-            dispatch(CoursesSlice.actions.getCoursesuccess({ course: course }));
-            return true;
+            return course;
         } catch (error: Error | any) {
             const errorMessage = error.response ? error.response.data.message : 'Something went wrong';
             showNotification(ToasterType.error, 'Failed to fetch course', errorMessage);
-            dispatch(CoursesSlice.actions.getFailure(errorMessage));
-            return false;
-        }
-    };
-};
-
-export const updateCourse = (id: string, course: CourseType) => {
-    return async () => {
-        try {
-            dispatch(CoursesSlice.actions.getRequest());
-            await axios.put(`${envConfig.serverURL}/courses/${id}`, course);
-            showNotification(ToasterType.success, 'Course updated successfully');
-        }
-        catch (error: Error | any) {
-            const errorMessage: string = error.response ? error.response.data.message : 'Something went wrong';
-            showNotification(ToasterType.error, 'Update failed', errorMessage);
-            dispatch(CoursesSlice.actions.getFailure(errorMessage));
+            throw error;
         }
     }
-};
+);
 
-export const createSession = (values: initialValuesType) => {
-    return async () => {
+export const updateCourse = createAsyncThunk(
+    'courses/updateCourse',
+    async ({ id, course }: { id: string; course: CourseType }) => {
         try {
-            dispatch(CoursesSlice.actions.getRequest());
+            await axios.put(`${envConfig.serverURL}/courses/${id}`, course);
+            showNotification(ToasterType.success, 'Course updated successfully');
+            return course;
+        } catch (error: Error | any) {
+            const errorMessage: string = error.response ? error.response.data.message : 'Something went wrong';
+            showNotification(ToasterType.error, 'Update failed', errorMessage);
+            throw error;
+        }
+    }
+);
+
+export const createSession = createAsyncThunk(
+    'courses/createSession',
+    async (values: initialValuesType) => {
+        try {
             await axios.post(`${envConfig.serverURL}/session`, {
                 "courseId": values.courseId,
                 "sessionNumber": values.sessionNumber,
@@ -133,37 +88,36 @@ export const createSession = (values: initialValuesType) => {
                 }
             });
             showNotification(ToasterType.success, 'Session created successfully');
+            return values;
         } catch (error: Error | any) {
             const errorMessage: string = error.response
                 ? error.response.data.message
                 : 'Something went wrong';
             showNotification(ToasterType.error, 'Registration failed', errorMessage);
-            dispatch(CoursesSlice.actions.getFailure(errorMessage));
+            throw error;
         }
-    };
-}
+    }
+);
 
-export const getSessionById = (id: string) => {
-    return async () => {
+export const getSessionById = createAsyncThunk(
+    'courses/getSessionById',
+    async (id: string) => {
         try {
-            dispatch(CoursesSlice.actions.getRequest());
             const result = await axios.get(`${envConfig.serverURL}/session/${id}`);
             const session: SessionResponse = result.data.data;
-            dispatch(CoursesSlice.actions.getSessionSuccess(session));
-            return true;
+            return session;
         } catch (error: any) {
             const errorMessage = error.response ? error.response.data.message : "Something went wrong";
             showNotification(ToasterType.error, "Failed to fetch session", errorMessage);
-            dispatch(CoursesSlice.actions.getFailure(errorMessage));
-            return false;
+            throw error;
         }
-    };
-};
+    }
+);
 
-export const updateSession = (id: string, values: initialValuesType) => {
-    return async () => {
+export const updateSession = createAsyncThunk(
+    'courses/updateSession',
+    async ({ id, values }: { id: string; values: initialValuesType }) => {
         try {
-            dispatch(CoursesSlice.actions.getRequest());
             await axios.put(`${envConfig.serverURL}/session/${id}`, {
                 "sessionNumber": values.sessionNumber,
                 "title": values.title,
@@ -182,46 +136,160 @@ export const updateSession = (id: string, values: initialValuesType) => {
                 "mode": values.mode
             });
             showNotification(ToasterType.success, 'Session updated successfully');
-            dispatch(CoursesSlice.actions.getSuccess());
-        }
-        catch (error: Error | any) {
+            return values;
+        } catch (error: Error | any) {
             const errorMessage: string = error.response
                 ? error.response.data.message
                 : 'Something went wrong';
             showNotification(ToasterType.error, 'Update failed', errorMessage);
-            dispatch(CoursesSlice.actions.getFailure(errorMessage));
+            throw error;
         }
-    };
-};
+    }
+);
 
-export const getUsersCore = (role: Role) => {
-    return async () => {
+export const getUsersCore = createAsyncThunk(
+    'courses/getUsersCore',
+    async (role: Role) => {
         try {
-            dispatch(CoursesSlice.actions.getRequest());
             const result = await axios.get(`${envConfig.serverURL}/users/core/${role}`);
             return result.data.data;
         } catch (error: Error | any) {
             const errorMessage = error.response ? error.response.data.message : 'Something went wrong';
             toast.error(errorMessage);
-            dispatch(CoursesSlice.actions.getFailure(errorMessage));
+            throw error;
         }
-    };
-}
+    }
+);
 
-export const getMyCourses = () => {
-    return async () => {
+export const getMyCourses = createAsyncThunk(
+    'courses/getMyCourses',
+    async () => {
         try {
-            dispatch(CoursesSlice.actions.getRequest());
             const result = await axios.get(`${envConfig.serverURL}/courses/myCourse`);
-            dispatch(CoursesSlice.actions.getMyCoursesSuccess({ myCourses: result.data.data }));
             return result.data.data;
-        }
-        catch (error: Error | any) {
+        } catch (error: Error | any) {
             const errorMessage = error.response ? error.response.data.message : 'Something went wrong';
             toast.error(errorMessage);
-            dispatch(CoursesSlice.actions.getFailure(errorMessage));
+            throw error;
         }
-    };
-};
+    }
+);
+
+export const CoursesSlice = createSlice({
+    name: 'courses',
+    initialState,
+    reducers: {
+        resetCourse: (state) => {
+            state.course = null;
+        },
+        resetSession: (state) => {
+            state.session = null;
+        }
+    },
+    extraReducers: (builder) => {
+        builder
+            // getCourses
+            .addCase(getCourses.pending, (state) => {
+                state.loading = true;
+                state.errorMessage = '';
+            })
+            .addCase(getCourses.fulfilled, (state, action) => {
+                state.loading = false;
+                state.courses = action.payload.courses;
+                state.totalCourse = action.payload.totalCourse;
+            })
+            .addCase(getCourses.rejected, (state, action) => {
+                state.loading = false;
+                state.errorMessage = action.error.message || 'Something went wrong';
+            })
+            // getCourseById
+            .addCase(getCourseById.pending, (state) => {
+                state.loading = true;
+                state.errorMessage = '';
+            })
+            .addCase(getCourseById.fulfilled, (state, action) => {
+                state.loading = false;
+                state.course = action.payload;
+            })
+            .addCase(getCourseById.rejected, (state, action) => {
+                state.loading = false;
+                state.errorMessage = action.error.message || 'Something went wrong';
+            })
+            // updateCourse
+            .addCase(updateCourse.pending, (state) => {
+                state.loading = true;
+                state.errorMessage = '';
+            })
+            .addCase(updateCourse.fulfilled, (state) => {
+                state.loading = false;
+            })
+            .addCase(updateCourse.rejected, (state, action) => {
+                state.loading = false;
+                state.errorMessage = action.error.message || 'Something went wrong';
+            })
+            // createSession
+            .addCase(createSession.pending, (state) => {
+                state.loading = true;
+                state.errorMessage = '';
+            })
+            .addCase(createSession.fulfilled, (state) => {
+                state.loading = false;
+            })
+            .addCase(createSession.rejected, (state, action) => {
+                state.loading = false;
+                state.errorMessage = action.error.message || 'Something went wrong';
+            })
+            // getSessionById
+            .addCase(getSessionById.pending, (state) => {
+                state.loading = true;
+                state.errorMessage = '';
+            })
+            .addCase(getSessionById.fulfilled, (state, action) => {
+                state.loading = false;
+                state.session = action.payload;
+            })
+            .addCase(getSessionById.rejected, (state, action) => {
+                state.loading = false;
+                state.errorMessage = action.error.message || 'Something went wrong';
+            })
+            // updateSession
+            .addCase(updateSession.pending, (state) => {
+                state.loading = true;
+                state.errorMessage = '';
+            })
+            .addCase(updateSession.fulfilled, (state) => {
+                state.loading = false;
+            })
+            .addCase(updateSession.rejected, (state, action) => {
+                state.loading = false;
+                state.errorMessage = action.error.message || 'Something went wrong';
+            })
+            // getUsersCore
+            .addCase(getUsersCore.pending, (state) => {
+                state.loading = true;
+                state.errorMessage = '';
+            })
+            .addCase(getUsersCore.fulfilled, (state) => {
+                state.loading = false;
+            })
+            .addCase(getUsersCore.rejected, (state, action) => {
+                state.loading = false;
+                state.errorMessage = action.error.message || 'Something went wrong';
+            })
+            // getMyCourses
+            .addCase(getMyCourses.pending, (state) => {
+                state.loading = true;
+                state.errorMessage = '';
+            })
+            .addCase(getMyCourses.fulfilled, (state, action) => {
+                state.loading = false;
+                state.myCourses = action.payload;
+            })
+            .addCase(getMyCourses.rejected, (state, action) => {
+                state.loading = false;
+                state.errorMessage = action.error.message || 'Something went wrong';
+            });
+    }
+});
 
 export default CoursesSlice.reducer;

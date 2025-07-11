@@ -1,14 +1,14 @@
+import { Button, Col, Form, Input, InputNumber, Row, Select } from "antd";
 import { useEffect, useState } from "react";
-import { Row, Col, Form, Input, Button, Select, InputNumber } from "antd";
-import SectionLayout from "../../../layouts/SectionLayout";
-import { useParams } from "react-router-dom";
-import { dispatch, RootState } from "../../../redux/store";
-import { getCourseById, getUsersCore, updateCourse } from "../../../redux/slices/courses";
 import { useSelector } from "react-redux";
-import { Currency, Status, TypeDiscount } from "../../../enum/course.enum";
+import { useParams } from "react-router-dom";
 import CustomSelectMultiple from "../../../components/common/CustomSelectMultiple";
-import { Role } from "../../../enum/user.enum";
 import ReturnPage from "../../../components/common/ReturnPage";
+import { Currency, Status, TypeDiscount } from "../../../enum/course.enum";
+import { Role } from "../../../enum/user.enum";
+import SectionLayout from "../../../layouts/SectionLayout";
+import { getCourseById, getUsersCore, updateCourse } from "../../../redux/slices/courses";
+import { RootState, useDispatch } from "../../../redux/store";
 
 const { Option } = Select;
 
@@ -20,6 +20,7 @@ type OptionsType = {
 const UpdateCourse = () => {
     const { id } = useParams();
     const [form] = Form.useForm();
+    const dispatch = useDispatch();
     const { course } = useSelector((state: RootState) => state.courses);
     const [optionsStudents, setOptionsStudents] = useState<OptionsType[]>([]);
     const [optionsTeachers, setOptionsTeachers] = useState<OptionsType[]>([]);
@@ -43,36 +44,42 @@ const UpdateCourse = () => {
                 status: course.status || Status.ACTIVE,
             });
         }
-    }, [course]);
+    }, [course, form]);
 
     // Xử lý khi submit form
     const onFinish = async (values: any) => {
-        await dispatch(updateCourse(id as string, values));
+        await dispatch(updateCourse({ id: id as string, course: values }));
     };
 
     useEffect(() => {
         if (!id) return;
         fetchData();
-    }, [id]);
+    }, [id, dispatch]);
 
     const fetchData = async () => {
         dispatch(getCourseById(id as string));
-        const students = await dispatch(getUsersCore(Role.STUDENT));
-        const teachers = await dispatch(getUsersCore(Role.TEACHER));
-        if (!teachers || !students) return;
+        const studentsResult = await dispatch(getUsersCore(Role.STUDENT));
+        const teachersResult = await dispatch(getUsersCore(Role.TEACHER));
+        
+        if (getUsersCore.fulfilled.match(studentsResult) && getUsersCore.fulfilled.match(teachersResult)) {
+            const students = studentsResult.payload;
+            const teachers = teachersResult.payload;
+            
+            if (!teachers || !students) return;
 
-        const uniqueOptionsStudent = students.map((item: any) => ({
-            label: `${item.fullName} [${item.email}]`,
-            value: item._id
-        }));
+            const uniqueOptionsStudent = students.map((item: any) => ({
+                label: `${item.fullName} [${item.email}]`,
+                value: item._id
+            }));
 
-        const uniqueOptionsTeacher = teachers.map((item: any) => ({
-            label: `${item.fullName} [${item.email}]`,
-            value: item._id
-        }));
+            const uniqueOptionsTeacher = teachers.map((item: any) => ({
+                label: `${item.fullName} [${item.email}]`,
+                value: item._id
+            }));
 
-        setOptionsStudents(uniqueOptionsStudent);
-        setOptionsTeachers(uniqueOptionsTeacher);
+            setOptionsStudents(uniqueOptionsStudent);
+            setOptionsTeachers(uniqueOptionsTeacher);
+        }
     };
     return (
         <SectionLayout title="Cập Nhật Khóa Học">
@@ -139,7 +146,7 @@ const UpdateCourse = () => {
 
                         <Form.Item label="Học viên" name="students">
                             {
-                                optionsStudents.length != 0 && course &&
+                                optionsStudents.length !== 0 && course &&
                                 <CustomSelectMultiple
                                     placeholder="Choose Students"
                                     options={optionsStudents}
@@ -150,7 +157,7 @@ const UpdateCourse = () => {
 
                         <Form.Item label="Giáo viên" name="instructorId">
                             {
-                                optionsTeachers.length != 0 && course &&
+                                optionsTeachers.length !== 0 && course &&
                                 <Select
                                     showSearch
                                     placeholder="Select A Teacher"

@@ -1,6 +1,7 @@
 import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
 import { Input } from "antd";
 import { useField } from "formik";
+import { COLORS, RADIUS, SPACING } from "../../constants/colors";
 
 interface CustomInputProps {
     label?: string;
@@ -13,23 +14,47 @@ const InputFormHide: React.FC<CustomInputProps> = ({ label, name, type = "text",
     const [field, meta] = useField(name);
 
     return (
-        <div style={{ marginBottom: "16px" }}>
+        <div style={{ marginBottom: SPACING.md }}>
+            {label && (
+                <label style={styles.label}>
+                    {label}
+                </label>
+            )}
             <Input.Password
                 placeholder={placeholder}
                 {...field}
                 type={type}
-                style={{ fontSize: "15px", background: "rgba(78, 205, 196, 0.05)", // Teal undertone for glassmorphism
-                    border: "1px solid rgba(78, 205, 196, 0.2)", // Teal border
-                    color: "#B0E0E6", // Pale teal for text
-                    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.5), 0 0 10px rgba(78, 205, 196, 0.2)", // Teal glow
-                     }}
+                style={styles.input}
                 iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
             />
             {meta.touched && meta.error && (
-                <div style={{ color: "red", fontSize: "12px", marginTop: "4px" }}>{meta.error}</div>
+                <div style={styles.error}>{meta.error}</div>
             )}
         </div>
     );
+};
+
+const styles = {
+    label: {
+        display: "block",
+        marginBottom: SPACING.xs,
+        color: COLORS.text.primary,
+        fontSize: "14px",
+        fontWeight: 500,
+    },
+    input: {
+        fontSize: "15px",
+        background: COLORS.background.primary,
+        border: `1px solid ${COLORS.border.light}`,
+        borderRadius: RADIUS.md,
+        color: COLORS.text.primary,
+        padding: `${SPACING.sm} ${SPACING.md}`,
+    },
+    error: {
+        color: COLORS.status.error,
+        fontSize: "12px",
+        marginTop: SPACING.xs,
+    },
 };
 
 export default InputFormHide;

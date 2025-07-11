@@ -1,20 +1,22 @@
-import SectionLayout from "../../../layouts/SectionLayout";
-import { Button, Col, Layout, Menu, Row, Drawer, Grid, Typography } from "antd";
-import { useLocation, useNavigate } from "react-router-dom";
-import { CSSProperties, useEffect, useState } from "react";
 import { MenuOutlined } from "@ant-design/icons";
-import UserMenu from "../UserMenu";
-import { dispatch, RootState, useSelector } from "../../../redux/store";
-import { getUser } from "../../../redux/slices/auth";
+import { Button, Col, Drawer, Grid, Layout, Menu, Row, Typography } from "antd";
+import { CSSProperties, useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { localStorageConfig } from "../../../config";
+import { COLORS } from "../../../constants/colors";
+import SectionLayout from "../../../layouts/SectionLayout";
+import { getUser } from "../../../redux/slices/auth";
+import { RootState, useDispatch, useSelector } from "../../../redux/store";
+import UserMenu from "../UserMenu";
 
 const { useBreakpoint } = Grid;
-const { Title, Text } = Typography;
+const { Text } = Typography;
 
 const Header = () => {
   const screens = useBreakpoint();
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useDispatch();
   const [menuItems, setMenuItems] = useState([
     { key: "/", label: "Home" },
     { key: "/aboutus", label: "About" },
@@ -27,7 +29,7 @@ const Header = () => {
     if (!user) {
       dispatch(getUser());
     }
-  }, [user]);
+  }, [user, dispatch]);
 
   const getSizeScreen = () => {
     return screens.md || screens.lg || screens.xl || screens.xxl;
@@ -63,7 +65,7 @@ const Header = () => {
     } else {
       setMenuItems((prev) => prev.filter((item) => item.key !== "logout" && item.key !== "/login"));
     }
-  }, [open]);
+  }, [open, user, handleLogout]);
 
   return (
     <Layout.Header style={styles.header}>
@@ -163,16 +165,14 @@ const styles: {
   drawerMenu: CSSProperties;
 } = {
   header: {
-    background: "rgba(10, 46, 46, 0.8)", // Dark teal with transparency for glassmorphism
-    backdropFilter: "blur(10px)",
-    boxShadow: "0 4px 12px rgba(161, 161, 161, 0.5), 0 0 10px rgba(78, 205, 196, 0.2)", // Teal glow
+    background: COLORS.background.primary,
+    border: `1px solid ${COLORS.border.light}`,
     position: "fixed",
     zIndex: 1000,
     top: 0,
     left: 0,
     width: "100%",
     padding: 0,
-    transition: "box-shadow 0.3s",
   },
   logoContainer: {
     display: "flex",
@@ -182,12 +182,10 @@ const styles: {
   },
   logo: {
     maxHeight: "40px",
-    // filter: "drop-shadow(0 0 5px rgba(78, 205, 196, 0.3))", // Teal glow
   },
   slogan: {
-    color: "#B0E0E6", // Pale teal for text
+    color: COLORS.text.secondary,
     fontSize: "12px",
-    textShadow: "0 0 5px rgba(78, 205, 196, 0.3)", // Subtle teal glow
   },
   menu: {
     flex: 1,
@@ -196,59 +194,36 @@ const styles: {
     borderBottom: "none",
   },
   menuItem: {
-    color: "#B0E0E6", // Pale teal for text
+    color: COLORS.text.primary,
     fontSize: "16px",
-    textShadow: "0 0 5px rgba(78, 205, 196, 0.3)", // Subtle teal glow
-    transition: "color 0.3s",
+    fontWeight: 500,
   },
   button: {
-    background: "linear-gradient(45deg, #4ECDC4, #1A4A4A)", // Teal gradient
+    background: COLORS.primary[500],
+    color: COLORS.background.primary,
     border: "none",
-    color: "#B0E0E6", // Pale teal for text
-    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.5), 0 0 10px rgba(78, 205, 196, 0.2)", // Teal glow
-    transition: "box-shadow 0.3s",
+    fontWeight: 500,
+    borderRadius: "8px",
   },
   menuIcon: {
-    fontSize: "24px",
-    color: "#B0E0E6", // Pale teal for icon
-    cursor: "pointer",
-    textShadow: "0 0 5px rgba(78, 205, 196, 0.3)", // Subtle teal glow
+    color: COLORS.text.primary,
+    fontSize: "18px",
   },
   drawerTitle: {
-    color: "#B0E0E6", // Pale teal for text
-    textShadow: "0 0 5px rgba(78, 205, 196, 0.3)", // Subtle teal glow
+    color: COLORS.text.heading,
+    fontSize: "16px",
+    fontWeight: 600,
   },
   drawerHeader: {
-    background: "linear-gradient(135deg, #0A2E2E 0%, #1A4A4A 100%)", // Dark teal gradient
-    borderBottom: "1px solid rgba(78, 205, 196, 0.2)", // Teal border
+    background: COLORS.background.primary,
+    borderBottom: `1px solid ${COLORS.border.light}`,
   },
   drawerBody: {
-    background: "linear-gradient(135deg, #0A2E2E 0%, #1A4A4A 100%)", // Dark teal gradient
-    // Subtle circuit pattern in lighter teal
-    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath d='M10 10h80v80H10z' fill='none' stroke='%234ECDC4' stroke-opacity='0.05' stroke-width='1'/%3E%3Cpath d='M20 20h60v60H20z' fill='none' stroke='%234ECDC4' stroke-opacity='0.05' stroke-width='1'/%3E%3C/svg%3E")`,
-    backgroundSize: "200px 200px",
+    background: COLORS.background.primary,
+    padding: "20px",
   },
   drawerMenu: {
     background: "transparent",
-    border: "none",
+    borderRight: "none",
   },
 };
-
-// Add hover effects and animations using CSS
-const styleSheetHeader = document.createElement("style");
-styleSheetHeader.innerText = `
-  .ant-layout-header:hover {
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.6), 0 0 15px rgba(78, 205, 196, 0.4);
-  }
-  .ant-menu-item:hover .ant-typography {
-    color: #4ECDC4 !important; /* Brighter teal on hover */
-  }
-  .ant-menu-item-selected .ant-typography {
-    color: #4ECDC4 !important; /* Brighter teal for selected item */
-    text-shadow: 0 0 10px rgba(78, 205, 196, 0.5) !important; /* Enhanced glow */
-  }
-  .enroll-button:hover {
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.6), 0 0 15px rgba(78, 205, 196, 0.4);
-  }
-`;
-document.head.appendChild(styleSheetHeader);

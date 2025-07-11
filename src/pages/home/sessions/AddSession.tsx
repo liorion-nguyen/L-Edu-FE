@@ -1,16 +1,17 @@
-import { Row, Col, Form, Input, Button, Select, Flex } from "antd";
-import SectionLayout from "../../../layouts/SectionLayout";
+import { Button, Col, Flex, Form, Input, Row, Select } from "antd";
 import { useParams } from "react-router-dom";
-import { initialValuesType } from "../../../types/session";
-import { dispatch } from "../../../redux/store";
-import { createSession } from "../../../redux/slices/courses";
 import ReturnPage from "../../../components/common/ReturnPage";
+import SectionLayout from "../../../layouts/SectionLayout";
+import { createSession } from "../../../redux/slices/courses";
+import { useDispatch } from "../../../redux/store";
+import { initialValuesType } from "../../../types/session";
 
 const { Option } = Select;
 
 const AddSession = () => {
     const { id } = useParams(); // Lấy courseId từ URL
     const [form] = Form.useForm();
+    const dispatch = useDispatch();
 
     // Xử lý khi submit form
     const onFinish = async (values: initialValuesType) => {

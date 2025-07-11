@@ -1,7 +1,8 @@
 import { Avatar, Col, Image, Row, Typography } from "antd";
 import Title from "antd/es/typography/Title";
-import SectionLayout from "../../layouts/SectionLayout";
 import { CSSProperties } from "react";
+import { COLORS, RADIUS, SPACING } from "../../constants/colors";
+import SectionLayout from "../../layouts/SectionLayout";
 
 const { Text } = Typography;
 
@@ -72,53 +73,39 @@ const styles: {
   textCountEnrolled: CSSProperties;
 } = {
   sectionLayout: {
-    background: "linear-gradient(135deg, #0A2E2E 0%, #1A4A4A 100%)", // Dark teal gradient
+    background: COLORS.gradient.primary,
     position: "relative",
     overflow: "hidden",
-    // Subtle circuit pattern in lighter teal
-    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath d='M10 10h80v80H10z' fill='none' stroke='%234ECDC4' stroke-opacity='0.05' stroke-width='1'/%3E%3Cpath d='M20 20h60v60H20z' fill='none' stroke='%234ECDC4' stroke-opacity='0.05' stroke-width='1'/%3E%3C/svg%3E")`,
-    backgroundSize: "200px 200px",
+    minHeight: "600px",
+    padding: SPACING.xl,
   },
   title: {
     fontSize: "4.5rem",
     fontWeight: "bold",
-    marginBottom: "40px",
+    marginBottom: SPACING.xl,
     textAlign: "right",
-    color: "#B0E0E6", // Pale teal for the title
-    textShadow: "0 0 10px rgba(78, 205, 196, 0.3)", // Subtle teal glow
+    color: COLORS.text.heading,
   },
   subtitle: {
     display: "block",
     fontSize: "1.2rem",
-    marginBottom: "20px",
-    color: "#B0E0E6", // Pale teal for subtitle
+    marginBottom: SPACING.lg,
+    color: COLORS.text.secondary,
     width: "70%",
     lineHeight: "1.8",
   },
   img: {
-    borderRadius: "16px",
+    borderRadius: RADIUS.xl,
     width: "100%",
-    filter: "brightness(0.7)",
-    transition: "filter 0.3s",
-    boxShadow: "0 8px 24px rgba(0, 0, 0, 0.5), 0 0 15px rgba(78, 205, 196, 0.2)", // Teal glow
+    filter: "brightness(1)",
   },
   avatar: {
-    border: "2px solid #4ECDC4", // Brighter teal border
-    boxShadow: "0 0 10px rgba(78, 205, 196, 0.5)", // Teal glow
+    border: `2px solid ${COLORS.primary[500]}`,
   },
   textCountEnrolled: {
     width: "fit-content",
-    color: "#B0E0E6", // Pale teal for text
+    color: COLORS.text.primary,
     fontSize: "16px",
-    margin: "10px 0",
+    margin: `${SPACING.sm} 0`,
   },
 };
-
-// Add hover effects using CSS
-const styleSheetHero = document.createElement("style");
-styleSheetHero.innerText = `
-  .hero-img:hover {
-    filter: brightness(1);
-  }
-`;
-document.head.appendChild(styleSheetHero);

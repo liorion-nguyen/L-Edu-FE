@@ -1,57 +1,40 @@
 import { Col, Row } from "antd";
 import Title from "antd/es/typography/Title";
-import { Typography } from "antd";
-import SectionLayout from "../../layouts/SectionLayout";
 import { CSSProperties } from "react";
-
-const { Text } = Typography;
+import { COLORS, RADIUS, SPACING } from "../../constants/colors";
+import SectionLayout from "../../layouts/SectionLayout";
 
 const ExploreCategories = () => {
   const categories = [
-    { name: "React Native", lesson: 20, icon: "/images/landing/sections/categories/react&react-native.png", handle: () => {} },
-    { name: "React", lesson: 20, icon: "/images/landing/sections/categories/react&react-native.png", handle: () => {} },
-    { name: "Website Basic", lesson: 20, icon: "/images/landing/sections/categories/web-basic.png", handle: () => {} },
-    { name: "Web Developer", lesson: 42, icon: "/images/landing/sections/categories/web-developer.png", handle: () => {} },
-    { name: "App Producer", lesson: 42, icon: "/images/landing/sections/categories/app-producer.png", handle: () => {} },
-    { name: "Computer Science", lesson: 42, icon: "/images/landing/sections/categories/computer-science.png", handle: () => {} },
-    { name: "Codementum", lesson: 10, icon: "/images/landing/sections/categories/codementum.png", handle: () => {} },
-    { name: "Data Science", lesson: 10, icon: "/images/landing/sections/categories/data-science.png", handle: () => {} },
-    { name: "Javascript Basic", lesson: 20, icon: "/images/landing/sections/categories/javascript-basic.png", handle: () => {} },
+    { id: 1, name: "Web Basic", image: "/images/landing/sections/categories/web-basic.png", courses: 25 },
+    { id: 2, name: "Web Developer", image: "/images/landing/sections/categories/web-developer.png", courses: 18 },
+    { id: 3, name: "Computer Science", image: "/images/landing/sections/categories/computer-science.png", courses: 32 },
+    { id: 4, name: "App Producer", image: "/images/landing/sections/categories/app-producer.png", courses: 12 },
+    { id: 5, name: "Data Science", image: "/images/landing/sections/categories/data-science.png", courses: 28 },
+    { id: 6, name: "React & React Native", image: "/images/landing/sections/categories/react&react-native.png", courses: 22 },
+    { id: 7, name: "JavaScript Basic", image: "/images/landing/sections/categories/javascript-basic.png", courses: 15 },
+    { id: 8, name: "Codementum", image: "/images/landing/sections/categories/codementum.png", courses: 10 },
   ];
 
   return (
     <SectionLayout style={styles.sectionLayout}>
-      <Row justify="center">
-        <Col span={24} style={{ paddingBottom: "40px" }}>
-          <Title level={2} style={styles.title}>
-            Explore Our Categories
-          </Title>
-        </Col>
-        <Col span={24}>
-          <Row gutter={[20, 20]}>
-            {categories.map((category, index) => (
-              <Col xs={24} sm={12} md={8} lg={6} key={index}>
-                <Row
-                  gutter={[10, 10]}
-                  justify="space-between"
-                  align="middle"
-                  style={styles.categoryCard}
-                  onClick={category.handle}
-                >
-                  <Col style={{ width: "60px", height: "50px" }}>
-                    <img src={category.icon} alt={category.name} style={styles.icon} />
-                  </Col>
-                  <Col flex="auto">
-                    <Title level={4} style={styles.categoryName}>
-                      {category.name}
-                    </Title>
-                    <Text style={styles.lessonText}>{category.lesson} lessons</Text>
-                  </Col>
-                </Row>
-              </Col>
-            ))}
-          </Row>
-        </Col>
+      <Title level={2} style={styles.title}>
+        Explore Categories
+      </Title>
+      <Row gutter={[24, 24]} justify="center">
+        {categories.map((category) => (
+          <Col key={category.id} xs={24} sm={12} md={8} lg={6}>
+            <div style={styles.categoryCard}>
+              <div style={styles.imageContainer}>
+                <img src={category.image} alt={category.name} style={styles.image} />
+              </div>
+              <div style={styles.cardContent}>
+                <h3 style={styles.categoryName}>{category.name}</h3>
+                <p style={styles.courseCount}>{category.courses} Courses</p>
+              </div>
+            </div>
+          </Col>
+        ))}
       </Row>
     </SectionLayout>
   );
@@ -63,56 +46,56 @@ const styles: {
   sectionLayout: CSSProperties;
   title: CSSProperties;
   categoryCard: CSSProperties;
-  icon: CSSProperties;
+  imageContainer: CSSProperties;
+  image: CSSProperties;
+  cardContent: CSSProperties;
   categoryName: CSSProperties;
-  lessonText: CSSProperties;
+  courseCount: CSSProperties;
 } = {
   sectionLayout: {
-    background: "linear-gradient(135deg, #0A2E2E 0%, #1A4A4A 100%)", // Dark teal gradient
-    position: "relative",
-    overflow: "hidden",
-    padding: "30px 0",
-    // Subtle circuit pattern in lighter teal
-    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath d='M10 10h80v80H10z' fill='none' stroke='%234ECDC4' stroke-opacity='0.05' stroke-width='1'/%3E%3Cpath d='M20 20h60v60H20z' fill='none' stroke='%234ECDC4' stroke-opacity='0.05' stroke-width='1'/%3E%3C/svg%3E")`,
-    backgroundSize: "200px 200px",
+    background: COLORS.background.primary,
+    padding: `${SPACING.xl} 0`,
   },
   title: {
     textAlign: "center",
-    color: "#B0E0E6", // Pale teal for title
-    textShadow: "0 0 10px rgba(78, 205, 196, 0.3)", // Subtle teal glow
+    color: COLORS.text.heading,
+    marginBottom: SPACING.xl,
+    fontSize: "2.5rem",
+    fontWeight: 600,
   },
   categoryCard: {
-    background: "rgba(78, 205, 196, 0.05)", // Teal undertone for glassmorphism
-    backdropFilter: "blur(15px)",
-    borderRadius: "50px",
-    padding: "10px 20px",
-    border: "1px solid rgba(78, 205, 196, 0.2)", // Teal border
-    boxShadow: "0 8px 24px rgba(0, 0, 0, 0.5), 0 0 15px rgba(78, 205, 196, 0.2)", // Teal glow
-    transition: "transform 0.3s, box-shadow 0.3s",
+    background: COLORS.background.secondary,
+    borderRadius: RADIUS.lg,
+    padding: SPACING.lg,
+    textAlign: "center",
+    height: "100%",
+    border: `1px solid ${COLORS.border.light}`,
     cursor: "pointer",
   },
-  icon: {
-    width: "100%",
-    height: "100%",
-    filter: "brightness(0.8) hue-rotate(180deg)", // Adjust icon color to match teal theme
+  imageContainer: {
+    marginBottom: SPACING.md,
+  },
+  image: {
+    width: "60px",
+    height: "60px",
+    objectFit: "cover",
+    borderRadius: RADIUS.md,
+  },
+  cardContent: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    gap: SPACING.xs,
   },
   categoryName: {
-    marginTop: 0,
-    color: "#B0E0E6", // Pale teal for category name
-    textShadow: "0 0 5px rgba(78, 205, 196, 0.3)", // Subtle teal glow
+    fontSize: "1.1rem",
+    fontWeight: 600,
+    color: COLORS.text.heading,
+    margin: 0,
   },
-  lessonText: {
-    color: "#4ECDC4", // Brighter teal for lesson count
-    fontSize: "16px",
+  courseCount: {
+    fontSize: "0.9rem",
+    color: COLORS.text.secondary,
+    margin: 0,
   },
 };
-
-// Add hover effects using CSS
-const styleSheetCategories = document.createElement("style");
-styleSheetCategories.innerText = `
-  .category-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6), 0 0 20px rgba(78, 205, 196, 0.4);
-  }
-`;
-document.head.appendChild(styleSheetCategories);
