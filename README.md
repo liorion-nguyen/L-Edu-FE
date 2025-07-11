@@ -21,6 +21,28 @@ L Edu giúp học viên tiếp cận kiến thức một cách có hệ thống,
 - **Hệ thống học tập cá nhân hóa**: Theo dõi tiến trình học tập, đánh giá kết quả học viên.
 - **Diễn đàn thảo luận**: Học viên có thể đặt câu hỏi, thảo luận và chia sẻ kinh nghiệm.
 - **Hệ thống đánh giá khóa học**: Học viên có thể để lại đánh giá và nhận xét sau khi hoàn thành khóa học.
+- **🎨 Hỗ trợ Dark/Light Theme**: Giao diện tự động thích ứng với thiết lập theme của hệ thống, bao gồm cả nội dung markdown.
+- **📖 Markdown Viewer nâng cao**: Hiển thị nội dung markdown với styling đẹp mắt, hỗ trợ syntax highlighting cho code.
+
+## **Tính Năng UI/UX Mới:**
+
+### **🌓 Adaptive Theme Support**
+- **Tự động phát hiện theme**: Hệ thống tự động phát hiện và áp dụng theme sáng/tối dựa trên thiết lập của người dùng
+- **Markdown responsive**: Nội dung markdown tự động chuyển đổi màu sắc phù hợp với theme
+- **Syntax highlighting thông minh**: Code blocks sử dụng GitHub theme tương ứng (github/github-dark)
+
+### **🎨 Enhanced Styling**
+- **Glassmorphism effects**: Hiệu ứng kính mờ hiện đại cho các component
+- **Elegant color palette**: Bảng màu teal thanh lịch, ít chói mắt hơn
+- **Smooth transitions**: Chuyển đổi mượt mà giữa các trạng thái
+- **Responsive design**: Tối ưu cho mọi kích thước màn hình
+
+### **📝 Markdown Features**
+- **Theme-aware colors**: Màu sắc tự động thích ứng với theme
+- **Enhanced typography**: Font chữ và spacing được tối ưu
+- **Beautiful code blocks**: Syntax highlighting với border và shadow
+- **Styled tables**: Bảng với border rounded và striped rows
+- **Interactive elements**: Links và buttons với hover effects
 
 ## **Công Nghệ Sử Dụng:**
 
@@ -29,6 +51,8 @@ L Edu giúp học viên tiếp cận kiến thức một cách có hệ thống,
 - **[Redux](https://redux.js.org/)**: Quản lý trạng thái toàn cục, giúp đồng bộ dữ liệu hiệu quả.
 - **[Ant Design](https://ant.design/)**: Giao diện đẹp mắt, chuyên nghiệp với các thành phần UI mạnh mẽ.
 - **[MongoDB](https://www.mongodb.com/)**: Cơ sở dữ liệu NoSQL linh hoạt, phù hợp với dữ liệu động của hệ thống.
+- **[React Markdown](https://github.com/remarkjs/react-markdown)**: Hiển thị nội dung markdown với syntax highlighting.
+- **[Highlight.js](https://highlightjs.org/)**: Syntax highlighting cho code blocks với theme adaptive.
 
 ## **[Link Website](https://l-edu.vercel.app/)**
 
@@ -73,6 +97,36 @@ npm start
 Dự án sẽ chạy trên `http://localhost:3000/` cho frontend và `http://localhost:5000/` cho backend.
 
 ---
+
+## **Tùy Chỉnh Theme**
+
+### **CSS Custom Properties**
+Hệ thống sử dụng CSS custom properties để hỗ trợ theme switching:
+
+```css
+/* Light theme */
+--markdown-bg: rgba(255, 255, 255, 0.95);
+--markdown-text: #2c3e50;
+--markdown-border: rgba(78, 205, 196, 0.2);
+
+/* Dark theme */
+--markdown-bg: rgba(26, 74, 74, 0.95);
+--markdown-text: #B0E0E6;
+--markdown-border: rgba(78, 205, 196, 0.3);
+```
+
+### **Responsive Breakpoints**
+```css
+/* Mobile */
+@media (max-width: 768px) {
+  /* Mobile-specific styles */
+}
+
+/* Tablet and Desktop */
+@media (min-width: 769px) {
+  /* Larger screen styles */
+}
+```
 
 ## **Đóng Góp**
 Nếu bạn muốn đóng góp vào dự án, vui lòng tạo Pull Request hoặc liên hệ với chúng tôi qua email: **ledu.support@gmail.com**.

@@ -1,6 +1,5 @@
 @import "github-markdown-css";
 
-
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -15,7 +14,179 @@ code {
     monospace;
 }
 
+/* Enhanced theme-aware markdown styling */
+.markdown-viewer {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  line-height: 1.6;
+}
 
+.markdown-viewer h1,
+.markdown-viewer h2,
+.markdown-viewer h3,
+.markdown-viewer h4,
+.markdown-viewer h5,
+.markdown-viewer h6 {
+  color: var(--markdown-heading) !important;
+  font-weight: 600;
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.markdown-viewer h1 {
+  font-size: 2em;
+  border-bottom: 2px solid var(--markdown-border);
+  padding-bottom: 0.5em;
+}
+
+.markdown-viewer h2 {
+  font-size: 1.5em;
+  border-bottom: 1px solid var(--markdown-border);
+  padding-bottom: 0.3em;
+}
+
+.markdown-viewer p {
+  color: var(--markdown-text) !important;
+  margin-bottom: 1em;
+  text-align: justify;
+}
+
+.markdown-viewer a {
+  color: var(--markdown-link) !important;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.markdown-viewer a:hover {
+  border-bottom-color: var(--markdown-link);
+  opacity: 0.8;
+}
+
+.markdown-viewer code {
+  background-color: var(--markdown-code-bg) !important;
+  color: var(--markdown-code-text) !important;
+  padding: 0.2em 0.4em;
+  border-radius: 6px;
+  font-size: 0.9em;
+  border: 1px solid var(--markdown-border);
+}
+
+.markdown-viewer pre {
+  background-color: var(--markdown-code-bg) !important;
+  border: 1px solid var(--markdown-border) !important;
+  border-radius: 8px !important;
+  padding: 1em !important;
+  overflow-x: auto;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.markdown-viewer pre code {
+  background-color: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  color: var(--markdown-code-text) !important;
+}
+
+.markdown-viewer blockquote {
+  border-left: 4px solid var(--markdown-quote-border) !important;
+  background-color: var(--markdown-code-bg) !important;
+  padding: 1em !important;
+  margin: 1em 0 !important;
+  border-radius: 0 8px 8px 0 !important;
+  color: var(--markdown-text) !important;
+}
+
+.markdown-viewer blockquote p {
+  margin: 0 !important;
+}
+
+.markdown-viewer ul,
+.markdown-viewer ol {
+  color: var(--markdown-text) !important;
+  padding-left: 1.5em;
+}
+
+.markdown-viewer li {
+  margin-bottom: 0.5em;
+}
+
+.markdown-viewer table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1em 0;
+  border: 1px solid var(--markdown-border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.markdown-viewer th,
+.markdown-viewer td {
+  border: 1px solid var(--markdown-border) !important;
+  padding: 0.75em !important;
+  text-align: left;
+  color: var(--markdown-text) !important;
+}
+
+.markdown-viewer th {
+  background-color: var(--markdown-code-bg) !important;
+  font-weight: 600;
+}
+
+.markdown-viewer tr:nth-child(even) {
+  background-color: var(--markdown-code-bg) !important;
+}
+
+.markdown-viewer img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin: 1em 0;
+}
+
+.markdown-viewer hr {
+  border: none;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--markdown-border), transparent);
+  margin: 2em 0;
+}
+
+/* Enhanced code block styling */
 li > pre {
-  background-color: #f0f0f0 !important;
+  background-color: var(--markdown-code-bg) !important;
+  border: 1px solid var(--markdown-border) !important;
+  border-radius: 6px !important;
+  padding: 0.8em !important;
+  margin: 0.5em 0 !important;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .markdown-viewer {
+    padding: 16px;
+  }
+  
+  .markdown-viewer h1 {
+    font-size: 1.6em;
+  }
+  
+  .markdown-viewer h2 {
+    font-size: 1.3em;
+  }
+  
+  .markdown-viewer pre {
+    padding: 0.8em !important;
+  }
+  
+  .markdown-viewer table {
+    font-size: 0.9em;
+  }
+  
+  .markdown-viewer th,
+  .markdown-viewer td {
+    padding: 0.5em !important;
+  }
 }
