@@ -1,4 +1,4 @@
-import { MenuOutlined } from "@ant-design/icons";
+import { MenuOutlined, CodeOutlined } from "@ant-design/icons";
 import { Button, Col, Drawer, Grid, Layout, Menu, Row, Typography } from "antd";
 import { CSSProperties, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -21,6 +21,11 @@ const Header = () => {
     { key: "/", label: "Home" },
     { key: "/aboutus", label: "About" },
     { key: "/course", label: "Course" },
+    { 
+      key: "/code-editor", 
+      label: "Code Editor",
+      icon: <CodeOutlined />
+    },
   ]);
   const [open, setOpen] = useState(false);
   const { user } = useSelector((state: RootState) => state.auth);

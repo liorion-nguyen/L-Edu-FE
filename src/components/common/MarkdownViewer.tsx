@@ -1,8 +1,10 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeHighlight from "rehype-highlight";
 import rehypeRaw from "rehype-raw";
+import remarkGfm from "remark-gfm";
 import { COLORS, RADIUS, SPACING } from "../../constants/colors";
+import './MarkdownViewer.css';
 
 // Function to load appropriate highlight.js theme based on system preference
 const loadHighlightTheme = () => {
@@ -19,9 +21,16 @@ const loadHighlightTheme = () => {
 interface MarkdownViewerProps {
   content: string;
   className?: string;
+  isPending?: boolean;
+  selectedText?: string;
 }
 
-const MarkdownViewer: React.FC<MarkdownViewerProps> = ({ content, className = "" }) => {
+const MarkdownViewer: React.FC<MarkdownViewerProps> = ({ 
+  content, 
+  className = "", 
+  isPending = false, 
+  selectedText 
+}) => {
   // Initialize theme on component load
   useEffect(() => {
     if (!document.getElementById('highlight-theme')) {
@@ -38,32 +47,189 @@ const MarkdownViewer: React.FC<MarkdownViewerProps> = ({ content, className = ""
     return () => mediaQuery.removeEventListener('change', loadHighlightTheme);
   }, []);
 
+  // Function to highlight selected text
+  const highlightText = (text: string) => {
+    if (!selectedText || typeof text !== 'string') return text;
+    
+    if (text.includes(selectedText)) {
+      return (
+        <span className="bg-yellow-200 text-black px-1 rounded">
+          {text}
+        </span>
+      );
+    }
+    return text;
+  };
+
+  if (isPending) {
+    return (
+      <div className={`markdown-viewer ${className}`} style={styles.container}>
+        <div className="markdown-loading">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div key={i} className="mb-4">
+              <div className="markdown-loading-line"></div>
+              <div className="markdown-loading-line"></div>
+              <div className="markdown-loading-line"></div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={`markdown-viewer ${className}`} style={styles.container}>
       <ReactMarkdown
         rehypePlugins={[rehypeHighlight, rehypeRaw]}
+        remarkPlugins={[remarkGfm]}
         components={{
-          h1: ({ children }) => <h1 style={styles.h1}>{children}</h1>,
-          h2: ({ children }) => <h2 style={styles.h2}>{children}</h2>,
-          h3: ({ children }) => <h3 style={styles.h3}>{children}</h3>,
-          p: ({ children }) => <p style={styles.paragraph}>{children}</p>,
-          code: ({ children, className }) => {
-            const isBlock = className?.includes('language-');
-            return isBlock ? (
-              <code style={styles.codeBlock}>{children}</code>
-            ) : (
-              <code style={styles.inlineCode}>{children}</code>
+          h1: ({ children, ...props }) => (
+            <h1 className="aui-md-h1" {...props}>{children}</h1>
+          ),
+          h2: ({ children, ...props }) => (
+            <h2 className="aui-md-h2" {...props}>{children}</h2>
+          ),
+          h3: ({ children, ...props }) => (
+            <h3 className="aui-md-h3" {...props}>{children}</h3>
+          ),
+          h4: ({ children, ...props }) => (
+            <h4 className="aui-md-h4" {...props}>{children}</h4>
+          ),
+          h5: ({ children, ...props }) => (
+            <h5 className="aui-md-h5" {...props}>{children}</h5>
+          ),
+          h6: ({ children, ...props }) => (
+            <h6 className="aui-md-h6" {...props}>{children}</h6>
+          ),
+          p: ({ children, ...props }) => {
+            const childrenArray = React.Children.toArray(children);
+            const hasImage = childrenArray.some(
+              child => React.isValidElement(child) && child.type === 'img'
+            );
+
+            if (hasImage) {
+              return (
+                <div className="flex w-full justify-center">
+                  <div className="flex w-2/3 max-w-full justify-center">
+                    <p className="aui-md-p text-center" {...props}>
+                      {children}
+                    </p>
+                  </div>
+                </div>
+              );
+            }
+
+            const highlightedText = selectedText
+              ? childrenArray.map((child, index) =>
+                  typeof child === 'string' && child.includes(selectedText) ? (
+                    <span key={index} className="bg-yellow-200 text-black px-1 rounded">
+                      {child}
+                    </span>
+                  ) : (
+                    child
+                  )
+                )
+              : childrenArray;
+
+            return (
+              <p className="aui-md-p" {...props}>
+                {highlightedText}
+              </p>
             );
           },
-          pre: ({ children }) => <pre style={styles.pre}>{children}</pre>,
-          ul: ({ children }) => <ul style={styles.list}>{children}</ul>,
-          ol: ({ children }) => <ol style={styles.list}>{children}</ol>,
-          li: ({ children }) => <li style={styles.listItem}>{children}</li>,
-          blockquote: ({ children }) => <blockquote style={styles.blockquote}>{children}</blockquote>,
-          a: ({ children, href }) => <a href={href} style={styles.link}>{children}</a>,
-          table: ({ children }) => <table style={styles.table}>{children}</table>,
-          th: ({ children }) => <th style={styles.tableHeader}>{children}</th>,
-          td: ({ children }) => <td style={styles.tableCell}>{children}</td>,
+          code: ({ children, className, ...props }) => {
+            const match = /language-(\w+)/.exec(className || '');
+            
+            // Debug children content in development
+            debugChildren(children, 'code children');
+            
+            // Convert children to string safely
+            const codeContent = childrenToString(children).replace(/\n$/, '');
+            
+            if (match && codeContent.trim()) {
+              return (
+                <div className="my-5 w-full">
+                  <div className="aui-code-header-root">
+                    <div className="aui-code-header-language">
+                      <span>{match[1]}</span>
+                    </div>
+                  </div>
+                  <pre className="aui-md-pre">
+                    <code className={className} {...props}>
+                      {codeContent}
+                    </code>
+                  </pre>
+                </div>
+              );
+            }
+            
+            return (
+              <code className="aui-md-inline-code" {...props}>
+                {codeContent || 'Empty code block'}
+              </code>
+            );
+          },
+          pre: ({ children, ...props }) => {
+            // If pre contains code element, just return the children
+            // The code element will handle the styling
+            const hasCodeChild = React.Children.toArray(children).some(
+              child => React.isValidElement(child) && child.type === 'code'
+            );
+            
+            if (hasCodeChild) {
+              return <>{children}</>;
+            }
+            
+            // For plain pre blocks without code
+            return (
+              <pre className="aui-md-pre" {...props}>
+                {childrenToString(children)}
+              </pre>
+            );
+          },
+          ul: ({ children, ...props }) => (
+            <ul className="aui-md-ul" {...props}>{children}</ul>
+          ),
+          ol: ({ children, ...props }) => (
+            <ol className="aui-md-ol" {...props}>{children}</ol>
+          ),
+          li: ({ children, ...props }) => (
+            <li {...props}>{children}</li>
+          ),
+          blockquote: ({ children, ...props }) => (
+            <blockquote className="aui-md-blockquote" {...props}>{children}</blockquote>
+          ),
+          a: ({ children, href, ...props }) => (
+            <a href={href} className="aui-md-a" {...props}>{children}</a>
+          ),
+          table: ({ children, ...props }) => (
+            <div className="table-wrapper">
+              <table className="aui-md-table" {...props}>{children}</table>
+            </div>
+          ),
+          thead: ({ children, ...props }) => <thead {...props}>{children}</thead>,
+          tbody: ({ children, ...props }) => <tbody {...props}>{children}</tbody>,
+          tr: ({ children, ...props }) => (
+            <tr className="aui-md-tr" {...props}>{children}</tr>
+          ),
+          th: ({ children, ...props }) => (
+            <th className="aui-md-th" {...props}>{children}</th>
+          ),
+          td: ({ children, ...props }) => (
+            <td className="aui-md-td" {...props}>{children}</td>
+          ),
+          strong: ({ children, ...props }) => (
+            <strong className="aui-md-strong" {...props}>{children}</strong>
+          ),
+          em: ({ children, ...props }) => (
+            <em className="aui-md-em" {...props}>{children}</em>
+          ),
+          hr: ({ ...props }) => (
+            <hr className="aui-md-hr" {...props} />
+          ),
+          sup: ({ children, ...props }) => (
+            <sup className="aui-md-sup" {...props}>{children}</sup>
+          ),
         }}
       >
         {content}
@@ -81,108 +247,161 @@ const styles = {
     lineHeight: 1.7,
     fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
     border: `1px solid ${COLORS.border.light}`,
+    position: 'relative' as const,
   },
-  h1: {
-    color: COLORS.text.heading,
-    fontSize: '2rem',
-    fontWeight: 700,
-    marginBottom: SPACING.lg,
-    marginTop: 0,
-    lineHeight: 1.2,
+};
+
+// Helper function to safely convert React children to string
+const childrenToString = (children: React.ReactNode): string => {
+  if (children === null || children === undefined) return '';
+  if (typeof children === 'string') return children;
+  if (typeof children === 'number') return String(children);
+  if (typeof children === 'boolean') return String(children);
+  
+  if (Array.isArray(children)) {
+    return children.map(childrenToString).join('');
+  }
+  
+  if (React.isValidElement(children)) {
+    // For React elements, try to extract text content recursively
+    const childProps = children.props as any;
+    if (childProps?.children !== undefined) {
+      return childrenToString(childProps.children);
+    }
+    
+    // Handle specific element types
+    if (children.type === 'br') return '\n';
+    if (children.type === 'hr') return '---';
+    
+    return '';
+  }
+  
+  // Handle objects (this is where [object Object] might appear)
+  if (typeof children === 'object') {
+    // If it's a React fragment
+    if (children && typeof children === 'object' && 'type' in children && 
+        (children as any).type === React.Fragment) {
+      const fragmentProps = (children as any).props;
+      if (fragmentProps?.children) {
+        return childrenToString(fragmentProps.children);
+      }
+    }
+    
+    // Try to extract meaningful content from objects
+    try {
+      if (children && typeof children === 'object' && 'toString' in children) {
+        const str = (children as any).toString();
+        // Avoid "[object Object]" by checking if toString was overridden
+        if (str !== '[object Object]') {
+          return str;
+        }
+      }
+      // Format as JSON for debugging
+      return JSON.stringify(children, null, 2);
+    } catch {
+      return '[Invalid Object]';
+    }
+  }
+  
+  // Fallback
+  const str = String(children);
+  return str === '[object Object]' ? '[Complex Content]' : str;
+};
+
+// Debug function to inspect children content
+const debugChildren = (children: React.ReactNode, label: string = 'children') => {
+  if (process.env.NODE_ENV === 'development') {
+    console.log(`[MarkdownViewer Debug] ${label}:`, {
+      type: typeof children,
+      isArray: Array.isArray(children),
+      content: children,
+      stringified: childrenToString(children)
+    });
+  }
+};
+
+// Helper functions for markdown processing
+export const markdownHelpers = {
+  /**
+   * Kiểm tra xem text có chứa markdown bold format (**text**) không
+   */
+  hasBoldMarkdown: (text: string): boolean => {
+    const boldRegex = /\*\*(.+?)\*\*/g;
+    return boldRegex.test(text);
   },
-  h2: {
-    color: COLORS.text.heading,
-    fontSize: '1.5rem',
-    fontWeight: 600,
-    marginBottom: SPACING.md,
-    marginTop: SPACING.lg,
-    lineHeight: 1.3,
+
+  /**
+   * Trích xuất tất cả bold text từ markdown
+   */
+  extractBoldText: (text: string): string[] => {
+    const boldRegex = /\*\*(.+?)\*\*/g;
+    const matches = [];
+    let match;
+    
+    while ((match = boldRegex.exec(text)) !== null) {
+      matches.push(match[1]); // match[1] chứa text bên trong **
+    }
+    
+    return matches;
   },
-  h3: {
-    color: COLORS.text.heading,
-    fontSize: '1.25rem',
-    fontWeight: 600,
-    marginBottom: SPACING.sm,
-    marginTop: SPACING.md,
-    lineHeight: 1.4,
+
+  /**
+   * Thay thế markdown bold với HTML bold tags
+   */
+  convertBoldMarkdownToHtml: (text: string): string => {
+    return text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
   },
-  paragraph: {
-    color: COLORS.text.primary,
-    fontSize: '1rem',
-    marginBottom: SPACING.md,
-    lineHeight: 1.7,
+
+  /**
+   * Đếm số lượng bold text trong markdown
+   */
+  countBoldText: (text: string): number => {
+    const boldRegex = /\*\*(.+?)\*\*/g;
+    const matches = text.match(boldRegex);
+    return matches ? matches.length : 0;
   },
-  inlineCode: {
-    background: COLORS.background.secondary,
-    color: COLORS.primary[600],
-    padding: '2px 6px',
-    borderRadius: RADIUS.xs,
-    fontSize: '0.9em',
-    fontFamily: 'Monaco, Consolas, "Courier New", monospace',
-    border: `1px solid ${COLORS.border.light}`,
+
+  /**
+   * Remove bold markdown syntax, keep only text
+   */
+  removeBoldMarkdown: (text: string): string => {
+    return text.replace(/\*\*(.+?)\*\*/g, '$1');
   },
-  codeBlock: {
-    display: 'block',
-    background: COLORS.background.secondary,
-    color: COLORS.text.primary,
-    padding: SPACING.md,
-    borderRadius: RADIUS.md,
-    fontSize: '0.9em',
-    fontFamily: 'Monaco, Consolas, "Courier New", monospace',
-    overflow: 'auto',
-    border: `1px solid ${COLORS.border.light}`,
+
+  /**
+   * Hàm chuyển đổi mảng JSON thành bảng Markdown
+   */
+  arrayToMarkdownTable: (jsonArray: any[]): string => {
+    if (!Array.isArray(jsonArray) || jsonArray.length === 0) return "";
+
+    const headers = Object.keys(jsonArray[0]);
+    let markdownTable = `| ${headers.join(" | ")} |\n| ${headers.map(() => "---").join(" | ")} |\n`;
+
+    jsonArray.forEach(item => {
+      const row = headers.map(header => String(item[header] || "")).join(" | ");
+      markdownTable += `| ${row} |\n`;
+    });
+
+    return markdownTable;
   },
-  pre: {
-    background: COLORS.background.secondary,
-    padding: SPACING.md,
-    borderRadius: RADIUS.md,
-    overflow: 'auto',
-    marginBottom: SPACING.md,
-    border: `1px solid ${COLORS.border.light}`,
-  },
-  list: {
-    marginBottom: SPACING.md,
-    paddingLeft: SPACING.lg,
-    color: COLORS.text.primary,
-  },
-  listItem: {
-    marginBottom: SPACING.xs,
-    color: COLORS.text.primary,
-  },
-  blockquote: {
-    borderLeft: `4px solid ${COLORS.primary[500]}`,
-    paddingLeft: SPACING.md,
-    marginLeft: 0,
-    marginBottom: SPACING.md,
-    fontStyle: 'italic',
-    color: COLORS.text.secondary,
-    background: COLORS.background.secondary,
-    padding: SPACING.md,
-    borderRadius: `0 ${RADIUS.md} ${RADIUS.md} 0`,
-  },
-  link: {
-    color: COLORS.primary[500],
-    textDecoration: 'none',
-  },
-  table: {
-    width: '100%',
-    borderCollapse: 'collapse' as const,
-    marginBottom: SPACING.md,
-    border: `1px solid ${COLORS.border.light}`,
-  },
-  tableHeader: {
-    background: COLORS.background.secondary,
-    padding: `${SPACING.sm} ${SPACING.md}`,
-    textAlign: 'left' as const,
-    fontWeight: 600,
-    color: COLORS.text.heading,
-    border: `1px solid ${COLORS.border.light}`,
-  },
-  tableCell: {
-    padding: `${SPACING.sm} ${SPACING.md}`,
-    color: COLORS.text.primary,
-    border: `1px solid ${COLORS.border.light}`,
-  },
+
+  /**
+   * Advanced function to parse markdown and extract info
+   */
+  parseMarkdownBold: (text: string) => {
+    const boldTexts = markdownHelpers.extractBoldText(text);
+    const hasBold = markdownHelpers.hasBoldMarkdown(text);
+    const count = markdownHelpers.countBoldText(text);
+    const plainText = markdownHelpers.removeBoldMarkdown(text);
+    
+    return {
+      hasBold,
+      boldTexts,
+      count,
+      plainText,
+      originalText: text,
+    };
+  }
 };
 
 export default MarkdownViewer;

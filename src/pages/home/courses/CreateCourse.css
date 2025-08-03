@@ -1,0 +1,103 @@
+/* CreateCourse.css */
+
+.create-course-form .form-step-card {
+  border: none;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  border-radius: 16px;
+  transition: all 0.3s ease;
+}
+
+.create-course-form .form-step-card:hover {
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  transform: translateY(-2px);
+}
+
+.create-course-form .form-step-card .ant-card-head {
+  border-bottom: 2px solid #f5f5f5;
+  border-radius: 16px 16px 0 0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.create-course-form .form-step-card .ant-card-head-title {
+  color: white;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.create-course-card .ant-form-item-label > label {
+  font-weight: 600;
+  color: #262626;
+  font-size: 14px;
+}
+
+.create-course-card .ant-input,
+.create-course-card .ant-input-number,
+.create-course-card .ant-select-selector {
+  border-radius: 12px;
+  border: 2px solid #f0f0f0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 14px;
+}
+
+.create-course-card .ant-input:focus,
+.create-course-card .ant-input-number:focus,
+.create-course-card .ant-select-focused .ant-select-selector {
+  border-color: #667eea;
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+  transform: scale(1.02);
+}
+
+.create-course-card .ant-steps-item-icon {
+  border-color: #d9d9d9;
+  font-size: 16px;
+}
+
+.create-course-card .ant-steps-item-finish .ant-steps-item-icon {
+  border-color: #667eea;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.create-course-card .ant-steps-item-process .ant-steps-item-icon {
+  border-color: #667eea;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.create-course-card .ant-progress-bg {
+  background: linear-gradient(90deg, #667eea, #764ba2);
+}
+
+.create-course-card .ant-btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4);
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.create-course-card .ant-btn-primary:hover {
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.5);
+}
+
+.create-course-card .ant-card-head-title {
+  font-weight: 600;
+  color: #667eea;
+}
+
+/* Animation for form steps */
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.form-step-card {
+  animation: slideInRight 0.5s ease-out;
+}

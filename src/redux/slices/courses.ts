@@ -175,6 +175,24 @@ export const getMyCourses = createAsyncThunk(
     }
 );
 
+export const createCourse = createAsyncThunk(
+    'courses/createCourse',
+    async (course: Partial<CourseType>) => {
+        try {
+            console.log('Creating course with data:', course);
+            const result = await axios.post(`${envConfig.serverURL}/courses`, course);
+            console.log('Course created successfully:', result.data);
+            showNotification(ToasterType.success, 'Course created successfully');
+            return result.data.data;
+        } catch (error: Error | any) {
+            console.error('Error creating course:', error);
+            const errorMessage: string = error.response ? error.response.data.message : 'Something went wrong';
+            showNotification(ToasterType.error, 'Failed to create course', errorMessage);
+            throw error;
+        }
+    }
+);
+
 export const CoursesSlice = createSlice({
     name: 'courses',
     initialState,
@@ -286,6 +304,23 @@ export const CoursesSlice = createSlice({
                 state.myCourses = action.payload;
             })
             .addCase(getMyCourses.rejected, (state, action) => {
+                state.loading = false;
+                state.errorMessage = action.error.message || 'Something went wrong';
+            })
+            // createCourse
+            .addCase(createCourse.pending, (state) => {
+                state.loading = true;
+                state.errorMessage = '';
+            })
+            .addCase(createCourse.fulfilled, (state, action) => {
+                state.loading = false;
+                // Optionally add the new course to the courses array
+                if (state.courses) {
+                    state.courses.unshift(action.payload);
+                    state.totalCourse += 1;
+                }
+            })
+            .addCase(createCourse.rejected, (state, action) => {
                 state.loading = false;
                 state.errorMessage = action.error.message || 'Something went wrong';
             });

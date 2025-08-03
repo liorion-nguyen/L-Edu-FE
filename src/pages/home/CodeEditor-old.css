@@ -1,0 +1,256 @@
+/* Code Editor Responsive Styles */
+.code-editor-container {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .code-editor-container .ant-tabs-tab {
+    padding: 8px 12px !important;
+    font-size: 12px;
+  }
+  
+  .code-editor-container .ant-tabs-tab-btn {
+    font-size: 12px;
+  }
+  
+  .code-editor-container .ant-card-head-title {
+    font-size: 14px;
+  }
+  
+  .code-editor-container .ant-space-item {
+    font-size: 12px;
+  }
+  
+  .code-editor-container .ant-btn {
+    font-size: 12px;
+    padding: 4px 8px;
+  }
+}
+
+/* Tablet Responsive */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .code-editor-container .ant-row {
+    flex-wrap: wrap;
+  }
+  
+  .code-editor-container .ant-col:last-child {
+    margin-top: 12px;
+    width: 100%;
+    text-align: left !important;
+  }
+}
+
+/* Monaco Editor Responsive */
+.monaco-editor {
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace !important;
+}
+
+/* Custom scrollbar for output */
+.code-editor-output::-webkit-scrollbar {
+  width: 8px;
+}
+
+.code-editor-output::-webkit-scrollbar-track {
+  background: #2d2d2d;
+  border-radius: 4px;
+}
+
+.code-editor-output::-webkit-scrollbar-thumb {
+  background: #555;
+  border-radius: 4px;
+}
+
+.code-editor-output::-webkit-scrollbar-thumb:hover {
+  background: #777;
+}
+
+/* Tab close button hover effect */
+.ant-tabs-tab .ant-tabs-tab-remove {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.ant-tabs-tab:hover .ant-tabs-tab-remove {
+  opacity: 1;
+}
+
+/* Code Editor Animations */
+.code-editor-fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Language selector hover effect */
+.ant-select-selector:hover {
+  border-color: #7FB67F !important;
+  box-shadow: 0 0 0 2px rgba(127, 182, 127, 0.1) !important;
+}
+
+/* Run button glow effect */
+.ant-btn-primary:hover {
+  box-shadow: 0 0 12px rgba(24, 144, 255, 0.3) !important;
+}
+
+/* File tab indicators */
+.file-tab-modified {
+  position: relative;
+}
+
+.file-tab-modified::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 8px;
+  height: 8px;
+  background: #faad14;
+  border-radius: 50%;
+  border: 2px solid #fff;
+}
+
+/* Loading spinner for code execution */
+.code-running-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.code-running-spinner {
+  width: 12px;
+  height: 12px;
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid #1890ff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Fullscreen mode styles */
+.code-editor-fullscreen {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  z-index: 9999 !important;
+  background: #fff !important;
+}
+
+/* Output panel syntax highlighting */
+.output-error {
+  color: #ff4d4f;
+  font-weight: 500;
+}
+
+.output-success {
+  color: #52c41a;
+}
+
+.output-warning {
+  color: #faad14;
+}
+
+.output-info {
+  color: #1890ff;
+}
+
+/* Feature card hover effects */
+.feature-card {
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.feature-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Code template preview */
+.code-template-preview {
+  max-height: 200px;
+  overflow-y: auto;
+  background: #f5f5f5;
+  border: 1px solid #d9d9d9;
+  border-radius: 6px;
+  padding: 12px;
+  font-family: 'Monaco', 'Consolas', 'Courier New', monospace;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+/* New file modal enhancements */
+.new-file-modal .ant-modal-body {
+  padding: 24px;
+}
+
+.new-file-modal .ant-space-vertical {
+  width: 100%;
+}
+
+.new-file-modal .ant-input,
+.new-file-modal .ant-select {
+  border-radius: 6px;
+}
+
+/* Status bar */
+.editor-status-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 16px;
+  background: #f0f0f0;
+  border-top: 1px solid #d9d9d9;
+  font-size: 12px;
+  color: #666;
+}
+
+.editor-status-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Resize handle for split panels */
+.resize-handle {
+  width: 4px;
+  background: #e8e8e8;
+  cursor: col-resize;
+  transition: background 0.2s ease;
+}
+
+.resize-handle:hover {
+  background: #1890ff;
+}
+
+/* Breadcrumb navigation */
+.editor-breadcrumb {
+  padding: 8px 16px;
+  background: #fafafa;
+  border-bottom: 1px solid #e8e8e8;
+  font-size: 12px;
+}
+
+.editor-breadcrumb .ant-breadcrumb-link {
+  color: #666;
+}
+
+.editor-breadcrumb .ant-breadcrumb-link:hover {
+  color: #1890ff;
+}

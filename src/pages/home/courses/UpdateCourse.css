@@ -1,0 +1,110 @@
+/* UpdateCourse.css */
+
+.update-course-form .form-section-card {
+  border: none;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  border-radius: 16px;
+  margin-bottom: 24px;
+  transition: all 0.3s ease;
+}
+
+.update-course-form .form-section-card:hover {
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  transform: translateY(-2px);
+}
+
+.update-course-form .form-section-card .ant-card-head {
+  border-bottom: 2px solid #f5f5f5;
+  border-radius: 16px 16px 0 0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.update-course-form .form-section-card .ant-card-head-title {
+  color: white;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.update-course-card .ant-form-item-label > label {
+  font-weight: 600;
+  color: #262626;
+  font-size: 14px;
+}
+
+.update-course-card .ant-input,
+.update-course-card .ant-input-number,
+.update-course-card .ant-select-selector {
+  border-radius: 12px;
+  border: 2px solid #f0f0f0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 14px;
+}
+
+.update-course-card .ant-input:focus,
+.update-course-card .ant-input-number:focus,
+.update-course-card .ant-select-focused .ant-select-selector {
+  border-color: #667eea;
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+  transform: scale(1.02);
+}
+
+.update-course-card .ant-progress-bg {
+  background: linear-gradient(90deg, #667eea, #764ba2);
+}
+
+.update-course-card .ant-btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4);
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.update-course-card .ant-btn-primary:hover {
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.5);
+}
+
+.update-course-card .ant-card-head-title {
+  font-weight: 600;
+  color: #667eea;
+}
+
+/* Animation for form sections */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.form-section-card {
+  animation: fadeInUp 0.5s ease-out;
+}
+
+.update-course-card .ant-btn-primary:disabled {
+  background: #f5f5f5;
+  border-color: #d9d9d9;
+  color: #00000040;
+  transform: none;
+  box-shadow: none;
+}
+
+.update-course-card .ant-tag {
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.update-course-card .ant-input-group .ant-input-number {
+  border-right: none;
+}
+
+.update-course-card .ant-input-group .ant-select .ant-select-selector {
+  border-left: none;
+}

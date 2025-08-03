@@ -13,6 +13,7 @@ type LoginFailureAction = PayloadAction<string>;
 type ForgotPasswordFailureAction = PayloadAction<string>;
 type ResetPasswordFailureAction = PayloadAction<string>;
 type SetUser = PayloadAction<UserType>;
+type SetAuth = PayloadAction<{ access_token: string; refresh_token: string; isAuthenticated: boolean }>;
 
 const initialState: AuthenticationState = {
     loading: false,
@@ -211,6 +212,11 @@ export const authenticationSlice = createSlice({
             state.loading = false;
             state.user = action.payload;
         },
+        // OAUTH AUTH
+        setAuth: (state: AuthenticationState, action: SetAuth) => {
+            state.loading = false;
+            state.isAuthenticated = action.payload.isAuthenticated;
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -299,4 +305,5 @@ export const authenticationSlice = createSlice({
     },
 });
 
+export const { setAuth } = authenticationSlice.actions;
 export default authenticationSlice.reducer;

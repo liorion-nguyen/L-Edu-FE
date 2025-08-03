@@ -1,122 +1,102 @@
 import React, { useEffect, useState } from "react";
 import {
-  Button,
-  Col,
+  Card,
   Form,
   Input,
   InputNumber,
-  Row,
   Select,
-  Card,
+  Button,
+  Row,
+  Col,
+  message,
+  Divider,
   Typography,
   Space,
-  Divider,
-  Tag,
   Progress,
-  message,
+  Tag,
   Tooltip
 } from "antd";
 import {
-  SaveOutlined,
-  EditOutlined,
   DollarOutlined,
+  PercentageOutlined,
+  ClockCircleOutlined,
   UserOutlined,
   BookOutlined,
-  ClockCircleOutlined,
   PictureOutlined,
-  PercentageOutlined
+  SaveOutlined,
+  PlusOutlined
 } from "@ant-design/icons";
-import { useSelector } from "react-redux";
-import { useParams, useNavigate } from "react-router-dom";
-import CustomSelectMultiple from "../../../components/common/CustomSelectMultiple";
-import ReturnPage from "../../../components/common/ReturnPage";
+import { useNavigate } from "react-router-dom";
 import { Currency, Status, TypeDiscount } from "../../../enum/course.enum";
 import { Role } from "../../../enum/user.enum";
 import SectionLayout from "../../../layouts/SectionLayout";
-import { getCourseById, getUsersCore, updateCourse } from "../../../redux/slices/courses";
-import { RootState, useDispatch } from "../../../redux/store";
+import ReturnPage from "../../../components/common/ReturnPage";
+import CustomSelectMultiple from "../../../components/common/CustomSelectMultiple";
+import { createCourse, getUsersCore } from "../../../redux/slices/courses";
+import { useDispatch } from "../../../redux/store";
 import { COLORS } from "../../../constants/colors";
-import './UpdateCourse.css';
+import './CreateCourse.css';
 
-const { Option } = Select;
 const { Title, Text, Paragraph } = Typography;
 const { TextArea } = Input;
+const { Option } = Select;
 
-type OptionsType = {
+interface OptionsType {
   label: string;
   value: string;
-};
+}
 
-const UpdateCourse: React.FC = () => {
-  const { id } = useParams();
+interface CourseFormData {
+  name: string;
+  description: string;
+  price: {
+    currency: Currency;
+    number: number;
+  };
+  discount: {
+    type: TypeDiscount;
+    number: number;
+  };
+  instructorId: string;
+  category: string;
+  cover: string;
+  students: string[];
+  duration: number;
+  status: Status;
+}
+
+const CreateCourse: React.FC = () => {
   const [form] = Form.useForm();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { course, loading } = useSelector((state: RootState) => state.courses);
   
+  const [loading, setLoading] = useState(false);
   const [optionsStudents, setOptionsStudents] = useState<OptionsType[]>([]);
   const [optionsTeachers, setOptionsTeachers] = useState<OptionsType[]>([]);
   const [formProgress, setFormProgress] = useState(0);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    if (course) {
-      form.setFieldsValue({
-        name: course.name,
-        description: course.description,
-        price: {
-          currency: course.price?.currency || Currency.VND,
-          number: course.price?.number || 0,
-        },
-        discount: {
-          type: course.discount?.type || TypeDiscount.PERCENT,
-          number: course.discount?.number || 0,
-        },
-        category: course.category || "",
-        cover: course.cover || "",
-        duration: course.duration || 0,
-        status: course.status || Status.ACTIVE,
-        instructorId: course.instructorId,
-        students: course.students || [],
-      });
-      calculateProgress();
-    }
-  }, [course, form]);
-
-  const calculateProgress = () => {
-    const values = form.getFieldsValue();
-    const requiredFields = ['name', 'description', 'duration', 'instructorId'];
-    const completedFields = requiredFields.filter(field => {
-      const value = values[field];
-      return value && value !== '' && value !== 0;
-    });
+    fetchUsersData();
     
-    const progress = (completedFields.length / requiredFields.length) * 100;
-    setFormProgress(progress);
-  };
+    // Set default values for form
+    const defaultValues = {
+      price: {
+        currency: Currency.VND,
+        number: 0
+      },
+      discount: {
+        type: TypeDiscount.PERCENT,
+        number: 0
+      },
+      status: Status.ACTIVE,
+      students: []
+    };
+    
+    form.setFieldsValue(defaultValues);
+  }, [dispatch, form]);
 
-  const onFinish = async (values: any) => {
-    setIsSubmitting(true);
+  const fetchUsersData = async () => {
     try {
-      await dispatch(updateCourse({ id: id as string, course: values }));
-      message.success("Cập nhật khóa học thành công!");
-      navigate("/course");
-    } catch (error) {
-      message.error("Có lỗi xảy ra khi cập nhật khóa học");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  useEffect(() => {
-    if (!id) return;
-    fetchData();
-  }, [id, dispatch]);
-
-  const fetchData = async () => {
-    try {
-      dispatch(getCourseById(id as string));
-      
       const [studentsResult, teachersResult] = await Promise.all([
         dispatch(getUsersCore(Role.STUDENT)),
         dispatch(getUsersCore(Role.TEACHER))
@@ -127,61 +107,105 @@ const UpdateCourse: React.FC = () => {
         const teachers = teachersResult.payload;
 
         if (students) {
-          const uniqueOptionsStudent = students.map((item: any) => ({
-            label: `${item.fullName} (${item.email})`,
-            value: item._id
+          const studentOptions = students.map((student: any) => ({
+            label: `${student.fullName} (${student.email})`,
+            value: student._id
           }));
-          setOptionsStudents(uniqueOptionsStudent);
+          setOptionsStudents(studentOptions);
         }
 
         if (teachers) {
-          const uniqueOptionsTeacher = teachers.map((item: any) => ({
-            label: `${item.fullName} (${item.email})`,
-            value: item._id
+          const teacherOptions = teachers.map((teacher: any) => ({
+            label: `${teacher.fullName} (${teacher.email})`,
+            value: teacher._id
           }));
-          setOptionsTeachers(uniqueOptionsTeacher);
+          setOptionsTeachers(teacherOptions);
         }
       }
     } catch (error) {
-      message.error("Không thể tải dữ liệu khóa học");
+      message.error("Không thể tải dữ liệu người dùng");
     }
   };
 
-  if (!course && !loading) {
-    return (
-      <SectionLayout title="Khóa học không tồn tại">
-        <div style={{ textAlign: 'center', padding: '60px 0' }}>
-          <Title level={3}>Khóa học không tồn tại</Title>
-          <Button type="primary" onClick={() => navigate('/course')}>
-            Quay lại danh sách khóa học
-          </Button>
-        </div>
-      </SectionLayout>
-    );
-  }
+  const handleFormChange = () => {
+    const values = form.getFieldsValue();
+    console.log("Form values changed:", values);
+    
+    // Calculate form completion progress
+    const requiredFields = ['name', 'description', 'duration', 'instructorId'];
+    const completedFields = requiredFields.filter(field => {
+      const value = values[field];
+      return value && value !== '' && value !== 0;
+    });
+    
+    const progress = (completedFields.length / requiredFields.length) * 100;
+    setFormProgress(progress);
+  };
+
+  const onFinish = async (values: CourseFormData) => {
+    console.log("Form values received:", values);
+    
+    // Validate all required fields before submitting
+    if (!values.name || !values.description || !values.duration || !values.instructorId) {
+      message.error("Vui lòng điền đầy đủ thông tin bắt buộc!");
+      return;
+    }
+    
+    setLoading(true);
+    try {
+      const courseData = {
+        name: values.name,
+        description: values.description,
+        price: {
+          currency: values.price?.currency || Currency.VND,
+          number: values.price?.number || 0
+        },
+        discount: {
+          type: values.discount?.type || TypeDiscount.PERCENT,
+          number: values.discount?.number || 0
+        },
+        instructorId: values.instructorId,
+        category: values.category,
+        cover: values.cover || "https://example.com/default-course-image.jpg",
+        students: values.students || [],
+        duration: values.duration,
+        status: values.status || Status.ACTIVE
+      };
+
+      console.log("Data to be sent:", courseData);
+      
+      await dispatch(createCourse(courseData));
+      message.success("Tạo khóa học thành công!");
+      navigate("/course");
+    } catch (error) {
+      console.error("Error creating course:", error);
+      message.error("Có lỗi xảy ra khi tạo khóa học");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <SectionLayout title="Cập nhật khóa học">
+    <SectionLayout title="Tạo khóa học mới">
       <div style={{ margin: "40px 0" }}>
         <ReturnPage dir="center" />
         
         <Row justify="center">
-          <Col xs={24} sm={20} md={16} lg={14} xl={12}>
+          <Col xs={24} sm={20} md={18} lg={16} xl={14}>
             <Card 
-              className="update-course-card"
+              className="create-course-card"
               style={{ 
                 borderRadius: "16px",
                 boxShadow: "0 8px 32px rgba(0,0,0,0.1)",
                 border: "none"
               }}
-              loading={loading}
             >
               <div style={{ marginBottom: "32px", textAlign: "center" }}>
                 <Title level={2} style={{ color: COLORS.primary[600], marginBottom: "8px" }}>
-                  <EditOutlined /> Cập nhật khóa học
+                  <PlusOutlined /> Tạo khóa học mới
                 </Title>
                 <Paragraph style={{ fontSize: "16px", color: COLORS.text.secondary }}>
-                  Chỉnh sửa thông tin khóa học "{course?.name}"
+                  Điền thông tin để tạo khóa học chuyên nghiệp
                 </Paragraph>
                 
                 <div style={{ margin: "24px 0" }}>
@@ -203,9 +227,9 @@ const UpdateCourse: React.FC = () => {
                 form={form} 
                 layout="vertical" 
                 onFinish={onFinish}
-                onValuesChange={calculateProgress}
+                onValuesChange={handleFormChange}
                 size="large"
-                className="update-course-form"
+                className="create-course-form"
               >
                 {/* Thông tin cơ bản */}
                 <Card 
@@ -215,13 +239,13 @@ const UpdateCourse: React.FC = () => {
                       <span>Thông tin cơ bản</span>
                     </Space>
                   } 
-                  className="form-section-card"
+                  className="form-step-card"
                   style={{ marginBottom: "24px" }}
                 >
                   <Row gutter={[24, 16]}>
                     <Col span={24}>
                       <Form.Item 
-                        label={<Text strong>Tên khóa học</Text>} 
+                        label={<Text strong><span style={{color: '#ff4d4f'}}>*</span> Tên khóa học</Text>} 
                         name="name" 
                         rules={[{ required: true, message: "Vui lòng nhập tên khóa học!" }]}
                       >
@@ -235,22 +259,22 @@ const UpdateCourse: React.FC = () => {
                     
                     <Col span={24}>
                       <Form.Item 
-                        label={<Text strong>Mô tả khóa học</Text>} 
+                        label={<Text strong><span style={{color: '#ff4d4f'}}>*</span> Mô tả khóa học</Text>} 
                         name="description" 
                         rules={[{ required: true, message: "Vui lòng nhập mô tả!" }]}
                       >
                         <TextArea 
-                          rows={4} 
+                          rows={6} 
                           placeholder="Mô tả chi tiết về khóa học..."
-                          showCount
-                          maxLength={500}
+                          showCount={false}
+                          style={{ resize: 'vertical' }}
                         />
                       </Form.Item>
                     </Col>
 
                     <Col span={12}>
                       <Form.Item 
-                        label={<Text strong>Danh mục</Text>} 
+                        label={<Text strong><span style={{color: '#ff4d4f'}}>*</span> Danh mục</Text>} 
                         name="category"
                         rules={[{ required: true, message: "Vui lòng nhập danh mục!" }]}
                       >
@@ -263,7 +287,7 @@ const UpdateCourse: React.FC = () => {
 
                     <Col span={12}>
                       <Form.Item 
-                        label={<Text strong>Thời lượng (buổi học)</Text>} 
+                        label={<Text strong><span style={{color: '#ff4d4f'}}>*</span> Thời lượng (buổi học)</Text>} 
                         name="duration" 
                         rules={[{ required: true, message: "Vui lòng nhập thời lượng!" }]}
                       >
@@ -301,7 +325,7 @@ const UpdateCourse: React.FC = () => {
                       <span>Giá cả & Trạng thái</span>
                     </Space>
                   } 
-                  className="form-section-card"
+                  className="form-step-card"
                   style={{ marginBottom: "24px" }}
                 >
                   <Row gutter={[24, 16]}>
@@ -321,7 +345,7 @@ const UpdateCourse: React.FC = () => {
                               formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                             />
                           </Form.Item>
-                          <Form.Item name={["price", "currency"]} noStyle>
+                          <Form.Item name={["price", "currency"]} noStyle initialValue={Currency.VND}>
                             <Select size="large" style={{ width: "25%" }}>
                               <Option value={Currency.VND}>VND</Option>
                               <Option value={Currency.USD}>USD</Option>
@@ -342,7 +366,7 @@ const UpdateCourse: React.FC = () => {
                               placeholder="Giá trị giảm giá"
                             />
                           </Form.Item>
-                          <Form.Item name={["discount", "type"]} noStyle>
+                          <Form.Item name={["discount", "type"]} noStyle initialValue={TypeDiscount.PERCENT}>
                             <Select size="large" style={{ width: "25%" }}>
                               <Option value={TypeDiscount.PERCENT}>
                                 <Space>
@@ -365,7 +389,8 @@ const UpdateCourse: React.FC = () => {
                     <Col span={24}>
                       <Form.Item 
                         label={<Text strong>Trạng thái khóa học</Text>} 
-                        name="status"
+                        name="status" 
+                        initialValue={Status.ACTIVE}
                       >
                         <Select size="large">
                           <Option value={Status.ACTIVE}>
@@ -388,42 +413,37 @@ const UpdateCourse: React.FC = () => {
                       <span>Người tham gia</span>
                     </Space>
                   } 
-                  className="form-section-card"
+                  className="form-step-card"
                   style={{ marginBottom: "24px" }}
                 >
                   <Row gutter={[24, 16]}>
                     <Col span={24}>
                       <Form.Item 
-                        label={<Text strong>Giảng viên</Text>} 
+                        label={<Text strong><span style={{color: '#ff4d4f'}}>*</span> Giảng viên</Text>} 
                         name="instructorId"
                         rules={[{ required: true, message: "Vui lòng chọn giảng viên!" }]}
                       >
-                        {optionsTeachers.length > 0 && (
-                          <Select
-                            size="large"
-                            showSearch
-                            placeholder="Chọn giảng viên cho khóa học"
-                            filterOption={(input, option) =>
-                              (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-                            }
-                            options={optionsTeachers}
-                          />
-                        )}
+                        <Select
+                          size="large"
+                          showSearch
+                          placeholder="Chọn giảng viên cho khóa học"
+                          filterOption={(input, option) =>
+                            (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                          }
+                          options={optionsTeachers}
+                        />
                       </Form.Item>
                     </Col>
 
                     <Col span={24}>
                       <Form.Item 
-                        label={<Text strong>Học viên</Text>} 
+                        label={<Text strong>Học viên (tùy chọn)</Text>} 
                         name="students"
                       >
-                        {optionsStudents.length > 0 && (
-                          <CustomSelectMultiple
-                            placeholder="Chọn học viên tham gia khóa học"
-                            options={optionsStudents}
-                            defaultValue={course?.students}
-                          />
-                        )}
+                        <CustomSelectMultiple
+                          placeholder="Chọn học viên tham gia khóa học"
+                          options={optionsStudents}
+                        />
                       </Form.Item>
                     </Col>
                   </Row>
@@ -442,12 +462,12 @@ const UpdateCourse: React.FC = () => {
                       </Button>
                       <Button 
                         type="primary" 
-                        htmlType="submit" 
-                        loading={isSubmitting}
+                        htmlType="submit"
+                        loading={loading}
                         size="large"
                         icon={<SaveOutlined />}
                       >
-                        Cập nhật khóa học
+                        Tạo khóa học
                       </Button>
                     </Space>
                   </Col>
@@ -461,4 +481,4 @@ const UpdateCourse: React.FC = () => {
   );
 };
 
-export default UpdateCourse;
+export default CreateCourse;

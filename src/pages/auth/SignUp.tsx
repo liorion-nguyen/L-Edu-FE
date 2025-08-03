@@ -136,7 +136,7 @@ const styles: {
         borderRadius: RADIUS.xl,
         padding: SPACING['2xl'],
         width: "100%",
-        maxWidth: "400px",
+        maxWidth: "400px"
     },
     title: {
         color: COLORS.text.heading,

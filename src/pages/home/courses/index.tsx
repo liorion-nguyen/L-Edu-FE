@@ -1,4 +1,4 @@
-import { EditOutlined, LockOutlined, LoginOutlined, SearchOutlined } from "@ant-design/icons";
+import { EditOutlined, LockOutlined, LoginOutlined, SearchOutlined, PlusOutlined } from "@ant-design/icons";
 import { Avatar, Button, Card, Col, Input, Row, Skeleton, Space, Tooltip, Typography } from "antd";
 import { CSSProperties, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -83,6 +83,8 @@ const CourseCard = ({ course }: { course: CourseType }) => {
 const Course = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const isAdmin = useIsAdmin();
   const { courses, totalCourse, loading } = useSelector((state: RootState) => state.courses);
 
   useEffect(() => {
@@ -102,13 +104,45 @@ const Course = () => {
     dispatch(getCourses({ page: 0, limit: 20, name: searchQuery }));
   };
 
+  const handleCreateCourse = () => {
+    navigate("/course/create");
+  };
+
   return (
     <SectionLayout title="Courses" style={styles.sectionLayout}>
       <Row gutter={[32, 32]} style={{ textAlign: "center", paddingBottom: "80px" }}>
         <Col span={24}>
-          <Title level={2} style={styles.sectionTitle}>
-            Our Courses
-          </Title>
+          <div style={styles.headerSection}>
+            <Title level={2} style={styles.sectionTitle}>
+              Our Courses
+            </Title>
+            {isAdmin && (
+              <Tooltip title="Chỉ Admin mới có quyền tạo khóa học mới">
+                <Button
+                  type="primary"
+                  size="large"
+                  icon={<PlusOutlined />}
+                  onClick={handleCreateCourse}
+                  style={styles.createButton}
+                  loading={loading}
+                  onMouseEnter={(e) => {
+                    if (!loading) {
+                      e.currentTarget.style.transform = "translateY(-2px)";
+                      e.currentTarget.style.boxShadow = "0 12px 32px rgba(102, 126, 234, 0.5)";
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!loading) {
+                      e.currentTarget.style.transform = "translateY(0)";
+                      e.currentTarget.style.boxShadow = "0 8px 24px rgba(102, 126, 234, 0.4)";
+                    }
+                  }}
+                >
+                  Tạo khóa học mới
+                </Button>
+              </Tooltip>
+            )}
+          </div>
           <Row justify="center" style={{ marginBottom: "40px" }}>
             <Col xs={24} sm={20} md={16} lg={12}>
               <Input.Search
@@ -155,9 +189,11 @@ export default Course;
 
 const styles: {
   sectionLayout: CSSProperties;
+  headerSection: CSSProperties;
   sectionTitle: CSSProperties;
   searchInput: CSSProperties;
   searchButton: CSSProperties;
+  createButton: CSSProperties;
   card: CSSProperties;
   cardCover: CSSProperties;
   thumbnail: CSSProperties;
@@ -174,11 +210,33 @@ const styles: {
     position: "relative",
     overflow: "hidden",
   },
+  headerSection: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: "30px",
+    flexWrap: "wrap",
+    gap: "16px",
+  },
   sectionTitle: {
     fontSize: "36px",
     fontWeight: 700,
     color: COLORS.text.heading,
-    marginBottom: "30px",
+    margin: 0,
+  },
+  createButton: {
+    background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+    borderColor: "transparent",
+    borderRadius: "12px",
+    fontWeight: 600,
+    fontSize: "16px",
+    height: "48px",
+    padding: "0 24px",
+    boxShadow: "0 8px 24px rgba(102, 126, 234, 0.4)",
+    transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
   },
   searchInput: {
     borderRadius: "8px",
