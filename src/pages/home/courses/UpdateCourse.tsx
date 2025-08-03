@@ -13,8 +13,7 @@ import {
   Divider,
   Tag,
   Progress,
-  message,
-  Tooltip
+  message
 } from "antd";
 import {
   SaveOutlined,

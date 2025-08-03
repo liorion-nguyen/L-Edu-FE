@@ -13,8 +13,7 @@ import {
   Typography,
   Space,
   Progress,
-  Tag,
-  Tooltip
+  Tag
 } from "antd";
 import {
   DollarOutlined,
