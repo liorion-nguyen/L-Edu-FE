@@ -27,7 +27,8 @@ const Login: React.FC = () => {
     setIsLoading(true);
     try {
       const response = await dispatch(login(values));
-      if (response.payload != "Unauthorized") {
+      console.log(response);
+      if (response.payload == true) {
         notification.success({
           message: "Đăng nhập thành công",
           description: "Chào mừng bạn trở lại!",
@@ -36,7 +37,7 @@ const Login: React.FC = () => {
       } else {
         notification.error({
           message: "Đăng nhập thất bại",
-          description: "Email hoặc mật khẩu không chính xác",
+          description: response.payload as string || "Email hoặc mật khẩu không chính xác",
         });
       }
     } catch (error: any) {

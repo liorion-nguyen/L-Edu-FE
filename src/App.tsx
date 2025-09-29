@@ -6,6 +6,8 @@ import Login from "./pages/auth/Login";
 import OAuthCallback from "./pages/auth/OAuthCallback";
 import SignUp from "./pages/auth/SignUp";
 import ForgotPassword from "./pages/auth/ForgotPassword";
+import ChangePassword from "./pages/auth/ChangePassword";
+import EmailVerification from "./pages/auth/EmailVerification";
 import LandingPage from "./pages/home/LandingPage";
 import AboutUs from "./pages/home/about";
 import Course from "./pages/home/courses";
@@ -27,6 +29,8 @@ function App() {
         <Route path="/login" element={<AuthLayout><Login /></AuthLayout>} />
         <Route path="/signup" element={<AuthLayout><SignUp /></AuthLayout>} />
         <Route path="/forgot-password" element={<AuthLayout><ForgotPassword /></AuthLayout>} />
+        <Route path="/change-password" element={<AuthLayout><ChangePassword /></AuthLayout>} />
+        <Route path="/email-verification/verify" element={<EmailVerification />} />
         <Route path="/auth/callback" element={<OAuthCallback />} />
 
         {/* Home Pages */}

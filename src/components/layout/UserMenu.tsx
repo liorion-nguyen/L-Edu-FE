@@ -1,4 +1,4 @@
-import { LogoutOutlined, UserOutlined } from "@ant-design/icons";
+import { LogoutOutlined, UserOutlined, LockOutlined } from "@ant-design/icons";
 import { Avatar, Dropdown, Menu } from "antd";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../../redux/slices/auth";
@@ -20,6 +20,9 @@ const UserMenu = ({ user }: { user: any }) => {
         {user?.fullName}
       </Menu.Item>
       <Menu.Divider />
+      <Menu.Item key="change-password" icon={<LockOutlined />} onClick={() => navigate('/change-password')}>
+        Đổi mật khẩu
+      </Menu.Item>
       <Menu.Item key="logout" icon={<LogoutOutlined />} onClick={handleLogout}>
         Đăng xuất
       </Menu.Item>

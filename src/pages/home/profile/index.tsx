@@ -16,13 +16,19 @@ const Profile: React.FC = () => {
     const { myCourses } = useSelector((state: RootState) => state.courses);
     const { id } = useParams();
     const [isModalOpen, setIsModalOpen] = useState(false);
-
     useEffect(() => {
         if (user && id !== user._id) {
             // Fetch user data if viewing another user's profile (not implemented here)
         }
         dispatch(getMyCourses());
     }, [id, user]);
+
+    // Cleanup modal states when component unmounts
+    useEffect(() => {
+        return () => {
+            setIsModalOpen(false);
+        };
+    }, []);
 
     const handleUpdateProfile = (updatedData: any) => {
         if (user) {
@@ -92,6 +98,7 @@ const Profile: React.FC = () => {
                                     type="primary"
                                     icon={<EditOutlined />}
                                     style={styles.editButton}
+                                    className="edit-button"
                                     block
                                     onClick={() => setIsModalOpen(true)}
                                 >
@@ -138,6 +145,11 @@ const Profile: React.FC = () => {
                 footer={null}
                 bodyStyle={styles.modalBody}
                 style={styles.modal}
+                destroyOnClose={true}
+                maskClosable={true}
+                closable={true}
+                centered={true}
+                width={500}
             >
                 {user && <UpdateProfile user={user} onSubmit={handleUpdateProfile} />}
             </Modal>
@@ -199,14 +211,6 @@ const styles: {
     icon: {
         color: "#4ECDC4", // Brighter teal for icons
     },
-    editButton: {
-        marginTop: 20,
-        background: "linear-gradient(45deg, #4ECDC4, #1A4A4A)", // Teal gradient
-        border: "none",
-        color: "#B0E0E6", // Pale teal for text
-        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.5), 0 0 10px rgba(78, 205, 196, 0.2)", // Teal glow
-        transition: "box-shadow 0.3s",
-    },
     sectionTitle: {
         color: "#B0E0E6", // Pale teal for text
         textShadow: "0 0 5px rgba(78, 205, 196, 0.3)", // Subtle teal glow
@@ -236,19 +240,20 @@ const styles: {
         marginTop: 10,
     },
     modal: {
-        background: "linear-gradient(135deg, #0A2E2E 0%, #1A4A4A 100%)", // Dark teal gradient
+        background: "rgba(255, 255, 255, 0.95)",
+        backdropFilter: "blur(10px)",
+        borderRadius: "16px",
+        boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+        zIndex: 1000,
     },
     modalTitle: {
-        color: "#B0E0E6", // Pale teal for title
-        textShadow: "0 0 5px rgba(78, 205, 196, 0.3)", // Subtle teal glow
+        color: "#1f2937",
+        fontWeight: 600,
+        fontSize: "18px",
     },
     modalBody: {
-        background: "linear-gradient(135deg, #0A2E2E 0%, #1A4A4A 100%)", // Dark teal gradient
-        position: "relative",
-        overflow: "hidden",
-        // Subtle circuit pattern in lighter teal
-        backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath d='M10 10h80v80H10z' fill='none' stroke='%234ECDC4' stroke-opacity='0.05' stroke-width='1'/%3E%3Cpath d='M20 20h60v60H20z' fill='none' stroke='%234ECDC4' stroke-opacity='0.05' stroke-width='1'/%3E%3C/svg%3E")`,
-        backgroundSize: "200px 200px",
+        background: "transparent",
+        padding: "0",
     },
 };
 
@@ -259,12 +264,19 @@ styleSheetProfile.innerText = `
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.6), 0 0 15px rgba(78, 205, 196, 0.4);
     transform: translateY(-5px);
   }
-  .course-card:hover {
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.6), 0 0 15px rgba(78, 205, 196, 0.4);
-    transform: translateY(-5px);
-  }
   .edit-button:hover {
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.6), 0 0 15px rgba(78, 205, 196, 0.4);
+    background: #059669;
+    box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3);
+    transform: translateY(-1px);
+  }
+  .ant-modal-mask {
+    z-index: 1000 !important;
+  }
+  .ant-modal-wrap {
+    z-index: 1000 !important;
+  }
+  .ant-modal {
+    z-index: 1001 !important;
   }
   .divider::before {
     content: '';
