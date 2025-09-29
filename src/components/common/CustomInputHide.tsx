@@ -49,6 +49,22 @@ const styles = {
         borderRadius: RADIUS.md,
         color: COLORS.text.primary,
         padding: `${SPACING.sm} ${SPACING.md}`,
+        height: "48px",
+        transition: "all 0.2s ease",
+        boxShadow: "none",
+        outline: "none",
+        "&:hover": {
+            borderColor: COLORS.primary[300],
+            boxShadow: `0 0 0 2px ${COLORS.primary[100]}`,
+        },
+        "&:focus": {
+            borderColor: COLORS.primary[500],
+            boxShadow: `0 0 0 3px ${COLORS.primary[100]}`,
+        },
+        "&:focus-visible": {
+            borderColor: COLORS.primary[500],
+            boxShadow: `0 0 0 3px ${COLORS.primary[100]}`,
+        },
     },
     error: {
         color: COLORS.status.error,

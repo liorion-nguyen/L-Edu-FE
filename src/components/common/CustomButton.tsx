@@ -41,7 +41,32 @@ const styles = {
     color: COLORS.text.inverse,
     width: "100%",
     height: "48px",
-    fontWeight: 500,
+    fontWeight: 600,
+    transition: "all 0.2s ease",
+    boxShadow: "none",
+    outline: "none",
+    cursor: "pointer",
+    "&:hover": {
+      background: COLORS.primary[600],
+      borderColor: COLORS.primary[700],
+      transform: "translateY(-1px)",
+      boxShadow: `0 4px 12px ${COLORS.primary[200]}`,
+    },
+    "&:active": {
+      transform: "translateY(0)",
+      boxShadow: `0 2px 8px ${COLORS.primary[200]}`,
+    },
+    "&:focus": {
+      boxShadow: `0 0 0 3px ${COLORS.primary[100]}`,
+    },
+    "&:disabled": {
+      background: COLORS.neutral[300],
+      borderColor: COLORS.neutral[400],
+      color: COLORS.neutral[500],
+      cursor: "not-allowed",
+      transform: "none",
+      boxShadow: "none",
+    },
   },
 };
 

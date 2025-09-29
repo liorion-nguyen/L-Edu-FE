@@ -48,7 +48,6 @@ export const login = createAsyncThunk(
         try {
             const result = await axios.post(`${envConfig.serverURL}/auth/login`, loginData);
             const data: LoginResponseType = result.data ? result.data.data : null;
-            showNotification(ToasterType.success, 'Login successful');
             if (data) {
                 localStorage.setItem(localStorageConfig.accessToken, data.access_token);
                 localStorage.setItem(localStorageConfig.refreshToken, data?.refresh_token || '');
@@ -60,7 +59,6 @@ export const login = createAsyncThunk(
             const errorMessage: string = error.response
                 ? error.response.data.message
                 : 'Something went wrong';
-            showNotification(ToasterType.error, 'Invalid email or password');
             return rejectWithValue(errorMessage);
         }
     }

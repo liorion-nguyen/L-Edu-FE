@@ -46,47 +46,60 @@ const SignUp = () => {
     };
 
     return (
-        <div style={styles.container}>
-            <Card style={styles.card}>
-                <Helmet>
-                    <title>Sign Up | L-Edu</title>
-                </Helmet>
+        <div style={styles.formContainer}>
+            <Helmet>
+                <title>Sign Up | L-Edu</title>
+            </Helmet>
 
+            <div style={styles.header}>
                 <Title level={1} style={styles.title}>
                     Đăng ký
                 </Title>
+                <Text style={styles.subtitle}>
+                    Tạo tài khoản mới để bắt đầu học tập
+                </Text>
+            </div>
 
-                <Formik
-                    initialValues={initialValues}
-                    validationSchema={SignUpValidationSchema}
-                    onSubmit={handleSubmit}
-                >
-                    {({ errors, touched }) => (
-                        <Form>
+            <Formik
+                initialValues={initialValues}
+                validationSchema={SignUpValidationSchema}
+                onSubmit={handleSubmit}
+            >
+                {({ errors, touched }) => (
+                    <Form style={styles.form}>
+                        <div style={styles.inputGroup}>
                             <Field name="fullName">
                                 {({ field }: any) => (
                                     <InputForm {...field} placeholder="Nhập họ và tên" />
                                 )}
                             </Field>
+                        </div>
 
+                        <div style={styles.inputGroup}>
                             <Field name="email">
                                 {({ field }: any) => (
                                     <InputForm {...field} placeholder="Nhập email" />
                                 )}
                             </Field>
+                        </div>
 
+                        <div style={styles.inputGroup}>
                             <Field name="password">
                                 {({ field }: any) => (
                                     <InputFormHide {...field} placeholder="Nhập mật khẩu" />
                                 )}
                             </Field>
+                        </div>
 
+                        <div style={styles.inputGroup}>
                             <Field name="cfPassword">
                                 {({ field }: any) => (
                                     <InputFormHide {...field} placeholder="Xác nhận mật khẩu" />
                                 )}
                             </Field>
+                        </div>
 
+                        <div style={styles.checkboxContainer}>
                             <Checkbox style={styles.checkbox}>
                                 <Text style={styles.checkboxLabel}>
                                     Tôi đồng ý với{" "}
@@ -95,25 +108,25 @@ const SignUp = () => {
                                     </Text>
                                 </Text>
                             </Checkbox>
+                        </div>
 
-                            <div style={{ display: "flex", justifyContent: "center" }}>
-                                <ButtonForm label="Đăng ký" type="submit" />
-                            </div>
+                        <div style={styles.buttonContainer}>
+                            <ButtonForm label="Đăng ký" type="submit" />
+                        </div>
 
-                            <Divider style={styles.divider}>Hoặc</Divider>
+                        <Divider style={styles.divider}>Hoặc</Divider>
 
-                            <div style={styles.loginLink}>
-                                <Text style={styles.text}>
-                                    Đã có tài khoản?{" "}
-                                    <Text style={styles.link}>
-                                        <a href="/login">Đăng nhập</a>
-                                    </Text>
+                        <div style={styles.loginLink}>
+                            <Text style={styles.text}>
+                                Đã có tài khoản?{" "}
+                                <Text style={styles.link}>
+                                    <a href="/login">Đăng nhập</a>
                                 </Text>
-                            </div>
-                        </Form>
-                    )}
-                </Formik>
-            </Card>
+                            </Text>
+                        </div>
+                    </Form>
+                )}
+            </Formik>
         </div>
     );
 };
@@ -123,47 +136,74 @@ export default SignUp;
 const styles: {
     [key: string]: React.CSSProperties;
 } = {
-    container: {
+    formContainer: {
         width: "100%",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        padding: "20px",
+        maxWidth: "400px",
+        margin: "0 auto",
+        paddingBottom: SPACING.md,
+        height: "100vh",
+        overflowY: "auto",
+        overflowX: "hidden",
     },
-    card: {
-        background: COLORS.background.primary,
-        border: `1px solid ${COLORS.border.light}`,
-        borderRadius: RADIUS.xl,
-        padding: SPACING['2xl'],
-        width: "100%",
-        maxWidth: "400px"
+    header: {
+        textAlign: "center",
+        marginBottom: SPACING.md,
     },
     title: {
         color: COLORS.text.heading,
         textAlign: "center",
-        marginBottom: SPACING.lg,
-        fontWeight: 600,
+        marginBottom: "4px",
+        fontWeight: 700,
+        fontSize: "22px",
+        letterSpacing: "-0.025em",
+    },
+    subtitle: {
+        color: COLORS.text.secondary,
+        fontSize: "13px",
+        fontWeight: 400,
+        textAlign: "center",
+    },
+    form: {
+        width: "100%",
+    },
+    inputGroup: {
+        marginBottom: "8px",
+    },
+    checkboxContainer: {
+        marginBottom: "12px",
     },
     checkbox: {
-        margin: `0 0 ${SPACING.lg} 0`,
+        margin: 0,
     },
     checkboxLabel: {
         color: COLORS.text.primary,
+        fontSize: "14px",
+        fontWeight: 400,
     },
     link: {
-        color: COLORS.primary[500],
+        color: COLORS.primary[600],
         fontWeight: 500,
+        textDecoration: "none",
+        transition: "color 0.2s ease",
+    },
+    buttonContainer: {
+        width: "100%",
+        marginBottom: "8px",
     },
     loginLink: {
         textAlign: "center",
-        marginTop: SPACING.lg,
+        marginTop: "8px",
     },
     text: {
         color: COLORS.text.secondary,
         fontSize: "14px",
+        fontWeight: 400,
     },
     divider: {
-        margin: `${SPACING.lg} 0`,
+        margin: "8px 0",
         borderColor: COLORS.border.light,
+        color: COLORS.text.muted,
+        fontSize: "14px",
+        fontWeight: 500,
     },
 };

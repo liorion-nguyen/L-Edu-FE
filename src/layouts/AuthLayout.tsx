@@ -59,7 +59,7 @@ const styles: {
     minHeight: "100vh",
     background: COLORS.background.secondary,
     position: "relative",
-    overflow: "hidden",
+    overflowY: "auto",
   },
   graphicSection: {
     width: "100%",
@@ -88,16 +88,17 @@ const styles: {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    justifyContent: "center",
-    gap: "40px",
-    padding: "40px",
+    justifyContent: "flex-start",
+    gap: "8px",
+    padding: "12px 24px",
     background: COLORS.background.primary,
     borderLeft: `1px solid ${COLORS.border.light}`,
+    height: "100vh",
   },
   logoContainer: {
     display: "flex",
     justifyContent: "center",
-    marginTop: "30px",
+    marginTop: "8px",
   },
   logo: {
     width: "80%",
@@ -106,6 +107,10 @@ const styles: {
   content: {
     width: "100%",
     maxWidth: "400px",
+    flex: 1,
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
   },
   footerText: {
     fontSize: "14px",

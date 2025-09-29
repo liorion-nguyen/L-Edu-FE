@@ -5,6 +5,7 @@ import NotFound from "./pages/NotFound";
 import Login from "./pages/auth/Login";
 import OAuthCallback from "./pages/auth/OAuthCallback";
 import SignUp from "./pages/auth/SignUp";
+import ForgotPassword from "./pages/auth/ForgotPassword";
 import LandingPage from "./pages/home/LandingPage";
 import AboutUs from "./pages/home/about";
 import Course from "./pages/home/courses";
@@ -25,6 +26,7 @@ function App() {
         {/* Authentication Pages */}
         <Route path="/login" element={<AuthLayout><Login /></AuthLayout>} />
         <Route path="/signup" element={<AuthLayout><SignUp /></AuthLayout>} />
+        <Route path="/forgot-password" element={<AuthLayout><ForgotPassword /></AuthLayout>} />
         <Route path="/auth/callback" element={<OAuthCallback />} />
 
         {/* Home Pages */}
