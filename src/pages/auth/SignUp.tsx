@@ -9,6 +9,7 @@ import { COLORS, RADIUS, SPACING } from "../../constants/colors";
 import { register } from "../../redux/slices/auth";
 import { useDispatch } from "../../redux/store";
 import { SignUpValidationSchema } from "../../validations/authValidation";
+import LoginMethods from "./components/LoginMethods";
 
 const { Title, Text } = Typography;
 
@@ -116,6 +117,10 @@ const SignUp = () => {
 
                         <Divider style={styles.divider}>Hoặc</Divider>
 
+                        <div style={styles.socialLogin}>
+                            <LoginMethods />
+                        </div>
+
                         <div style={styles.loginLink}>
                             <Text style={styles.text}>
                                 Đã có tài khoản?{" "}
@@ -205,5 +210,8 @@ const styles: {
         color: COLORS.text.muted,
         fontSize: "14px",
         fontWeight: 500,
+    },
+    socialLogin: {
+        marginBottom: "8px",
     },
 };

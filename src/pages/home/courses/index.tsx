@@ -181,6 +181,7 @@ const Course = () => {
           )}
         </Col>
       </Row>
+      
     </SectionLayout>
   );
 };

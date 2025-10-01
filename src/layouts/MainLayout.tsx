@@ -3,6 +3,7 @@ import { BackTop, Layout } from "antd";
 import React from "react";
 import Footer from "../components/layout/home/Footer";
 import Header from "../components/layout/home/Header";
+import GlobalChatbot from "../components/chatbot/GlobalChatbot";
 import { COLORS, RADIUS, SPACING } from "../constants/colors";
 
 const { Content } = Layout;
@@ -17,6 +18,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       <BackTop style={styles.backTop}>
         <ArrowUpOutlined />
       </BackTop>
+      <GlobalChatbot />
     </Layout>
   );
 };

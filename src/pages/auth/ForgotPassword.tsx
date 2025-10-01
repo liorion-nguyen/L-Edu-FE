@@ -233,3 +233,4 @@ const styles: {
 };
 
 export default ForgotPassword;
+

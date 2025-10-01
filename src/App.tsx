@@ -4,6 +4,7 @@ import MainLayout from "./layouts/MainLayout";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/auth/Login";
 import OAuthCallback from "./pages/auth/OAuthCallback";
+import GoogleCallback from "./pages/auth/GoogleCallback";
 import SignUp from "./pages/auth/SignUp";
 import ForgotPassword from "./pages/auth/ForgotPassword";
 import ChangePassword from "./pages/auth/ChangePassword";
@@ -20,11 +21,17 @@ import Document from "./pages/home/sessions/Document";
 import UpdateSession from "./pages/home/sessions/UpdateSession";
 import Video from "./pages/home/sessions/Video";
 import CodeEditorPage from "./pages/home/CodeEditorPage";
+import ChatbotTestPage from "./pages/test/ChatbotTestPage";
+import DebugAuthPage from "./pages/test/DebugAuthPage";
 
 function App() {
   return (
     <Router>
       <Routes>
+        {/* Test Pages */}
+        <Route path="/test/chatbot" element={<MainLayout><ChatbotTestPage /></MainLayout>} />
+        <Route path="/test/debug-auth" element={<MainLayout><DebugAuthPage /></MainLayout>} />
+        
         {/* Authentication Pages */}
         <Route path="/login" element={<AuthLayout><Login /></AuthLayout>} />
         <Route path="/signup" element={<AuthLayout><SignUp /></AuthLayout>} />
@@ -32,6 +39,7 @@ function App() {
         <Route path="/change-password" element={<AuthLayout><ChangePassword /></AuthLayout>} />
         <Route path="/email-verification/verify" element={<EmailVerification />} />
         <Route path="/auth/callback" element={<OAuthCallback />} />
+        <Route path="/auth/google/callback" element={<AuthLayout><GoogleCallback /></AuthLayout>} />
 
         {/* Home Pages */}
         <Route path="/" element={<MainLayout><LandingPage /></MainLayout>} />
@@ -46,6 +54,7 @@ function App() {
         <Route path="/course/video/:id" element={<MainLayout><Video /></MainLayout>} />
         <Route path="/session/addSession/:id" element={<MainLayout><AddSession /></MainLayout>} />
         <Route path="/session/updateSession/:id" element={<MainLayout><UpdateSession /></MainLayout>} />
+
 
         {/* 404 Not Found */}
         <Route path="*" element={<MainLayout><NotFound/></MainLayout>} />

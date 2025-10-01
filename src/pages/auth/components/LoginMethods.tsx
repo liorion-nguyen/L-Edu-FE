@@ -1,7 +1,7 @@
 import { Button, Row, Tooltip } from "antd";
 
 const LoginMethods = () => {
-    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
+    const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
     const handleGoogleLogin = () => {
         window.location.href = `${API_BASE_URL}/auth/google`;
