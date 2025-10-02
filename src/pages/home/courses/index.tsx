@@ -1,7 +1,7 @@
-import { EditOutlined, LockOutlined, LoginOutlined, SearchOutlined, PlusOutlined } from "@ant-design/icons";
-import { Avatar, Button, Card, Col, Input, Row, Skeleton, Space, Tooltip, Typography } from "antd";
+import { EditOutlined, LockOutlined, LoginOutlined, SearchOutlined, PlusOutlined, FilterOutlined, StarOutlined } from "@ant-design/icons";
+import { Avatar, Button, Card, Col, Input, Row, Skeleton, Space, Tooltip, Typography, Select, Rate } from "antd";
 import { CSSProperties, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslationWithRerender } from "../../../hooks/useLanguageChange";
 import { COLORS } from "../../../constants/colors";
 import { Mode } from "../../../enum/course.enum";
@@ -10,6 +10,7 @@ import { getCourses } from "../../../redux/slices/courses";
 import { RootState, useDispatch, useSelector } from "../../../redux/store";
 import { CourseType } from "../../../types/course";
 import { useIsAdmin } from "../../../utils/auth";
+import { categoryService, Category } from "../../../services/categoryService";
 
 const { Title, Text } = Typography;
 
@@ -55,6 +56,19 @@ const CourseCard = ({ course }: { course: CourseType }) => {
       <Title level={4} style={styles.nameCourse}>
         {course.name}
       </Title>
+      
+      {/* Rating Display */}
+      <div style={styles.ratingSection}>
+        <Rate 
+          disabled 
+          value={course.averageRating || 0} 
+          style={styles.rating}
+        />
+        <span style={styles.ratingText}>
+          ({course.totalReviews || 0} {t('reviews.reviews')})
+        </span>
+      </div>
+      
       <Space direction="horizontal" size="middle" style={{ width: "100%", justifyContent: "center" }}>
         <Button
           type="primary"
@@ -84,6 +98,10 @@ const CourseCard = ({ course }: { course: CourseType }) => {
 
 const Course = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const categoryId = searchParams.get('category');
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const isAdmin = useIsAdmin();
@@ -98,13 +116,58 @@ const Course = () => {
   }, []);
 
   useEffect(() => {
+    // Fetch categories for filter
+    const fetchCategories = async () => {
+      try {
+        const response = await categoryService.getCategories({ 
+          limit: 1000,
+          isActive: true 
+        });
+        setCategories(response.data);
+      } catch (error) {
+        console.error('Failed to fetch categories:', error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  useEffect(() => {
+    // Set selected category from URL params
+    if (categoryId) {
+      setSelectedCategory(categoryId);
+    } else {
+      setSelectedCategory(undefined);
+    }
+  }, [categoryId]);
+
+  useEffect(() => {
     if (totalCourse === 0) {
       dispatch(getCourses({}));
     }
   }, [totalCourse, dispatch]);
 
+  useEffect(() => {
+    // Fetch courses with category filter when categoryId changes
+    if (categoryId) {
+      dispatch(getCourses({ categoryId: categoryId }));
+    } else if (selectedCategory) {
+      dispatch(getCourses({ categoryId: selectedCategory }));
+    }
+  }, [categoryId, selectedCategory, dispatch]);
+
   const handleSearch = () => {
-    dispatch(getCourses({ page: 0, limit: 20, name: searchQuery }));
+    dispatch(getCourses({ page: 0, limit: 20, name: searchQuery, categoryId: selectedCategory }));
+  };
+
+  const handleCategoryFilter = (value: string | undefined) => {
+    setSelectedCategory(value);
+    if (value) {
+      setSearchParams({ category: value });
+    } else {
+      setSearchParams({});
+    }
+    dispatch(getCourses({ page: 0, limit: 20, name: searchQuery, categoryId: value }));
   };
 
   const handleCreateCourse = () => {
@@ -163,6 +226,41 @@ const Course = () => {
               />
             </Col>
           </Row>
+          <Row justify="center" style={{ marginBottom: "20px" }}>
+            <Col xs={24} sm={20} md={16} lg={12}>
+              <div style={styles.filterSection}>
+                <div style={styles.filterHeader}>
+                  <FilterOutlined style={styles.filterIcon} />
+                  <span style={styles.filterTitle}>{t('course.filterByCategory')}</span>
+                </div>
+                <Select
+                  placeholder={t('course.selectCategory')}
+                  value={selectedCategory}
+                  onChange={handleCategoryFilter}
+                  allowClear
+                  style={styles.categoryFilter}
+                  size="large"
+                  suffixIcon={<span style={styles.dropdownIcon}>▼</span>}
+                  optionLabelProp="label"
+                >
+                  {categories.map((category) => (
+                    <Select.Option 
+                      key={category._id} 
+                      value={category._id}
+                      label={category.name}
+                    >
+                      <div style={styles.categoryOption}>
+                        <span style={styles.categoryName}>{category.name}</span>
+                        <span style={styles.courseCountBadge}>
+                          {category.courseCount} {t('course.courses')}
+                        </span>
+                      </div>
+                    </Select.Option>
+                  ))}
+                </Select>
+              </div>
+            </Col>
+          </Row>
         </Col>
         <Col span={24}>
           {loading || !courses ? (
@@ -198,6 +296,15 @@ const styles: {
   searchInput: CSSProperties;
   searchButton: CSSProperties;
   createButton: CSSProperties;
+  filterSection: CSSProperties;
+  filterHeader: CSSProperties;
+  filterIcon: CSSProperties;
+  filterTitle: CSSProperties;
+  categoryFilter: CSSProperties;
+  dropdownIcon: CSSProperties;
+  categoryOption: CSSProperties;
+  categoryName: CSSProperties;
+  courseCountBadge: CSSProperties;
   card: CSSProperties;
   cardCover: CSSProperties;
   thumbnail: CSSProperties;
@@ -207,6 +314,9 @@ const styles: {
   cardBody: CSSProperties;
   joinButton: CSSProperties;
   updateButton: CSSProperties;
+  ratingSection: CSSProperties;
+  rating: CSSProperties;
+  ratingText: CSSProperties;
 } = {
   sectionLayout: {
     background: "var(--bg-secondary)",
@@ -254,6 +364,59 @@ const styles: {
     border: "none",
     borderRadius: "8px",
   },
+  filterSection: {
+    background: "var(--bg-primary)",
+    borderRadius: "12px",
+    padding: "20px",
+    border: "1px solid var(--border-color)",
+    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+  },
+  filterHeader: {
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+    marginBottom: "12px",
+  },
+  filterIcon: {
+    color: "var(--accent-color)",
+    fontSize: "18px",
+  },
+  filterTitle: {
+    fontSize: "16px",
+    fontWeight: 600,
+    color: "var(--text-primary)",
+  },
+  categoryFilter: {
+    width: "100%",
+    borderRadius: "8px",
+    background: "var(--bg-secondary)",
+    border: "1px solid var(--border-color)",
+    color: "var(--text-primary)",
+  },
+  dropdownIcon: {
+    color: "var(--text-secondary)",
+    fontSize: "12px",
+    fontWeight: "bold",
+  },
+  categoryOption: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    width: "100%",
+  },
+  categoryName: {
+    fontSize: "14px",
+    fontWeight: 500,
+    color: "var(--text-primary)",
+  },
+  courseCountBadge: {
+    background: "var(--accent-color)",
+    color: "white",
+    padding: "2px 8px",
+    borderRadius: "12px",
+    fontSize: "12px",
+    fontWeight: 500,
+  },
   card: {
     borderRadius: "12px",
     overflow: "hidden",
@@ -295,8 +458,22 @@ const styles: {
     fontSize: "20px",
     fontWeight: 600,
     color: "var(--text-primary)",
-    marginBottom: "20px",
+    marginBottom: "12px",
     textAlign: "center",
+  },
+  ratingSection: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "8px",
+    marginBottom: "16px",
+  },
+  rating: {
+    fontSize: "14px",
+  },
+  ratingText: {
+    fontSize: "12px",
+    color: "var(--text-secondary)",
   },
   cardBody: {
     padding: "24px",

@@ -32,12 +32,12 @@ const setupAxiosInterceptors = (onUnauthenticated: any) => {
           const refreshToken = localStorage.getItem(REFRESH_TOKEN);
 
           const newAccessToken = await axios.post(`${envConfig.serverURL}/auth/refresh-token`, {
-            refreshToken,
+            refresh_token: refreshToken,
           });
 
-          localStorage.setItem(ACCESS_TOKEN, newAccessToken.data.accessToken);
+          localStorage.setItem(ACCESS_TOKEN, newAccessToken.data.data.access_token);
           const originalRequest = err.config;
-          originalRequest.headers.Authorization = `Bearer ${newAccessToken.data.data.accessToken}`;
+          originalRequest.headers.Authorization = `Bearer ${newAccessToken.data.data.access_token}`;
           return axios(originalRequest);
         } catch (error) {
           localStorage.removeItem(ACCESS_TOKEN);

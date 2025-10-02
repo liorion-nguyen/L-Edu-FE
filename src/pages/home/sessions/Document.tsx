@@ -18,10 +18,6 @@ const Document = () => {
     const { t } = useTranslationWithRerender();
     const { session, loading } = useSelector((state: RootState) => state.courses);
     
-    useEffect(() => {
-        fetch();
-    }, [id, dispatch]);
-    
     const fetch = async () => {
         try {
             const result = await dispatch(getSessionById(id as string));
@@ -31,7 +27,11 @@ const Document = () => {
         } catch (error) {
             navigate(-1);
         }
-    }
+    };
+
+    useEffect(() => {
+        fetch();
+    }, [id, dispatch, navigate]);
     return (
         <SectionLayout title={document.title}>
             <ReturnPage />

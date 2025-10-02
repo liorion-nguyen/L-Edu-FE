@@ -26,6 +26,14 @@ import Video from "./pages/home/sessions/Video";
 import CodeEditorPage from "./pages/home/CodeEditorPage";
 import ChatbotTestPage from "./pages/test/ChatbotTestPage";
 import DebugAuthPage from "./pages/test/DebugAuthPage";
+import DashboardLayout from "./layouts/DashboardLayout";
+import DashboardHome from "./pages/dashboard/DashboardHome";
+import UserManagement from "./pages/dashboard/UserManagement";
+import CourseManagement from "./pages/dashboard/CourseManagement";
+import SessionManagement from "./pages/dashboard/SessionManagement";
+import ReviewManagement from "./pages/dashboard/ReviewManagement";
+import FooterManagement from "./pages/dashboard/FooterManagement";
+import CategoryManagement from "./pages/dashboard/CategoryManagement";
 
 function App() {
   return (
@@ -59,6 +67,14 @@ function App() {
         <Route path="/session/addSession/:id" element={<MainLayout><AddSession /></MainLayout>} />
         <Route path="/session/updateSession/:id" element={<MainLayout><UpdateSession /></MainLayout>} />
 
+        {/* Dashboard Pages */}
+        <Route path="/dashboard" element={<DashboardLayout><DashboardHome /></DashboardLayout>} />
+        <Route path="/dashboard/users" element={<DashboardLayout><UserManagement /></DashboardLayout>} />
+        <Route path="/dashboard/courses" element={<DashboardLayout><CourseManagement /></DashboardLayout>} />
+        <Route path="/dashboard/sessions" element={<DashboardLayout><SessionManagement /></DashboardLayout>} />
+        <Route path="/dashboard/reviews" element={<DashboardLayout><ReviewManagement /></DashboardLayout>} />
+        <Route path="/dashboard/footer" element={<DashboardLayout><FooterManagement /></DashboardLayout>} />
+        <Route path="/dashboard/categories" element={<DashboardLayout><CategoryManagement /></DashboardLayout>} />
 
         {/* 404 Not Found */}
         <Route path="*" element={<MainLayout><NotFound/></MainLayout>} />

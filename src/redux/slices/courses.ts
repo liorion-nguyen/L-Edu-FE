@@ -21,11 +21,13 @@ const initialState: CoursesState = {
 // Async thunks
 export const getCourses = createAsyncThunk(
     'courses/getCourses',
-    async ({ page = 0, limit = 20, name = "" }: { page?: number; limit?: number; name?: string }) => {
+    async ({ page = 0, limit = 20, name = "", categoryId }: { page?: number; limit?: number; name?: string; categoryId?: string }) => {
         try {
-            const result = await axios.get(
-                `${envConfig.serverURL}/courses/search?page=${page}&limit=${limit}&name=${name}`
-            );
+            let url = `${envConfig.serverURL}/courses/search?page=${page}&limit=${limit}&name=${name}`;
+            if (categoryId) {
+                url += `&categoryId=${categoryId}`;
+            }
+            const result = await axios.get(url);
             const courses: CourseType[] = Array.isArray(result.data.data.data) ? result.data.data.data : [];
             return { courses, totalCourse: result.data.data.total };
         } catch (error: Error | any) {

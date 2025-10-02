@@ -31,6 +31,9 @@ export type CourseType = {
     discount?: Discount;
     instructorId?: string;
     category?: string;
+    categoryId?: string;
+    averageRating?: number;
+    totalReviews?: number;
     cover?: string;
     students: string[];
     sessions?: SessionCoreResponse[] | string[];

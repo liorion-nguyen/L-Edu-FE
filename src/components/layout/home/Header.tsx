@@ -26,11 +26,11 @@ const Header = () => {
     { key: "/", label: t('navigation.home') },
     { key: "/aboutus", label: t('navigation.about') },
     { key: "/course", label: t('navigation.course') },
-    { 
-      key: "/code-editor", 
-      label: t('navigation.codeEditor'),
-      icon: <CodeOutlined />
-    },
+    // { 
+    //   key: "/code-editor", 
+    //   label: t('navigation.codeEditor'),
+    //   icon: <CodeOutlined />
+    // },
   ]);
   const [open, setOpen] = useState(false);
   const { user } = useSelector((state: RootState) => state.auth);
@@ -43,17 +43,24 @@ const Header = () => {
 
   // Update menu items when language changes
   useEffect(() => {
-    setMenuItems([
+    const baseMenuItems = [
       { key: "/", label: t('navigation.home') },
       { key: "/aboutus", label: t('navigation.about') },
       { key: "/course", label: t('navigation.course') },
-      { 
-        key: "/code-editor", 
-        label: t('navigation.codeEditor'),
-        icon: <CodeOutlined />
-      },
-    ]);
-  }, [language, t]);
+      // { 
+      //   key: "/code-editor", 
+      //   label: t('navigation.codeEditor'),
+      //   icon: <CodeOutlined />
+      // },
+    ];
+
+    // Add Dashboard link for admin users
+    if (user?.role === 'ADMIN') {
+      baseMenuItems.push({ key: "/dashboard", label: t('navigation.dashboard') });
+    }
+
+    setMenuItems(baseMenuItems);
+  }, [language, t, user]);
 
   const getSizeScreen = () => {
     return screens.md || screens.lg || screens.xl || screens.xxl;

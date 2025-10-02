@@ -13,6 +13,7 @@ import SectionLayout from "../../../layouts/SectionLayout";
 import { getCourseById } from "../../../redux/slices/courses";
 import { RootState, useDispatch, useSelector } from "../../../redux/store";
 import { useIsAdmin } from "../../../utils/auth";
+import CourseReviews from "../../../components/course/CourseReviews";
 
 const { Text } = Typography;
 const useBreakpoint = Grid.useBreakpoint;
@@ -173,6 +174,9 @@ const CourseDetail = () => {
                 </Col>
               ))}
             </Row>
+          </Col>
+          <Col span={24}>
+            <CourseReviews courseId={course._id} />
           </Col>
         </Row>
       </SectionLayout>
