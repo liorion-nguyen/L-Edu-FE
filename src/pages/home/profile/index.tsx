@@ -240,14 +240,14 @@ const styles: {
         marginTop: 10,
     },
     modal: {
-        background: "rgba(255, 255, 255, 0.95)",
+        background: "var(--bg-primary)",
         backdropFilter: "blur(10px)",
         borderRadius: "16px",
-        boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+        boxShadow: "0 20px 25px -5px var(--shadow), 0 10px 10px -5px var(--shadow)",
         zIndex: 1000,
     },
     modalTitle: {
-        color: "#1f2937",
+        color: "var(--text-primary)",
         fontWeight: 600,
         fontSize: "18px",
     },

@@ -1,29 +1,32 @@
 import { Col, Row } from "antd";
 import Title from "antd/es/typography/Title";
 import { CSSProperties } from "react";
+import { useTranslationWithRerender } from "../../hooks/useLanguageChange";
 import { COLORS, RADIUS, SPACING } from "../../constants/colors";
 import SectionLayout from "../../layouts/SectionLayout";
 
 const CourseOverview = () => {
+  const { t } = useTranslationWithRerender();
+  
   const features = [
     {
-      title: "Expert Instructors",
-      description: "Learn from industry professionals with years of experience",
+      title: t('courseOverview.feature1.title'),
+      description: t('courseOverview.feature1.description'),
       icon: "👨‍🏫",
     },
     {
-      title: "Hands-on Projects",
-      description: "Build real-world projects to strengthen your portfolio",
+      title: t('courseOverview.feature2.title'),
+      description: t('courseOverview.feature2.description'),
       icon: "🛠️",
     },
     {
-      title: "Flexible Learning",
-      description: "Study at your own pace with lifetime access to materials",
+      title: t('courseOverview.feature3.title'),
+      description: t('courseOverview.feature3.description'),
       icon: "⏰",
     },
     {
-      title: "Certificate",
-      description: "Get certified upon completion to boost your career",
+      title: t('courseOverview.feature4.title'),
+      description: t('courseOverview.feature4.description'),
       icon: "🏆",
     },
   ];
@@ -31,7 +34,7 @@ const CourseOverview = () => {
   return (
     <SectionLayout style={styles.sectionLayout}>
       <Title level={2} style={styles.title}>
-        Why Choose Our Courses?
+        {t('courseOverview.title')}
       </Title>
       <Row gutter={[32, 32]} justify="center">
         {features.map((feature, index) => (
@@ -62,24 +65,25 @@ const styles: {
   featureDescription: CSSProperties;
 } = {
   sectionLayout: {
-    background: COLORS.background.secondary,
+    background: "var(--bg-secondary)",
     padding: `${SPACING.xl} 0`,
   },
   title: {
     textAlign: "center",
-    color: COLORS.text.heading,
+    color: "var(--text-primary)",
     marginBottom: SPACING.xl,
     fontSize: "2.5rem",
     fontWeight: 600,
   },
   featureCard: {
-    background: COLORS.background.primary,
+    background: "var(--bg-secondary)",
     borderRadius: RADIUS.lg,
     padding: SPACING.lg,
     textAlign: "center",
     height: "100%",
-    border: `1px solid ${COLORS.border.light}`,
+    border: "1px solid var(--border-color)",
     cursor: "pointer",
+    transition: "all 0.3s ease",
   },
   iconContainer: {
     marginBottom: SPACING.md,
@@ -91,12 +95,12 @@ const styles: {
   featureTitle: {
     fontSize: "1.3rem",
     fontWeight: 600,
-    color: COLORS.text.heading,
+    color: "var(--text-primary)",
     margin: `${SPACING.md} 0`,
   },
   featureDescription: {
     fontSize: "1rem",
-    color: COLORS.text.secondary,
+    color: "var(--text-secondary)",
     lineHeight: 1.6,
     margin: 0,
   },

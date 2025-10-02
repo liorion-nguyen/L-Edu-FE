@@ -3,16 +3,16 @@ import ReactMarkdown from "react-markdown";
 import rehypeHighlight from "rehype-highlight";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
-import { COLORS, RADIUS, SPACING } from "../../constants/colors";
+import { RADIUS, SPACING } from "../../constants/colors";
+import { useTheme } from "../../contexts/ThemeContext";
 import './MarkdownViewer.css';
 
-// Function to load appropriate highlight.js theme based on system preference
-const loadHighlightTheme = () => {
-  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+// Function to load appropriate highlight.js theme based on current theme
+const loadHighlightTheme = (isDark: boolean) => {
   const themeLink = document.getElementById('highlight-theme') as HTMLLinkElement;
   
   if (themeLink) {
-    themeLink.href = prefersDark 
+    themeLink.href = isDark 
       ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css'
       : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css';
   }
@@ -31,6 +31,8 @@ const MarkdownViewer: React.FC<MarkdownViewerProps> = ({
   isPending = false, 
   selectedText 
 }) => {
+  const { isDark } = useTheme();
+  
   // Initialize theme on component load
   useEffect(() => {
     if (!document.getElementById('highlight-theme')) {
@@ -39,13 +41,8 @@ const MarkdownViewer: React.FC<MarkdownViewerProps> = ({
       link.rel = 'stylesheet';
       document.head.appendChild(link);
     }
-    loadHighlightTheme();
-    
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    mediaQuery.addEventListener('change', loadHighlightTheme);
-    
-    return () => mediaQuery.removeEventListener('change', loadHighlightTheme);
-  }, []);
+    loadHighlightTheme(isDark);
+  }, [isDark]);
 
   // Function to highlight selected text
   const highlightText = (text: string) => {
@@ -240,13 +237,13 @@ const MarkdownViewer: React.FC<MarkdownViewerProps> = ({
 
 const styles = {
   container: {
-    background: COLORS.background.primary,
-    color: COLORS.text.primary,
+    background: "var(--bg-primary)",
+    color: "var(--text-primary)",
     borderRadius: RADIUS.md,
     padding: SPACING.lg,
     lineHeight: 1.7,
     fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-    border: `1px solid ${COLORS.border.light}`,
+    border: "1px solid var(--border-color)",
     position: 'relative' as const,
   },
 };

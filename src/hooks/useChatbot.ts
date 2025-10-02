@@ -8,6 +8,7 @@ interface Message {
   role: 'user' | 'assistant';
   timestamp: Date;
   isComplete?: boolean;
+  imageUrls?: string[];
 }
 
 interface UseChatbotReturn {
@@ -16,7 +17,7 @@ interface UseChatbotReturn {
   isLoading: boolean;
   openChatbot: () => void;
   closeChatbot: () => void;
-  sendMessage: (text: string) => Promise<void>;
+  sendMessage: (text: string, imageUrls?: string[]) => Promise<void>;
   clearMessages: () => Promise<void>;
   toggleChatbot: () => void;
   currentConversationId: string | null;
@@ -83,7 +84,12 @@ const useChatbot = (): UseChatbotReturn => {
 
       // Nhận streaming response từ AI
       socketRef.current.on('streaming_message', (message: any) => {
-        console.log('🤖 Streaming AI response:', message);
+        // Log streaming progress
+        if (message.isComplete) {
+          console.log('✅ AI response complete. Length:', message.content.length);
+        } else {
+          console.log('📡 Streaming... Length:', message.content.length);
+        }
         
         setMessages(prev => {
           const existingIndex = prev.findIndex(msg => msg.id === message.id);
@@ -100,7 +106,8 @@ const useChatbot = (): UseChatbotReturn => {
             };
             return newMessages;
           } else {
-            // Add new AI message
+            // Add new AI message (first chunk)
+            console.log('🆕 First chunk received, creating message');
             return [...prev, {
               id: message.id,
               content: message.content,
@@ -113,7 +120,6 @@ const useChatbot = (): UseChatbotReturn => {
         
         // Tắt loading khi AI trả lời xong
         if (message.isComplete) {
-          console.log('✅ AI response complete');
           setIsLoading(false);
         }
       });
@@ -161,7 +167,14 @@ const useChatbot = (): UseChatbotReturn => {
           role: msg.role,
           timestamp: new Date(msg.createdAt),
           isComplete: true,
+          imageUrls: msg.imageUrls || [],
         }));
+        
+        // Log nếu có attachments
+        const messagesWithImages = history.filter((m: Message) => m.imageUrls && m.imageUrls.length > 0);
+        if (messagesWithImages.length > 0) {
+          console.log('📷 Found', messagesWithImages.length, 'messages with images');
+        }
         
         setMessages(history);
       } else {
@@ -238,8 +251,8 @@ const useChatbot = (): UseChatbotReturn => {
   }, [getOrCreateConversation]);
 
   // Send message
-  const sendMessage = useCallback(async (text: string) => {
-    if (!text.trim()) {
+  const sendMessage = useCallback(async (text: string, imageUrls?: string[]) => {
+    if (!text.trim() && (!imageUrls || imageUrls.length === 0)) {
       console.log('⚠️ Empty message, skip');
       return;
     }
@@ -250,7 +263,7 @@ const useChatbot = (): UseChatbotReturn => {
       await initializeConversation();
       // Retry after initialization
       setTimeout(() => {
-        sendMessage(text);
+        sendMessage(text, imageUrls);
       }, 500);
       return;
     }
@@ -265,6 +278,9 @@ const useChatbot = (): UseChatbotReturn => {
     }
 
     console.log('📤 Sending message:', text);
+    if (imageUrls && imageUrls.length > 0) {
+      console.log('   With images:', imageUrls.length);
+    }
     setIsLoading(true);
 
     // 1. Hiển thị tin nhắn user ngay lập tức
@@ -274,16 +290,18 @@ const useChatbot = (): UseChatbotReturn => {
       role: 'user',
       timestamp: new Date(),
       isComplete: true,
+      imageUrls: imageUrls || [],
     };
     setMessages(prev => [...prev, userMessage]);
 
     // 2. Gửi tin nhắn qua socket → Backend sẽ:
     //    - Lưu tin nhắn user vào DB
-    //    - Gọi Gemini API
+    //    - Gọi Gemini API (với ảnh nếu có)
     //    - Stream response về qua socket event 'streaming_message'
     socketRef.current.emit('send_message', {
       conversationId: currentConversationId,
       content: text,
+      imageUrls: imageUrls || [],
     });
     
     console.log('✅ Message sent via socket');
@@ -352,7 +370,7 @@ const useChatbot = (): UseChatbotReturn => {
         
         notification.success({
           message: 'Thành công',
-          description: 'Đã tạo cuộc trò chuyện mới',
+          description: 'Đã xóa cuộc trò chuyện và tạo mới',
         });
       } else {
         throw new Error('Failed to clear conversation');

@@ -1,4 +1,7 @@
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import { ThemeProvider } from "./contexts/ThemeContext";
+import "./styles/theme.css";
+import "./i18n"; // Initialize i18n
 import AuthLayout from "./layouts/AuthLayout";
 import MainLayout from "./layouts/MainLayout";
 import NotFound from "./pages/NotFound";
@@ -26,7 +29,8 @@ import DebugAuthPage from "./pages/test/DebugAuthPage";
 
 function App() {
   return (
-    <Router>
+    <ThemeProvider>
+      <Router>
       <Routes>
         {/* Test Pages */}
         <Route path="/test/chatbot" element={<MainLayout><ChatbotTestPage /></MainLayout>} />
@@ -60,7 +64,8 @@ function App() {
         <Route path="*" element={<MainLayout><NotFound/></MainLayout>} />
 
       </Routes>
-    </Router>
+      </Router>
+    </ThemeProvider>
   );
 }
 

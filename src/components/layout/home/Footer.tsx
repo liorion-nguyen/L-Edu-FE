@@ -1,11 +1,14 @@
 import { Col, Layout, Row, Space, Typography } from "antd";
 import { CSSProperties } from "react";
+import { useTranslationWithRerender } from "../../../hooks/useLanguageChange";
 import { COLORS } from "../../../constants/colors";
 import SectionLayout from "../../../layouts/SectionLayout";
 
 const { Title, Text } = Typography;
 
 const Footer = () => {
+  const { t } = useTranslationWithRerender();
+  
   const socials = [
     { name: "Facebook", icon: "/images/icons/socials/ft_facebook.png", link: "#" },
     { name: "Twitter", icon: "/images/icons/socials/ft_twitter.png", link: "#" },
@@ -14,13 +17,13 @@ const Footer = () => {
   ];
 
   const contacts = [
-    { name: "Location", value: "2972 Westheimer Rd. Santa Ana, Illinois 85486", icon: "/images/icons/contacts/location.png" },
-    { name: "Email", value: "educare31@gmail.com", icon: "/images/icons/contacts/email.png" },
-    { name: "Phone", value: "(704) 555-0127", icon: "/images/icons/contacts/phone.png" },
+    { name: "Location", value: "Cau Giay, Ha Noi, Viet Nam", icon: "/images/icons/contacts/location.png" },
+    { name: "Email", value: "liorion.nguyen@gmail.com", icon: "/images/icons/contacts/email.png" },
+    { name: "Phone", value: "(+84) 708-200-334", icon: "/images/icons/contacts/phone.png" },
   ];
 
-  const companyLinks = ["Courses", "Feature", "Design"];
-  const courseLinks = ["Language", "Marketing", "Testimonial", "Developer"];
+  const companyLinks = [t('footer.courses'), t('footer.features'), t('footer.design')];
+  const courseLinks = [t('footer.language'), t('footer.marketing'), t('footer.testimonial'), t('footer.developer')];
 
   return (
     <Layout.Footer style={styles.footer}>
@@ -31,7 +34,7 @@ const Footer = () => {
             <Title level={3} style={styles.logo}>
               L-Edu
             </Title>
-            <Text style={styles.text}>Nền tảng học lập trình toàn diện</Text>
+            <Text style={styles.text}>{t('footer.description')}</Text>
             <Space size="middle">
               {socials.map((social, index) => (
                 <a key={index} href={social.link} style={styles.socialLink}>
@@ -44,7 +47,7 @@ const Footer = () => {
           {/* Company Section */}
           <Col lg={4} md={8} sm={12} xs={24} style={styles.center}>
             <Title level={4} style={styles.title}>
-              Company
+              {t('footer.company')}
             </Title>
             <ul style={styles.list}>
               {companyLinks.map((link, index) => (
@@ -60,7 +63,7 @@ const Footer = () => {
           {/* Course Section */}
           <Col lg={4} md={8} sm={12} xs={24} style={styles.center}>
             <Title level={4} style={styles.title}>
-              Course
+              {t('footer.course')}
             </Title>
             <ul style={styles.list}>
               {courseLinks.map((link, index) => (
@@ -76,7 +79,7 @@ const Footer = () => {
           {/* Contact Information */}
           <Col lg={6} md={12} sm={24} xs={24} style={styles.center}>
             <Title level={4} style={styles.title}>
-              Contact Information
+              {t('footer.contactInfo')}
             </Title>
             <ul style={styles.list}>
               {contacts.map((contact, index) => (
@@ -116,7 +119,7 @@ const styles: {
     background: "transparent",
   },
   sectionLayout: {
-    background: COLORS.background.tertiary,
+    background: "var(--bg-tertiary)",
     padding: "0",
     position: "relative",
     overflow: "hidden",
@@ -126,13 +129,13 @@ const styles: {
   },
   logo: {
     fontWeight: 700,
-    color: COLORS.text.heading,
+    color: "var(--text-primary)",
     marginBottom: "20px",
   },
   title: {
     fontSize: "18px",
     fontWeight: 600,
-    color: COLORS.text.heading,
+    color: "var(--text-primary)",
     marginBottom: "20px",
   },
   list: {
@@ -142,7 +145,7 @@ const styles: {
     fontSize: "16px",
   },
   text: {
-    color: COLORS.text.secondary,
+    color: "var(--text-secondary)",
     fontSize: "16px",
     display: "block",
     marginBottom: "20px",
@@ -155,7 +158,7 @@ const styles: {
     display: "inline-block",
   },
   link: {
-    color: COLORS.text.secondary,
+    color: "var(--text-secondary)",
     textDecoration: "none",
     display: "block",
     marginBottom: "10px",
@@ -165,17 +168,17 @@ const styles: {
     alignItems: "center",
     justifyContent: "center",
     marginBottom: "15px",
-    background: COLORS.background.primary,
+    background: "var(--bg-primary)",
     borderRadius: "8px",
     padding: "10px",
-    border: `1px solid ${COLORS.border.light}`,
+    border: "1px solid var(--border-color)",
   },
   contactIcon: {
     width: "20px",
     marginRight: "10px",
   },
   contactText: {
-    color: COLORS.text.primary,
+    color: "var(--text-primary)",
     fontSize: "14px",
   },
 };

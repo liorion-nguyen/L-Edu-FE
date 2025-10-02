@@ -1,5 +1,6 @@
 import { Button } from "antd";
-import { COLORS, RADIUS, SPACING } from "../../constants/colors";
+import { RADIUS, SPACING } from "../../constants/colors";
+import { CSSProperties } from "react";
 
 interface ButtonFormProps {
   label?: string;
@@ -32,41 +33,22 @@ const ButtonForm: React.FC<ButtonFormProps> = ({
   );
 };
 
-const styles = {
+const styles: { button: CSSProperties } = {
   button: {
     fontSize: "16px",
-    background: COLORS.primary[500],
-    border: `1px solid ${COLORS.primary[600]}`,
+    background: "var(--accent-color)",
+    border: "1px solid var(--accent-color)",
     borderRadius: RADIUS.md,
-    color: COLORS.text.inverse,
+    color: "#ffffff",
     width: "100%",
     height: "48px",
     fontWeight: 600,
-    transition: "all 0.2s ease",
-    boxShadow: "none",
+    transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+    boxShadow: "0 2px 8px rgba(24, 144, 255, 0.2)",
     outline: "none",
     cursor: "pointer",
-    "&:hover": {
-      background: COLORS.primary[600],
-      borderColor: COLORS.primary[700],
-      transform: "translateY(-1px)",
-      boxShadow: `0 4px 12px ${COLORS.primary[200]}`,
-    },
-    "&:active": {
-      transform: "translateY(0)",
-      boxShadow: `0 2px 8px ${COLORS.primary[200]}`,
-    },
-    "&:focus": {
-      boxShadow: `0 0 0 3px ${COLORS.primary[100]}`,
-    },
-    "&:disabled": {
-      background: COLORS.neutral[300],
-      borderColor: COLORS.neutral[400],
-      color: COLORS.neutral[500],
-      cursor: "not-allowed",
-      transform: "none",
-      boxShadow: "none",
-    },
+    position: "relative",
+    overflow: "hidden",
   },
 };
 

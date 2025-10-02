@@ -2,6 +2,7 @@ import { EditOutlined, LockOutlined, LoginOutlined, SearchOutlined, PlusOutlined
 import { Avatar, Button, Card, Col, Input, Row, Skeleton, Space, Tooltip, Typography } from "antd";
 import { CSSProperties, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslationWithRerender } from "../../../hooks/useLanguageChange";
 import { COLORS } from "../../../constants/colors";
 import { Mode } from "../../../enum/course.enum";
 import SectionLayout from "../../../layouts/SectionLayout";
@@ -15,6 +16,7 @@ const { Title, Text } = Typography;
 const CourseCard = ({ course }: { course: CourseType }) => {
   const navigate = useNavigate();
   const isAdmin = useIsAdmin();
+  const { t } = useTranslationWithRerender();
 
   const handleJoinCourse = () => {
     navigate(`/course/${course._id}`);
@@ -34,13 +36,13 @@ const CourseCard = ({ course }: { course: CourseType }) => {
             src={course.cover || "/images/landing/sections/fakeImages/thumbnailCourse.png"}
             style={styles.thumbnail}
           />
-          <Text style={styles.countLesson}>{course.duration} Sessions</Text>
+          <Text style={styles.countLesson}>{course.duration} {t('course.sessions')}</Text>
           {course.instructor && (
             <a href={`../profile/${course.instructor._id}`} style={styles.avtTeacher}>
               <Tooltip title={course.instructor.fullName} placement="top">
                 <Avatar
                   src={course.instructor.avatar || "/images/landing/sections/fakeImages/avatarStudent.png"}
-                  style={{ width: "100%", height: "100%", border: `2px solid ${COLORS.primary[500]}` }}
+                  style={{ width: "100%", height: "100%", border: "2px solid var(--accent-color)" }}
                 />
               </Tooltip>
             </a>
@@ -62,7 +64,7 @@ const CourseCard = ({ course }: { course: CourseType }) => {
           disabled={course.mode === Mode.CLOSE}
           style={styles.joinButton}
         >
-          {course.mode === Mode.CLOSE ? "Locked" : "Join Course"}
+          {course.mode === Mode.CLOSE ? t('course.locked') : t('course.joinCourse')}
         </Button>
         {isAdmin && (
           <Button
@@ -72,7 +74,7 @@ const CourseCard = ({ course }: { course: CourseType }) => {
             onClick={handleUpdateCourse}
             style={styles.updateButton}
           >
-            Update
+            {t('course.update')}
           </Button>
         )}
       </Space>
@@ -85,6 +87,7 @@ const Course = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const isAdmin = useIsAdmin();
+  const { t } = useTranslationWithRerender();
   const { courses, totalCourse, loading } = useSelector((state: RootState) => state.courses);
 
   useEffect(() => {
@@ -109,15 +112,15 @@ const Course = () => {
   };
 
   return (
-    <SectionLayout title="Courses" style={styles.sectionLayout}>
+    <SectionLayout title={t('course.title')} style={styles.sectionLayout}>
       <Row gutter={[32, 32]} style={{ textAlign: "center", paddingBottom: "80px" }}>
         <Col span={24}>
           <div style={styles.headerSection}>
             <Title level={2} style={styles.sectionTitle}>
-              Our Courses
+              {t('course.ourCourses')}
             </Title>
             {isAdmin && (
-              <Tooltip title="Chỉ Admin mới có quyền tạo khóa học mới">
+              <Tooltip title={t('course.adminOnly')}>
                 <Button
                   type="primary"
                   size="large"
@@ -138,7 +141,7 @@ const Course = () => {
                     }
                   }}
                 >
-                  Tạo khóa học mới
+                  {t('course.createNewCourse')}
                 </Button>
               </Tooltip>
             )}
@@ -146,7 +149,7 @@ const Course = () => {
           <Row justify="center" style={{ marginBottom: "40px" }}>
             <Col xs={24} sm={20} md={16} lg={12}>
               <Input.Search
-                placeholder="Search for a course..."
+                placeholder={t('course.searchPlaceholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onSearch={handleSearch}
@@ -154,7 +157,7 @@ const Course = () => {
                 style={styles.searchInput}
                 enterButton={
                   <Button type="primary" icon={<SearchOutlined />} style={styles.searchButton}>
-                    Search
+                    {t('common.search')}
                   </Button>
                 }
               />
@@ -206,7 +209,7 @@ const styles: {
   updateButton: CSSProperties;
 } = {
   sectionLayout: {
-    background: COLORS.background.secondary,
+    background: "var(--bg-secondary)",
     padding: "60px 0",
     position: "relative",
     overflow: "hidden",
@@ -222,7 +225,7 @@ const styles: {
   sectionTitle: {
     fontSize: "36px",
     fontWeight: 700,
-    color: COLORS.text.heading,
+    color: "var(--text-primary)",
     margin: 0,
   },
   createButton: {
@@ -241,25 +244,25 @@ const styles: {
   },
   searchInput: {
     borderRadius: "8px",
-    background: COLORS.background.primary,
-    border: `1px solid ${COLORS.neutral[200]}`,
-    color: COLORS.text.primary,
+    background: "var(--bg-primary)",
+    border: "1px solid var(--border-color)",
+    color: "var(--text-primary)",
   },
   searchButton: {
-    background: COLORS.primary[500],
-    color: COLORS.background.primary,
+    background: "var(--accent-color)",
+    color: "white",
     border: "none",
     borderRadius: "8px",
   },
   card: {
     borderRadius: "12px",
     overflow: "hidden",
-    background: COLORS.background.primary,
-    border: `1px solid ${COLORS.neutral[200]}`,
+    background: "var(--bg-primary)",
+    border: "1px solid var(--border-color)",
   },
   cardCover: {
     position: "relative",
-    borderBottom: `1px solid ${COLORS.neutral[200]}`,
+    borderBottom: "1px solid var(--border-color)",
   },
   thumbnail: {
     width: "100%",
@@ -271,12 +274,12 @@ const styles: {
     position: "absolute",
     top: "16px",
     right: "16px",
-    background: COLORS.accent[100],
+    background: "var(--accent-color)",
     padding: "6px 12px",
     borderRadius: "20px",
-    color: COLORS.accent[600],
+    color: "white",
     fontWeight: 500,
-    border: `1px solid ${COLORS.accent[200]}`,
+    border: "1px solid var(--accent-color)",
   },
   avtTeacher: {
     position: "absolute",
@@ -284,33 +287,33 @@ const styles: {
     left: "16px",
     width: "40px",
     height: "40px",
-    background: COLORS.background.primary,
+    background: "var(--bg-primary)",
     borderRadius: "50%",
     padding: "2px",
   },
   nameCourse: {
     fontSize: "20px",
     fontWeight: 600,
-    color: COLORS.text.heading,
+    color: "var(--text-primary)",
     marginBottom: "20px",
     textAlign: "center",
   },
   cardBody: {
     padding: "24px",
-    background: COLORS.background.primary,
+    background: "var(--bg-primary)",
   },
   joinButton: {
-    background: COLORS.primary[500],
-    color: COLORS.background.primary,
+    background: "var(--accent-color)",
+    color: "white",
     border: "none",
     borderRadius: "8px",
     fontWeight: 500,
   },
   updateButton: {
     background: "transparent",
-    border: `1px solid ${COLORS.primary[500]}`,
+    border: "1px solid var(--accent-color)",
     borderRadius: "8px",
-    color: COLORS.primary[500],
+    color: "var(--accent-color)",
     fontWeight: 500,
   },
 };

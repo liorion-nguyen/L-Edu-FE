@@ -1,0 +1,514 @@
+/* Dark Mode CSS Variables */
+:root {
+  /* Light theme colors */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f5f5f5;
+  --bg-tertiary: #fafafa;
+  --text-primary: #000000;
+  --text-secondary: #666666;
+  --text-tertiary: #999999;
+  --border-color: #d9d9d9;
+  --shadow: rgba(0, 0, 0, 0.1);
+  --accent-color: #1890ff;
+  --success-color: #52c41a;
+  --warning-color: #faad14;
+  --error-color: #ff4d4f;
+}
+
+/* Dark theme colors */
+[data-theme="dark"] {
+  --bg-primary: #141414;
+  --bg-secondary: #1f1f1f;
+  --bg-tertiary: #262626;
+  --text-primary: #ffffff;
+  --text-secondary: #a6a6a6;
+  --text-tertiary: #737373;
+  --border-color: #434343;
+  --shadow: rgba(0, 0, 0, 0.3);
+  --accent-color: #177ddc;
+  --success-color: #49aa19;
+  --warning-color: #d89614;
+  --error-color: #d32029;
+}
+
+/* Apply theme colors globally */
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Ant Design component overrides for dark mode */
+[data-theme="dark"] .ant-layout-header {
+  background-color: var(--bg-secondary) !important;
+  border-bottom: 1px solid var(--border-color);
+}
+
+[data-theme="dark"] .ant-menu {
+  background-color: transparent !important;
+}
+
+[data-theme="dark"] .ant-menu-item {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .ant-menu-item:hover {
+  background-color: var(--bg-tertiary) !important;
+  color: var(--accent-color) !important;
+}
+
+[data-theme="dark"] .ant-menu-item-selected {
+  background-color: var(--bg-tertiary) !important;
+  color: var(--accent-color) !important;
+}
+
+[data-theme="dark"] .ant-drawer {
+  background-color: var(--bg-secondary) !important;
+}
+
+[data-theme="dark"] .ant-drawer-header {
+  background-color: var(--bg-secondary) !important;
+  border-bottom: 1px solid var(--border-color);
+}
+
+[data-theme="dark"] .ant-drawer-title {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .ant-drawer-body {
+  background-color: var(--bg-secondary) !important;
+}
+
+[data-theme="dark"] .ant-card {
+  background-color: var(--bg-secondary) !important;
+  border: 1px solid var(--border-color);
+}
+
+[data-theme="dark"] .ant-card-head {
+  background-color: var(--bg-secondary) !important;
+  border-bottom: 1px solid var(--border-color);
+}
+
+[data-theme="dark"] .ant-card-body {
+  background-color: var(--bg-secondary) !important;
+}
+
+[data-theme="dark"] .ant-input {
+  background-color: var(--bg-tertiary) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .ant-input:focus {
+  border-color: var(--accent-color) !important;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2) !important;
+}
+
+[data-theme="dark"] .ant-btn {
+  background-color: var(--bg-tertiary) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .ant-btn:hover {
+  background-color: var(--bg-primary) !important;
+  border-color: var(--accent-color) !important;
+  color: var(--accent-color) !important;
+}
+
+[data-theme="dark"] .ant-btn-primary {
+  background-color: var(--accent-color) !important;
+  border-color: var(--accent-color) !important;
+  color: #fff !important;
+  box-shadow: 0 2px 8px rgba(24, 144, 255, 0.2) !important;
+}
+
+[data-theme="dark"] .ant-btn-primary:hover {
+  background-color: var(--accent-color) !important;
+  border-color: var(--accent-color) !important;
+  opacity: 0.9 !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 16px rgba(24, 144, 255, 0.3) !important;
+}
+
+[data-theme="dark"] .ant-btn-primary:active {
+  transform: translateY(0) !important;
+  box-shadow: 0 2px 8px rgba(24, 144, 255, 0.2) !important;
+}
+
+[data-theme="dark"] .ant-btn-primary:focus {
+  box-shadow: 0 0 0 3px rgba(24, 144, 255, 0.2) !important;
+}
+
+/* Chatbot specific dark mode styles */
+[data-theme="dark"] .chat-popup {
+  background-color: var(--bg-secondary) !important;
+}
+
+[data-theme="dark"] .chat-card {
+  background-color: var(--bg-secondary) !important;
+  border: 1px solid var(--border-color);
+}
+
+[data-theme="dark"] .chat-messages {
+  background-color: var(--bg-tertiary) !important;
+}
+
+[data-theme="dark"] .chat-input {
+  background-color: var(--bg-secondary) !important;
+}
+
+[data-theme="dark"] .message.user {
+  background-color: var(--accent-color) !important;
+  color: white !important;
+}
+
+[data-theme="dark"] .message.bot {
+  background-color: var(--bg-primary) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-color);
+}
+
+[data-theme="dark"] .markdown-content {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .markdown-content pre {
+  background-color: var(--bg-tertiary) !important;
+  border: 1px solid var(--border-color);
+}
+
+[data-theme="dark"] .markdown-content code {
+  background-color: var(--bg-tertiary) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Additional component overrides */
+[data-theme="dark"] .ant-typography {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .ant-typography h1,
+[data-theme="dark"] .ant-typography h2,
+[data-theme="dark"] .ant-typography h3,
+[data-theme="dark"] .ant-typography h4,
+[data-theme="dark"] .ant-typography h5,
+[data-theme="dark"] .ant-typography h6 {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .ant-typography p {
+  color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .ant-skeleton {
+  background-color: var(--bg-tertiary) !important;
+}
+
+[data-theme="dark"] .ant-skeleton-content .ant-skeleton-title,
+[data-theme="dark"] .ant-skeleton-content .ant-skeleton-paragraph > li {
+  background-color: var(--bg-primary) !important;
+}
+
+[data-theme="dark"] .ant-empty {
+  color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .ant-empty-description {
+  color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .ant-tooltip {
+  background-color: var(--bg-tertiary) !important;
+}
+
+[data-theme="dark"] .ant-tooltip-inner {
+  background-color: var(--bg-tertiary) !important;
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .ant-tooltip-arrow::before {
+  background-color: var(--bg-tertiary) !important;
+}
+
+[data-theme="dark"] .ant-avatar {
+  background-color: var(--bg-tertiary) !important;
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .ant-space {
+  color: var(--text-primary) !important;
+}
+
+/* Additional Ant Design component overrides */
+[data-theme="dark"] .ant-layout {
+  background-color: var(--bg-primary) !important;
+}
+
+[data-theme="dark"] .ant-layout-content {
+  background-color: var(--bg-primary) !important;
+}
+
+[data-theme="dark"] .ant-layout-footer {
+  background-color: var(--bg-secondary) !important;
+  border-top: 1px solid var(--border-color);
+}
+
+[data-theme="dark"] .ant-layout-sider {
+  background-color: var(--bg-secondary) !important;
+}
+
+[data-theme="dark"] .ant-row {
+  background-color: transparent !important;
+}
+
+[data-theme="dark"] .ant-col {
+  background-color: transparent !important;
+}
+
+[data-theme="dark"] .ant-divider {
+  border-color: var(--border-color) !important;
+}
+
+[data-theme="dark"] .ant-divider-inner-text {
+  color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .ant-progress-text {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .ant-tag {
+  background-color: var(--bg-tertiary) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-color) !important;
+}
+
+[data-theme="dark"] .ant-tag-blue {
+  background-color: var(--accent-color) !important;
+  color: white !important;
+}
+
+[data-theme="dark"] .ant-tag-green {
+  background-color: var(--success-color) !important;
+  color: white !important;
+}
+
+[data-theme="dark"] .ant-tag-orange {
+  background-color: var(--warning-color) !important;
+  color: white !important;
+}
+
+[data-theme="dark"] .ant-tag-red {
+  background-color: var(--error-color) !important;
+  color: white !important;
+}
+
+/* Additional component overrides for better coverage */
+[data-theme="dark"] .ant-carousel .slick-slide {
+  background-color: transparent !important;
+}
+
+[data-theme="dark"] .ant-carousel .slick-track {
+  background-color: transparent !important;
+}
+
+[data-theme="dark"] .ant-carousel .slick-list {
+  background-color: transparent !important;
+}
+
+[data-theme="dark"] .ant-carousel .slick-dots {
+  background-color: transparent !important;
+}
+
+[data-theme="dark"] .ant-carousel .slick-dots li button {
+  background-color: var(--bg-tertiary) !important;
+}
+
+[data-theme="dark"] .ant-carousel .slick-dots li.slick-active button {
+  background-color: var(--accent-color) !important;
+}
+
+[data-theme="dark"] .ant-image {
+  background-color: transparent !important;
+}
+
+[data-theme="dark"] .ant-image-img {
+  background-color: transparent !important;
+}
+
+[data-theme="dark"] .ant-image-mask {
+  background-color: rgba(0, 0, 0, 0.5) !important;
+}
+
+[data-theme="dark"] .ant-image-preview-wrap {
+  background-color: rgba(0, 0, 0, 0.8) !important;
+}
+
+[data-theme="dark"] .ant-image-preview {
+  background-color: transparent !important;
+}
+
+/* Footer specific dark mode styles */
+[data-theme="dark"] .ant-layout-footer {
+  background-color: var(--bg-tertiary) !important;
+  border-top: 1px solid var(--border-color);
+}
+
+[data-theme="dark"] .ant-layout-footer .ant-typography {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .ant-layout-footer .ant-typography h3,
+[data-theme="dark"] .ant-layout-footer .ant-typography h4 {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .ant-layout-footer .ant-typography p {
+  color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .ant-layout-footer a {
+  color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .ant-layout-footer a:hover {
+  color: var(--accent-color) !important;
+}
+
+[data-theme="dark"] .ant-layout-footer ul {
+  background-color: transparent !important;
+}
+
+[data-theme="dark"] .ant-layout-footer li {
+  background-color: transparent !important;
+}
+
+/* Input components specific dark mode styles */
+[data-theme="dark"] .ant-input {
+  background-color: var(--bg-primary) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .ant-input:hover {
+  border-color: var(--accent-color) !important;
+}
+
+[data-theme="dark"] .ant-input:focus {
+  border-color: var(--accent-color) !important;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2) !important;
+}
+
+[data-theme="dark"] .ant-input::placeholder {
+  color: var(--text-tertiary) !important;
+}
+
+[data-theme="dark"] .ant-input-password {
+  background-color: var(--bg-primary) !important;
+  border-color: var(--border-color) !important;
+}
+
+[data-theme="dark"] .ant-input-password .ant-input {
+  background-color: transparent !important;
+  border: none !important;
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .ant-input-password .ant-input::placeholder {
+  color: var(--text-tertiary) !important;
+}
+
+[data-theme="dark"] .ant-input-password .ant-input-suffix {
+  color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .ant-input-password .ant-input-suffix:hover {
+  color: var(--accent-color) !important;
+}
+
+[data-theme="dark"] .ant-input-affix-wrapper {
+  background-color: var(--bg-primary) !important;
+  border-color: var(--border-color) !important;
+}
+
+[data-theme="dark"] .ant-input-affix-wrapper:hover {
+  border-color: var(--accent-color) !important;
+}
+
+[data-theme="dark"] .ant-input-affix-wrapper:focus {
+  border-color: var(--accent-color) !important;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2) !important;
+}
+
+[data-theme="dark"] .ant-input-affix-wrapper .ant-input {
+  background-color: transparent !important;
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .ant-input-affix-wrapper .ant-input::placeholder {
+  color: var(--text-tertiary) !important;
+}
+
+[data-theme="dark"] .ant-input-affix-wrapper .ant-input-suffix {
+  color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .ant-input-affix-wrapper .ant-input-suffix:hover {
+  color: var(--accent-color) !important;
+}
+
+/* Checkbox dark mode */
+[data-theme="dark"] .ant-checkbox {
+  background-color: var(--bg-primary) !important;
+  border-color: var(--border-color) !important;
+}
+
+[data-theme="dark"] .ant-checkbox:hover {
+  border-color: var(--accent-color) !important;
+}
+
+[data-theme="dark"] .ant-checkbox-checked .ant-checkbox-inner {
+  background-color: var(--accent-color) !important;
+  border-color: var(--accent-color) !important;
+}
+
+[data-theme="dark"] .ant-checkbox-inner {
+  background-color: var(--bg-primary) !important;
+  border-color: var(--border-color) !important;
+}
+
+[data-theme="dark"] .ant-checkbox-wrapper {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .ant-checkbox-wrapper:hover .ant-checkbox-inner {
+  border-color: var(--accent-color) !important;
+}
+
+/* Social login buttons dark mode */
+[data-theme="dark"] .ant-btn {
+  box-shadow: 0 2px 8px rgba(255, 255, 255, 0.1) !important;
+}
+
+[data-theme="dark"] .ant-btn:hover {
+  box-shadow: 0 4px 16px rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Dark mode specific social button shadows */
+[data-theme="dark"] .ant-btn[style*="background-color: #1877F2"] {
+  box-shadow: 0 2px 8px rgba(24, 119, 242, 0.3) !important;
+}
+
+[data-theme="dark"] .ant-btn[style*="background-color: #333333"] {
+  box-shadow: 0 2px 8px rgba(51, 51, 51, 0.3) !important;
+}
+
+[data-theme="dark"] .ant-btn[style*="background-color: #DB4437"] {
+  box-shadow: 0 2px 8px rgba(219, 68, 55, 0.3) !important;
+}
+
+/* Smooth transitions */
+* {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}

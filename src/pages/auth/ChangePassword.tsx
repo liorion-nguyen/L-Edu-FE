@@ -1,6 +1,9 @@
-import { Typography, notification } from "antd";
+import { Typography, notification, Button } from "antd";
+import { ArrowLeftOutlined } from "@ant-design/icons";
 import { Form, Formik } from "formik";
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useTranslationWithRerender } from "../../hooks/useLanguageChange";
 import CustomButton from "../../components/common/CustomButton";
 import CustomInputHide from "../../components/common/CustomInputHide";
 import { COLORS, SPACING } from "../../constants/colors";
@@ -28,6 +31,8 @@ const ChangePasswordValidationSchema = Yup.object().shape({
 
 const ChangePassword: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+  const { t } = useTranslationWithRerender();
 
   const handleChangePassword = async (values: ChangePasswordFormData) => {
     setIsLoading(true);
@@ -37,13 +42,13 @@ const ChangePassword: React.FC = () => {
         newPassword: values.newPassword,
       });
       notification.success({
-        message: "Đổi mật khẩu thành công",
-        description: "Mật khẩu của bạn đã được cập nhật",
+        message: t('auth.messages.changePasswordSuccess'),
+        description: t('auth.messages.passwordUpdated'),
       });
     } catch (error: any) {
       notification.error({
-        message: "Đổi mật khẩu thất bại",
-        description: error.response?.data?.message || "Có lỗi xảy ra, vui lòng thử lại.",
+        message: t('auth.messages.changePasswordFailed'),
+        description: error.response?.data?.message || t('common.error'),
       });
     } finally {
       setIsLoading(false);
@@ -52,12 +57,28 @@ const ChangePassword: React.FC = () => {
 
   return (
     <div style={styles.formContainer}>
+      <div style={styles.backButton}>
+        <Button 
+          type="text" 
+          icon={<ArrowLeftOutlined />}
+          onClick={() => navigate(-1)}
+          style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '8px',
+            color: COLORS.text.secondary 
+          }}
+        >
+          {t('auth.changePassword.backButton')}
+        </Button>
+      </div>
+      
       <div style={styles.header}>
         <Title level={2} style={styles.title}>
-          Đổi mật khẩu
+          {t('auth.changePassword.title')}
         </Title>
         <Text style={styles.subtitle}>
-          Để bảo mật tài khoản, vui lòng nhập mật khẩu hiện tại và mật khẩu mới
+          {t('auth.changePassword.subtitle')}
         </Text>
       </div>
 
@@ -74,32 +95,32 @@ const ChangePassword: React.FC = () => {
           <Form style={styles.form}>
             <div style={styles.inputGroup}>
               <CustomInputHide
-                label="Mật khẩu hiện tại"
+                label={t('auth.changePassword.currentPassword')}
                 name="currentPassword"
-                placeholder="Nhập mật khẩu hiện tại"
+                placeholder={t('auth.changePassword.currentPasswordPlaceholder')}
               />
             </div>
 
             <div style={styles.inputGroup}>
               <CustomInputHide
-                label="Mật khẩu mới"
+                label={t('auth.changePassword.newPassword')}
                 name="newPassword"
-                placeholder="Nhập mật khẩu mới"
+                placeholder={t('auth.changePassword.newPasswordPlaceholder')}
               />
             </div>
 
             <div style={styles.inputGroup}>
               <CustomInputHide
-                label="Xác nhận mật khẩu mới"
+                label={t('auth.changePassword.confirmNewPassword')}
                 name="confirmPassword"
-                placeholder="Nhập lại mật khẩu mới"
+                placeholder={t('auth.changePassword.confirmNewPasswordPlaceholder')}
               />
             </div>
 
             <div style={styles.buttonContainer}>
               <CustomButton
                 type="submit"
-                label="Đổi mật khẩu"
+                label={t('auth.changePassword.changePasswordButton')}
                 disabled={isLoading || isSubmitting}
                 loading={isLoading}
               />
@@ -122,6 +143,9 @@ const styles: {
     height: "100vh",
     overflowY: "auto",
     overflowX: "hidden",
+  },
+  backButton: {
+    marginBottom: SPACING.sm,
   },
   header: {
     textAlign: "center",

@@ -10,6 +10,7 @@ import { register } from "../../redux/slices/auth";
 import { useDispatch } from "../../redux/store";
 import { SignUpValidationSchema } from "../../validations/authValidation";
 import LoginMethods from "./components/LoginMethods";
+import { useTranslationWithRerender } from "../../hooks/useLanguageChange";
 
 const { Title, Text } = Typography;
 
@@ -32,6 +33,7 @@ const initialValues: SignUpValues = {
 const SignUp = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const { t } = useTranslationWithRerender();
 
     const handleSubmit = async (values: SignUpValues) => {
         const response = await dispatch(
@@ -54,10 +56,10 @@ const SignUp = () => {
 
             <div style={styles.header}>
                 <Title level={1} style={styles.title}>
-                    Đăng ký
+                    {t('auth.signup.title')}
                 </Title>
                 <Text style={styles.subtitle}>
-                    Tạo tài khoản mới để bắt đầu học tập
+                    {t('auth.signup.subtitle')}
                 </Text>
             </div>
 
@@ -71,7 +73,7 @@ const SignUp = () => {
                         <div style={styles.inputGroup}>
                             <Field name="fullName">
                                 {({ field }: any) => (
-                                    <InputForm {...field} placeholder="Nhập họ và tên" />
+                                    <InputForm {...field} placeholder={t('auth.signup.fullName')} />
                                 )}
                             </Field>
                         </div>
@@ -79,7 +81,7 @@ const SignUp = () => {
                         <div style={styles.inputGroup}>
                             <Field name="email">
                                 {({ field }: any) => (
-                                    <InputForm {...field} placeholder="Nhập email" />
+                                    <InputForm {...field} placeholder={t('auth.signup.email')} />
                                 )}
                             </Field>
                         </div>
@@ -87,7 +89,7 @@ const SignUp = () => {
                         <div style={styles.inputGroup}>
                             <Field name="password">
                                 {({ field }: any) => (
-                                    <InputFormHide {...field} placeholder="Nhập mật khẩu" />
+                                    <InputFormHide {...field} placeholder={t('auth.signup.password')} />
                                 )}
                             </Field>
                         </div>
@@ -95,7 +97,7 @@ const SignUp = () => {
                         <div style={styles.inputGroup}>
                             <Field name="cfPassword">
                                 {({ field }: any) => (
-                                    <InputFormHide {...field} placeholder="Xác nhận mật khẩu" />
+                                    <InputFormHide {...field} placeholder={t('auth.signup.confirmPassword')} />
                                 )}
                             </Field>
                         </div>
@@ -103,19 +105,19 @@ const SignUp = () => {
                         <div style={styles.checkboxContainer}>
                             <Checkbox style={styles.checkbox}>
                                 <Text style={styles.checkboxLabel}>
-                                    Tôi đồng ý với{" "}
+                                    {t('auth.signup.agreeTerms')}{" "}
                                     <Text style={styles.link}>
-                                        điều khoản L-Edu
+                                        {t('auth.signup.termsLink')}
                                     </Text>
                                 </Text>
                             </Checkbox>
                         </div>
 
                         <div style={styles.buttonContainer}>
-                            <ButtonForm label="Đăng ký" type="submit" />
+                            <ButtonForm label={t('auth.signup.signupButton')} type="submit" />
                         </div>
 
-                        <Divider style={styles.divider}>Hoặc</Divider>
+                        <Divider style={styles.divider}>{t('auth.signup.or')}</Divider>
 
                         <div style={styles.socialLogin}>
                             <LoginMethods />
@@ -123,9 +125,9 @@ const SignUp = () => {
 
                         <div style={styles.loginLink}>
                             <Text style={styles.text}>
-                                Đã có tài khoản?{" "}
+                                {t('auth.signup.hasAccount')}{" "}
                                 <Text style={styles.link}>
-                                    <a href="/login">Đăng nhập</a>
+                                    <a href="/login">{t('auth.signup.loginLink')}</a>
                                 </Text>
                             </Text>
                         </div>

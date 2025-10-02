@@ -44,6 +44,7 @@ import {
 import { COLORS, RADIUS, SPACING } from "../../constants/colors";
 import { getLanguageIcon, TerminalIcon } from "../../components/common/CodeIcons";
 import './CodeEditor.css';
+import { useTranslationWithRerender } from "../../hooks/useLanguageChange";
 
 const { Text, Title } = Typography;
 const { Option } = Select;
@@ -197,6 +198,7 @@ interface CodeEditorProps {
 }
 
 const CodeEditor: React.FC<CodeEditorProps> = ({ className = "" }) => {
+  const { t } = useTranslationWithRerender();
   const [files, setFiles] = useState<FileTab[]>([
     {
       key: "main.cpp",
@@ -608,28 +610,28 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ className = "" }) => {
           <Col>
             <Space size="large">
               <Title level={4} style={{ margin: 0, color: COLORS.primary[500] }}>
-                🔧 Online Code Editor
+                🔧 {t('codeEditor.title')}
               </Title>
-              <Text type="secondary">code. compile. run. debug. share.</Text>
+              <Text type="secondary">{t('codeEditor.subtitle')}</Text>
             </Space>
           </Col>
           
           <Col>
             <Space>
               {/* Language Selector */}
-              <Text strong>Language:</Text>
+              <Text strong>{t('codeEditor.language')}</Text>
               <Select
                 value={activeFile?.language}
                 onChange={handleLanguageChange}
                 style={{ width: 140 }}
               >
-                <Option value="cpp">C++</Option>
-                <Option value="c">C</Option>
-                <Option value="javascript">JavaScript</Option>
-                <Option value="python">Python</Option>
-                <Option value="java">Java</Option>
-                <Option value="html">HTML</Option>
-                <Option value="css">CSS</Option>
+                <Option value="cpp">{t('codeEditor.languages.cpp')}</Option>
+                <Option value="c">{t('codeEditor.languages.c')}</Option>
+                <Option value="javascript">{t('codeEditor.languages.javascript')}</Option>
+                <Option value="python">{t('codeEditor.languages.python')}</Option>
+                <Option value="java">{t('codeEditor.languages.java')}</Option>
+                <Option value="html">{t('codeEditor.languages.html')}</Option>
+                <Option value="css">{t('codeEditor.languages.css')}</Option>
               </Select>
               
               {/* Main Action Buttons */}
@@ -641,7 +643,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ className = "" }) => {
                 size="large"
                 style={{ backgroundColor: '#52c41a', borderColor: '#52c41a' }}
               >
-                Run
+                {t('codeEditor.run')}
               </Button>
               
               <Button

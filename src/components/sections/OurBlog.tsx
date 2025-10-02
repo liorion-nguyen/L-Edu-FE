@@ -2,23 +2,24 @@ import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 import { Button, Col, Row, Space, Typography } from "antd";
 import Title from "antd/es/typography/Title";
 import { CSSProperties } from "react";
+import { useTranslationWithRerender } from "../../hooks/useLanguageChange";
 import { COLORS } from "../../constants/colors";
 import SectionLayout from "../../layouts/SectionLayout";
 
 const { Text } = Typography;
 
 const OurBlog = () => {
+  const { t } = useTranslationWithRerender();
+  
   const blogs = [
     {
-      title: "Lorem Ipsum",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ut purus eget sapien egestas tincidunt. Nullam nec nunc nec libero ultricies ultricies.",
+      title: t('blog.post1.title'),
+      description: t('blog.post1.description'),
       image: "/images/landing/sections/fakeImages/blog.png",
     },
     {
-      title: "Lorem Ipsum",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ut purus eget sapien egestas tincidunt. Nullam nec nunc nec libero ultricies ultricies.",
+      title: t('blog.post2.title'),
+      description: t('blog.post2.description'),
       image: "/images/landing/sections/fakeImages/blog.png",
     },
   ];
@@ -30,16 +31,16 @@ const OurBlog = () => {
         <Col lg={8} md={12} sm={24} xs={24}>
           <Row justify="start" gutter={[20, 10]}>
             <Col span={24}>
-              <Text style={styles.subTitle}>Our Blog Post</Text>
+              <Text style={styles.subTitle}>{t('blog.subtitle')}</Text>
             </Col>
             <Col span={24}>
               <Title level={2} style={styles.title}>
-                Latest Post from Blog
+                {t('blog.title')}
               </Title>
             </Col>
             <Col span={24}>
               <Text style={styles.description}>
-                Turpis viverra pallentesque diam in. Eu elementum commodo faciisis massa senectus.
+                {t('blog.description')}
               </Text>
             </Col>
             <Col span={24}>
@@ -96,32 +97,32 @@ const styles: {
   cardDescription: CSSProperties;
 } = {
   section: {
-    background: COLORS.background.secondary,
+    background: "var(--bg-secondary)",
     padding: "50px 0",
   },
   subTitle: {
-    color: COLORS.accent[600],
+    color: "var(--accent-color)",
     fontSize: "16px",
     fontWeight: 500,
   },
   title: {
-    color: COLORS.text.heading,
+    color: "var(--text-primary)",
     fontSize: "28px",
     fontWeight: 600,
   },
   description: {
-    color: COLORS.text.secondary,
+    color: "var(--text-secondary)",
     fontSize: "15px",
     lineHeight: "1.6",
   },
   navButton: {
-    background: COLORS.background.primary,
-    border: `1px solid ${COLORS.border.light}`,
-    color: COLORS.text.primary,
+    background: "var(--bg-primary)",
+    border: "1px solid var(--border-color)",
+    color: "var(--text-primary)",
   },
   card: {
-    background: COLORS.background.primary,
-    border: `1px solid ${COLORS.border.light}`,
+    background: "var(--bg-primary)",
+    border: "1px solid var(--border-color)",
     borderRadius: "12px",
     padding: "20px",
   },
@@ -130,13 +131,13 @@ const styles: {
     width: "100%",
   },
   cardTitle: {
-    color: COLORS.text.heading,
+    color: "var(--text-primary)",
     marginTop: "10px",
     fontSize: "20px",
     fontWeight: 600,
   },
   cardDescription: {
-    color: COLORS.text.primary,
+    color: "var(--text-primary)",
     fontSize: "15px",
     lineHeight: "1.6",
   },

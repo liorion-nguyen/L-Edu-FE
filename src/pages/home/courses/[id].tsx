@@ -3,6 +3,7 @@ import { Button, Col, Flex, Grid, Image, Row, Typography } from "antd";
 import Title from "antd/es/typography/Title";
 import { CSSProperties, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { useTranslationWithRerender } from "../../../hooks/useLanguageChange";
 import Loading from "../../../components/common/Loading";
 import ReturnPage from "../../../components/common/ReturnPage";
 import { COLORS } from "../../../constants/colors";
@@ -17,17 +18,19 @@ const { Text } = Typography;
 const useBreakpoint = Grid.useBreakpoint;
 
 const Session = ({ item, index }: { item: any; index: number }) => {
+  const { t } = useTranslationWithRerender();
+  
   const sections = [
-    { name: "Note document", icon: "/images/icons/course/doc.png", id: item._id, status: item.modeNoteMd === Mode.OPEN },
-    { name: "Video document", icon: "/images/icons/course/video.png", id: item._id, status: item.modeVideoUrl === Mode.OPEN },
-    { name: "Quiz document", icon: "/images/icons/course/quiz.png", id: item._id, status: item.modeQuizId === Mode.OPEN },
+    { name: t('courseDetail.noteDocument'), icon: "/images/icons/course/doc.png", id: item._id, status: item.modeNoteMd === Mode.OPEN },
+    { name: t('courseDetail.videoDocument'), icon: "/images/icons/course/video.png", id: item._id, status: item.modeVideoUrl === Mode.OPEN },
+    { name: t('courseDetail.quizDocument'), icon: "/images/icons/course/quiz.png", id: item._id, status: item.modeQuizId === Mode.OPEN },
   ];
   const screens = useBreakpoint();
   const navigate = useNavigate();
   const handleView = (link: string, name: string) => {
-    if (name === "Note document") navigate(`/course/document/${link}`);
-    if (name === "Video document") navigate(`/course/video/${link}`);
-    if (name === "Quiz document") navigate(`/course/quiz/${link}`);
+    if (name === t('courseDetail.noteDocument')) navigate(`/course/document/${link}`);
+    if (name === t('courseDetail.videoDocument')) navigate(`/course/video/${link}`);
+    if (name === t('courseDetail.quizDocument')) navigate(`/course/quiz/${link}`);
   };
   const isAdmin = useIsAdmin();
 
@@ -37,12 +40,12 @@ const Session = ({ item, index }: { item: any; index: number }) => {
         <Row justify="space-between" align="middle" gutter={[10, 10]}>
           <Col xs={24} sm={24} md={20} lg={20}>
             <Title level={4} style={styles.sessionTitle}>
-              Lesson {item.sessionNumber}. {item.title}
+              {t('courseDetail.lesson')} {item.sessionNumber}. {item.title}
             </Title>
           </Col>
           <Col xs={24} sm={24} md={4} lg={4} style={{ textAlign: "right" }}>
             <EyeOutlined style={styles.viewIcon} />
-            <Text style={styles.viewText}>{item?.views || 0} views</Text>
+            <Text style={styles.viewText}>{item?.views || 0} {t('courseDetail.views')}</Text>
           </Col>
         </Row>
       </Col>
@@ -64,7 +67,7 @@ const Session = ({ item, index }: { item: any; index: number }) => {
                     disabled={!section.status}
                     onClick={() => handleView(section.id, section.name)}
                   >
-                    {!screens.md ? "" : (section.status ? "View" : "Locked")}
+                    {!screens.md ? "" : (section.status ? t('courseDetail.view') : t('courseDetail.locked'))}
                   </Button>
                 </Col>
               </Row>
@@ -82,7 +85,7 @@ const Session = ({ item, index }: { item: any; index: number }) => {
               onClick={() => navigate(`/session/updateSession/${item._id}`)}
               style={styles.updateButton}
             >
-              Update Session
+              {t('courseDetail.updateSession')}
             </Button>
           </Flex>
         </Col>
@@ -90,7 +93,7 @@ const Session = ({ item, index }: { item: any; index: number }) => {
       {item.mode === Mode.CLOSE && (
         <Flex style={styles.lock} justify="center" align="center" vertical>
           <LockOutlined style={styles.lockIcon} />
-          <Title level={3} style={styles.lockText}>Temporarily Locked</Title>
+          <Title level={3} style={styles.lockText}>{t('courseDetail.temporarilyLocked')}</Title>
         </Flex>
       )}
     </Row>
@@ -101,6 +104,7 @@ const CourseDetail = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const dispatch = useDispatch();
+  const { t } = useTranslationWithRerender();
   const { course, loading } = useSelector((state: RootState) => state.courses);
   const { user } = useSelector((state: RootState) => state.auth);
 
@@ -143,7 +147,7 @@ const CourseDetail = () => {
                   onClick={handleAddSession}
                   style={styles.addButton}
                 >
-                  Add Session
+                  {t('courseDetail.addSession')}
                 </Button>
               )}
             </Flex>
@@ -182,7 +186,7 @@ const styles: {
   [key: string]: CSSProperties;
 } = {
   sectionLayout: {
-    background: COLORS.background.secondary,
+    background: "var(--bg-secondary)",
     padding: "60px 0",
     position: "relative",
     overflow: "hidden",
@@ -190,12 +194,12 @@ const styles: {
   courseTitle: {
     fontSize: "36px",
     fontWeight: 700,
-    color: COLORS.text.heading,
+    color: "var(--text-primary)",
     marginBottom: "20px",
   },
   addButton: {
-    background: COLORS.primary[500],
-    color: COLORS.background.primary,
+    background: "var(--accent-color)",
+    color: "#ffffff",
     border: "none",
     borderRadius: "8px",
     fontWeight: 500,
@@ -207,63 +211,63 @@ const styles: {
     objectFit: "cover",
   },
   description: {
-    color: COLORS.text.primary,
+    color: "var(--text-primary)",
     fontSize: "16px",
     lineHeight: "1.8",
-    background: COLORS.background.primary,
+    background: "var(--bg-primary)",
     padding: "20px",
     borderRadius: "12px",
-    border: `1px solid ${COLORS.neutral[200]}`,
+    border: "1px solid var(--border-color)",
     margin: "20px 0",
   },
   container: {
     padding: "20px",
-    background: COLORS.background.primary,
+    background: "var(--bg-primary)",
     borderRadius: "12px",
-    border: `1px solid ${COLORS.neutral[200]}`,
+    border: "1px solid var(--border-color)",
     position: "relative",
   },
   sessionTitle: {
     fontSize: "20px",
     fontWeight: 600,
-    color: COLORS.text.heading,
+    color: "var(--text-primary)",
     marginTop: "10px",
   },
   viewIcon: {
-    color: COLORS.primary[500],
+    color: "var(--accent-color)",
     marginRight: "8px",
   },
   viewText: {
-    color: COLORS.text.secondary,
+    color: "var(--text-secondary)",
     fontSize: "14px",
   },
   boxSession: {
     padding: "10px",
-    background: COLORS.background.tertiary,
+    background: "var(--bg-tertiary)",
     borderRadius: "8px",
-    border: `1px solid ${COLORS.neutral[200]}`,
+    border: "1px solid var(--border-color)",
   },
   icon: {
     width: "30px",
     height: "30px",
   },
   sectionText: {
-    color: COLORS.text.primary,
+    color: "var(--text-primary)",
     fontSize: "16px",
   },
   boxButton: {
     textAlign: "right",
   },
   button: {
-    background: COLORS.primary[500],
-    color: COLORS.background.primary,
+    background: "var(--accent-color)",
+    color: "#ffffff",
     border: "none",
     borderRadius: "8px",
     fontWeight: 500,
   },
   updateButton: {
-    background: COLORS.primary[500],
-    color: COLORS.background.primary,
+    background: "var(--accent-color)",
+    color: "#ffffff",
     border: "none",
     borderRadius: "8px",
     fontWeight: 500,
@@ -272,7 +276,7 @@ const styles: {
     position: "absolute",
     top: 0,
     right: 0,
-    color: COLORS.text.secondary,
+    color: "var(--text-secondary)",
     width: "100%",
     height: "100%",
     background: "rgba(0, 0, 0, 0.7)",
@@ -282,9 +286,9 @@ const styles: {
   },
   lockIcon: {
     fontSize: "30px",
-    color: COLORS.primary[500],
+    color: "var(--accent-color)",
   },
   lockText: {
-    color: COLORS.text.primary,
+    color: "var(--text-primary)",
   },
 };

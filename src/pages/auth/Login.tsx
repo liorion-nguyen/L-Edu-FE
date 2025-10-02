@@ -2,6 +2,7 @@ import { Divider, Typography, notification } from "antd";
 import { Form, Formik } from "formik";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslationWithRerender } from "../../hooks/useLanguageChange";
 import CustomButton from "../../components/common/CustomButton";
 import CustomInput from "../../components/common/CustomInput";
 import CustomInputHide from "../../components/common/CustomInputHide";
@@ -22,6 +23,7 @@ const Login: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { t } = useTranslationWithRerender();
 
   const handleLogin = async (values: LoginFormData) => {
     setIsLoading(true);
@@ -30,20 +32,20 @@ const Login: React.FC = () => {
       console.log(response);
       if (response.payload == true) {
         notification.success({
-          message: "Đăng nhập thành công",
-          description: "Chào mừng bạn trở lại!",
+          message: t('auth.messages.loginSuccess'),
+          description: t('auth.messages.loginWelcome'),
         });
         navigate("/");
       } else {
         notification.error({
-          message: "Đăng nhập thất bại",
+          message: t('auth.messages.loginFailed'),
           description: response.payload as string || "Email hoặc mật khẩu không chính xác",
         });
       }
     } catch (error: any) {
       notification.error({
-        message: "Đăng nhập thất bại",
-        description: error.message || "Có lỗi xảy ra, vui lòng thử lại.",
+        message: t('auth.messages.loginFailed'),
+        description: error.message || t('common.error'),
       });
     } finally {
       setIsLoading(false);
@@ -54,10 +56,10 @@ const Login: React.FC = () => {
     <div style={styles.formContainer}>
       <div style={styles.header}>
         <Title level={2} style={styles.title}>
-          Đăng nhập
+          {t('auth.login.title')}
         </Title>
         <Text style={styles.subtitle}>
-          Chào mừng bạn trở lại L-Edu
+          {t('auth.login.subtitle')}
         </Text>
       </div>
 
@@ -70,7 +72,7 @@ const Login: React.FC = () => {
           <Form style={styles.form}>
             <div style={styles.inputGroup}>
               <CustomInput
-                label="Email"
+                label={t('auth.login.email')}
                 name="email"
                 type="email"
                 placeholder="Nhập email của bạn"
@@ -79,7 +81,7 @@ const Login: React.FC = () => {
 
             <div style={styles.inputGroup}>
               <CustomInputHide
-                label="Mật khẩu"
+                label={t('auth.login.password')}
                 name="password"
                 placeholder="Nhập mật khẩu"
               />
@@ -87,14 +89,14 @@ const Login: React.FC = () => {
 
             <div style={styles.forgotPassword}>
               <Link href="/forgot-password" style={styles.link}>
-                Quên mật khẩu?
+                {t('auth.login.forgotPassword')}
               </Link>
             </div>
 
             <div style={styles.buttonContainer}>
               <CustomButton
                 type="submit"
-                label="Đăng nhập"
+                label={t('auth.login.loginButton')}
                 disabled={isLoading || isSubmitting}
                 loading={isLoading}
               />
@@ -103,7 +105,7 @@ const Login: React.FC = () => {
         )}
       </Formik>
 
-      <Divider style={styles.divider}>Hoặc</Divider>
+      <Divider style={styles.divider}>{t('auth.login.or')}</Divider>
 
       <div style={styles.socialLogin}>
         <LoginMethods />
@@ -111,9 +113,9 @@ const Login: React.FC = () => {
 
       <div style={styles.registerLink}>
         <Text style={styles.text}>
-          Chưa có tài khoản?{" "}
+          {t('auth.login.noAccount')}{" "}
           <Link href="/signup" style={styles.link}>
-            Đăng ký ngay
+            {t('auth.login.signupLink')}
           </Link>
         </Text>
       </div>
@@ -138,14 +140,14 @@ const styles: {
         marginBottom: SPACING.md,
     },
     title: {
-        color: COLORS.text.heading,
+        color: "var(--text-primary)",
         marginBottom: "4px",
         fontWeight: 700,
         fontSize: "22px",
         letterSpacing: "-0.025em",
     },
     subtitle: {
-        color: COLORS.text.secondary,
+        color: "var(--text-secondary)",
         fontSize: "13px",
         fontWeight: 400,
     },
@@ -160,7 +162,7 @@ const styles: {
         marginBottom: "12px",
     },
     link: {
-        color: COLORS.primary[600],
+        color: "var(--accent-color)",
         fontWeight: 500,
         textDecoration: "none",
         transition: "color 0.2s ease",
@@ -172,8 +174,8 @@ const styles: {
     },
     divider: {
         margin: "8px 0",
-        borderColor: COLORS.border.light,
-        color: COLORS.text.muted,
+        borderColor: "var(--border-color)",
+        color: "var(--text-tertiary)",
         fontSize: "14px",
         fontWeight: 500,
     },
@@ -185,7 +187,7 @@ const styles: {
         marginTop: "8px",
     },
     text: {
-        color: COLORS.text.secondary,
+        color: "var(--text-secondary)",
         fontSize: "14px",
         fontWeight: 400,
     },

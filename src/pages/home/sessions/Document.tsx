@@ -2,6 +2,7 @@ import { EyeOutlined } from "@ant-design/icons";
 import { Col, Flex, Row, Typography } from "antd";
 import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { useTranslationWithRerender } from "../../../hooks/useLanguageChange";
 import Loading from "../../../components/common/Loading";
 import MarkdownViewer from "../../../components/common/MarkdownViewer";
 import ReturnPage from "../../../components/common/ReturnPage";
@@ -14,6 +15,7 @@ const Document = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const { t } = useTranslationWithRerender();
     const { session, loading } = useSelector((state: RootState) => state.courses);
     
     useEffect(() => {
@@ -39,7 +41,7 @@ const Document = () => {
                         <Col span={24}>
                             <Flex gap={5}>
                                 <EyeOutlined />
-                                <Text>{session?.views || 0} views</Text>
+                                <Text>{session?.views || 0} {t('courseDetail.views')}</Text>
                             </Flex>
                         </Col>
                         <Col span={24}>

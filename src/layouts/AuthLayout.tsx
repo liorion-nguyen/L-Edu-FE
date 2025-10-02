@@ -1,5 +1,6 @@
 import { Col, Layout, Row, Typography } from "antd";
 import React, { CSSProperties } from "react";
+import { useTranslationWithRerender } from "../hooks/useLanguageChange";
 import { COLORS } from "../constants/colors";
 
 const { Content } = Layout;
@@ -10,6 +11,8 @@ interface AuthLayoutProps {
 }
 
 const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => {
+  const { t } = useTranslationWithRerender();
+  
   return (
     <Layout style={styles.layout}>
       <Row style={{ width: "100%", height: "100vh" }}>
@@ -31,7 +34,7 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => {
           </div>
           <Content style={styles.content}>{children}</Content>
           <Text style={styles.footerText}>
-            © 2025 - Bản quyền thuộc về{" "}
+            © 2025 - {t('auth.copyright')}{" "}
             <Text style={styles.footerLink}>L-Edu</Text>.
           </Text>
         </Col>

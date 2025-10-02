@@ -1,12 +1,14 @@
 import { LogoutOutlined, UserOutlined, LockOutlined } from "@ant-design/icons";
 import { Avatar, Dropdown, Menu } from "antd";
 import { useNavigate } from "react-router-dom";
+import { useTranslationWithRerender } from "../../hooks/useLanguageChange";
 import { logout } from "../../redux/slices/auth";
 import { useDispatch } from "../../redux/store";
 
 const UserMenu = ({ user }: { user: any }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { t } = useTranslationWithRerender();
   
   const handleLogout = async () => {
     const response = await dispatch(logout());
@@ -21,10 +23,10 @@ const UserMenu = ({ user }: { user: any }) => {
       </Menu.Item>
       <Menu.Divider />
       <Menu.Item key="change-password" icon={<LockOutlined />} onClick={() => navigate('/change-password')}>
-        Đổi mật khẩu
+        {t('auth.changePassword.title')}
       </Menu.Item>
       <Menu.Item key="logout" icon={<LogoutOutlined />} onClick={handleLogout}>
-        Đăng xuất
+        {t('navigation.logout')}
       </Menu.Item>
     </Menu>
   );

@@ -1,13 +1,16 @@
-import { MenuOutlined, CodeOutlined } from "@ant-design/icons";
+import { MenuOutlined, CodeOutlined, LockOutlined, SunOutlined, MoonOutlined } from "@ant-design/icons";
 import { Button, Col, Drawer, Grid, Layout, Menu, Row, Typography } from "antd";
 import { CSSProperties, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useTranslationWithRerender } from "../../../hooks/useLanguageChange";
 import { localStorageConfig } from "../../../config";
 import { COLORS } from "../../../constants/colors";
 import SectionLayout from "../../../layouts/SectionLayout";
 import { getUser } from "../../../redux/slices/auth";
 import { RootState, useDispatch, useSelector } from "../../../redux/store";
 import UserMenu from "../UserMenu";
+import { useTheme } from "../../../contexts/ThemeContext";
+import LanguageSwitcher from "../../common/LanguageSwitcher";
 
 const { useBreakpoint } = Grid;
 const { Text } = Typography;
@@ -17,13 +20,15 @@ const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
+  const { theme, toggleTheme, isDark } = useTheme();
+  const { t, language } = useTranslationWithRerender();
   const [menuItems, setMenuItems] = useState([
-    { key: "/", label: "Home" },
-    { key: "/aboutus", label: "About" },
-    { key: "/course", label: "Course" },
+    { key: "/", label: t('navigation.home') },
+    { key: "/aboutus", label: t('navigation.about') },
+    { key: "/course", label: t('navigation.course') },
     { 
       key: "/code-editor", 
-      label: "Code Editor",
+      label: t('navigation.codeEditor'),
       icon: <CodeOutlined />
     },
   ]);
@@ -35,6 +40,20 @@ const Header = () => {
       dispatch(getUser());
     }
   }, [user, dispatch]);
+
+  // Update menu items when language changes
+  useEffect(() => {
+    setMenuItems([
+      { key: "/", label: t('navigation.home') },
+      { key: "/aboutus", label: t('navigation.about') },
+      { key: "/course", label: t('navigation.course') },
+      { 
+        key: "/code-editor", 
+        label: t('navigation.codeEditor'),
+        icon: <CodeOutlined />
+      },
+    ]);
+  }, [language, t]);
 
   const getSizeScreen = () => {
     return screens.md || screens.lg || screens.xl || screens.xxl;
@@ -58,23 +77,36 @@ const Header = () => {
     if (open) {
       if (user) {
         setMenuItems((prev: any) => {
-          const hasLogout = prev.find((item: any) => item.key === "logout");
-          if (!hasLogout) {
-            return [...prev, { key: "logout", label: "Logout" }];
-          }
-          return prev;
+          const filteredItems = prev.filter((item: any) => 
+            item.key !== "logout" && 
+            item.key !== "/login" && 
+            item.key !== "/change-password"
+          );
+          return [
+            ...filteredItems, 
+            { 
+              key: "/change-password", 
+              label: t('auth.changePassword.title'),
+              icon: <LockOutlined />
+            },
+            { key: "logout", label: t('navigation.logout') }
+          ];
         });
       } else {
         setMenuItems((prev: any) => {
           const hasLogin = prev.find((item: any) => item.key === "/login");
           if (!hasLogin) {
-            return [...prev, { key: "/login", label: "Login" }];
+            return [...prev, { key: "/login", label: t('navigation.login') }];
           }
           return prev;
         });
       }
     } else {
-      setMenuItems((prev) => prev.filter((item) => item.key !== "logout" && item.key !== "/login"));
+      setMenuItems((prev) => prev.filter((item) => 
+        item.key !== "logout" && 
+        item.key !== "/login" && 
+        item.key !== "/change-password"
+      ));
     }
   }, [open, user]);
 
@@ -126,26 +158,51 @@ const Header = () => {
 
           {/* Enroll Button + Menu Icon for mobile */}
           <Col lg={4} md={6} sm={6} xs={6} style={{ textAlign: "right" }}>
-            {user ? (
-              getSizeScreen() && <UserMenu user={user} />
-            ) : (
-              <Button
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'flex-end' }}>
+              {/* Language Switcher - chỉ hiển thị trên desktop */}
+              {getSizeScreen() && <LanguageSwitcher />}
+              
+              {/* Theme Toggle Button - chỉ hiển thị trên desktop */}
+              {getSizeScreen() && (
+                <Button
+                  type="text"
+                  icon={isDark ? <SunOutlined /> : <MoonOutlined />}
+                  onClick={toggleTheme}
+                  style={{
+                    color: isDark ? '#ffd700' : '#1890ff',
+                    fontSize: '18px',
+                    width: '40px',
+                    height: '40px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                  title={isDark ? t('theme.switchToLight') : t('theme.switchToDark')}
+                />
+              )}
+              
+              {user ? (
+                getSizeScreen() && <UserMenu user={user} />
+              ) : (
+                <Button
+                  style={{
+                    ...styles.button,
+                    display: getSizeScreen() ? "inline-flex" : "none",
+                  }}
+                  onClick={handleLogin}
+                >
+                  {t('course.enrollNow')}
+                </Button>
+              )}
+              
+              <MenuOutlined
                 style={{
-                  ...styles.button,
-                  display: getSizeScreen() ? "inline-flex" : "none",
+                  ...styles.menuIcon,
+                  display: getSizeScreen() ? "none" : "inline-flex",
                 }}
-                onClick={handleLogin}
-              >
-                Enroll Now
-              </Button>
-            )}
-            <MenuOutlined
-              style={{
-                ...styles.menuIcon,
-                display: getSizeScreen() ? "none" : "inline-flex",
-              }}
-              onClick={() => setOpen(true)}
-            />
+                onClick={() => setOpen(true)}
+              />
+            </div>
           </Col>
         </Row>
       </SectionLayout>
@@ -165,10 +222,43 @@ const Header = () => {
         <Menu
           mode="vertical"
           selectedKeys={[location.pathname]}
-          items={menuItems.map((item) => ({
-            ...item,
-            label: <Text style={styles.menuItem}>{item.label}</Text>,
-          }))}
+          items={[
+            // Language switcher item
+            {
+              key: 'language-switcher',
+              label: (
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <span>{t('language.switchLanguage')}</span>
+                  <LanguageSwitcher showIcon={false} />
+                </div>
+              ),
+            },
+            // Theme toggle item
+            {
+              key: 'theme-toggle',
+              label: (
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <span>{isDark ? t('theme.light') : t('theme.dark')}</span>
+                  <Button
+                    type="text"
+                    icon={isDark ? <SunOutlined /> : <MoonOutlined />}
+                    onClick={toggleTheme}
+                    style={{
+                      color: isDark ? '#ffd700' : '#1890ff',
+                      fontSize: '16px',
+                    }}
+                  />
+                </div>
+              ),
+            },
+            // Divider
+            { type: 'divider' },
+            // Other menu items
+            ...menuItems.map((item) => ({
+              ...item,
+              label: <Text style={styles.menuItem}>{item.label}</Text>,
+            }))
+          ]}
           onClick={handleDrawerMenuClick}
           style={styles.drawerMenu}
         />
@@ -239,16 +329,16 @@ const styles: {
     fontSize: "18px",
   },
   drawerTitle: {
-    color: COLORS.text.heading,
+    color: "var(--text-primary)",
     fontSize: "16px",
     fontWeight: 600,
   },
   drawerHeader: {
-    background: COLORS.background.primary,
-    borderBottom: `1px solid ${COLORS.border.light}`,
+    background: "var(--bg-primary)",
+    borderBottom: "1px solid var(--border-color)",
   },
   drawerBody: {
-    background: COLORS.background.primary,
+    background: "var(--bg-primary)",
     padding: "20px",
   },
   drawerMenu: {

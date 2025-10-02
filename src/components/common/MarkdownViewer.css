@@ -1,8 +1,122 @@
-/* MarkdownViewer Styles - Modern Design System */
+/* MarkdownViewer Styles - Modern Design System with Dark Mode Support */
 .markdown-viewer {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   line-height: 1.7;
-  color: #4A4A4A;
+  color: var(--text-primary);
+}
+
+/* Dark mode overrides */
+[data-theme="dark"] .markdown-viewer {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .aui-md-h1,
+[data-theme="dark"] .aui-md-h2,
+[data-theme="dark"] .aui-md-h3,
+[data-theme="dark"] .aui-md-h4,
+[data-theme="dark"] .aui-md-h5,
+[data-theme="dark"] .aui-md-h6 {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .aui-md-p {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .aui-md-a {
+  color: var(--accent-color);
+}
+
+[data-theme="dark"] .aui-md-a:hover {
+  color: var(--accent-color);
+  opacity: 0.8;
+}
+
+[data-theme="dark"] .aui-md-blockquote {
+  background: var(--bg-secondary);
+  border-left-color: var(--accent-color);
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .aui-md-hr {
+  border-bottom-color: var(--border-color);
+}
+
+[data-theme="dark"] .aui-md-table {
+  border-color: var(--border-color);
+  background: var(--bg-primary);
+}
+
+[data-theme="dark"] .aui-md-th {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border-bottom-color: var(--border-color);
+}
+
+[data-theme="dark"] .aui-md-td {
+  border-color: var(--border-color);
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .aui-md-tr:hover {
+  background-color: var(--bg-secondary);
+}
+
+[data-theme="dark"] .aui-md-tr:nth-child(even) {
+  background-color: var(--bg-tertiary);
+}
+
+[data-theme="dark"] .aui-md-tr:nth-child(even):hover {
+  background-color: var(--bg-secondary);
+}
+
+[data-theme="dark"] .aui-md-pre {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .aui-md-inline-code {
+  background: var(--bg-tertiary);
+  color: var(--accent-color);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .aui-md-strong {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .aui-md-em {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .aui-code-header-root {
+  background: var(--accent-color);
+  color: white;
+  border-color: var(--accent-color);
+}
+
+[data-theme="dark"] .markdown-viewer .table-wrapper {
+  background: var(--bg-primary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .markdown-viewer td code,
+[data-theme="dark"] .aui-md-td code {
+  background: var(--bg-tertiary);
+  color: var(--accent-color);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .markdown-viewer table a,
+[data-theme="dark"] .aui-md-table a {
+  color: var(--accent-color);
+}
+
+[data-theme="dark"] .markdown-viewer table a:hover,
+[data-theme="dark"] .aui-md-table a:hover {
+  color: var(--accent-color);
+  opacity: 0.8;
 }
 
 /* Running indicator for loading content */

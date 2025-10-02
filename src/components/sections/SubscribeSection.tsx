@@ -1,5 +1,6 @@
 import { Button, Col, Grid, Input, Row } from "antd";
 import Title from "antd/es/typography/Title";
+import { useTranslationWithRerender } from "../../hooks/useLanguageChange";
 import SectionLayout from "../../layouts/SectionLayout";
 import { SendOutlined } from "@ant-design/icons";
 import { CSSProperties } from "react";
@@ -8,6 +9,7 @@ const { useBreakpoint } = Grid;
 
 const SubscribeSection = () => {
   const screens = useBreakpoint();
+  const { t } = useTranslationWithRerender();
 
   const getPadding = () => {
     if (screens.lg) return "50px 25%";
@@ -25,16 +27,16 @@ const SubscribeSection = () => {
         gutter={[0, 20]}
       >
         <Title level={2} style={styles.title}>
-          If you’re interested in our courses and want to know our latest news, please subscribe to our newsletter
+          {t('subscribe.title')}
         </Title>
         <Col span={24}>
           <div style={styles.form}>
-            <Input placeholder="Enter your email" style={styles.input} />
+            <Input placeholder={t('subscribe.emailPlaceholder')} style={styles.input} />
             <Button
               style={styles.button}
               icon={screens.md ? undefined : <SendOutlined />}
             >
-              {screens.md ? "Subscribe" : ""}
+              {screens.md ? t('subscribe.button') : ""}
             </Button>
           </div>
         </Col>
@@ -70,17 +72,16 @@ const styles: {
   },
   title: {
     textAlign: "center",
-    color: "#B0E0E6", // Pale teal for text
-    textShadow: "0 0 5px rgba(78, 205, 196, 0.3)", // Subtle teal glow
+    color: "var(--text-primary)",
+    textShadow: "0 0 5px var(--shadow)",
   },
   form: {
-    // border: 0,
     borderRadius: "20px",
     padding: "10px 20px",
-    background: "rgba(78, 205, 196, 0.05)", // Teal undertone for glassmorphism
+    background: "var(--bg-primary)",
     backdropFilter: "blur(10px)",
-    border: "1px solid rgba(78, 205, 196, 0.2)", // Teal border
-    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.5), 0 0 10px rgba(78, 205, 196, 0.2)", // Teal glow
+    border: "1px solid var(--border-color)",
+    boxShadow: "0 4px 12px var(--shadow)",
     width: "100%",
     display: "flex",
     alignItems: "center",
@@ -93,7 +94,7 @@ const styles: {
     boxShadow: "none",
     fontSize: "16px",
     flex: 1,
-    color: "#B0E0E6", // Pale teal for text
+    color: "var(--text-primary)",
   },
   button: {
     background: "linear-gradient(45deg, #4ECDC4, #1A4A4A)", // Teal gradient

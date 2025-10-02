@@ -1,0 +1,392 @@
+{
+  "common": {
+    "loading": "Đang tải...",
+    "error": "Có lỗi xảy ra",
+    "success": "Thành công",
+    "cancel": "Hủy",
+    "confirm": "Xác nhận",
+    "save": "Lưu",
+    "edit": "Chỉnh sửa",
+    "delete": "Xóa",
+    "back": "Quay lại",
+    "next": "Tiếp theo",
+    "previous": "Trước đó",
+    "close": "Đóng",
+    "open": "Mở",
+    "search": "Tìm kiếm",
+    "filter": "Lọc",
+    "sort": "Sắp xếp",
+    "refresh": "Làm mới",
+    "submit": "Gửi",
+    "reset": "Đặt lại",
+    "yes": "Có",
+    "no": "Không",
+    "ok": "OK",
+    "continue": "Tiếp tục",
+    "finish": "Hoàn thành",
+    "start": "Bắt đầu",
+    "stop": "Dừng",
+    "pause": "Tạm dừng",
+    "resume": "Tiếp tục",
+    "retry": "Thử lại",
+    "skip": "Bỏ qua",
+    "view": "Xem",
+    "hide": "Ẩn",
+    "show": "Hiện",
+    "more": "Thêm",
+    "less": "Ít hơn",
+    "all": "Tất cả",
+    "none": "Không có",
+    "select": "Chọn",
+    "clear": "Xóa",
+    "upload": "Tải lên",
+    "download": "Tải xuống",
+    "copy": "Sao chép",
+    "paste": "Dán",
+    "cut": "Cắt",
+    "undo": "Hoàn tác",
+    "redo": "Làm lại",
+    "returnToPrevious": "Quay lại trang trước"
+  },
+  "navigation": {
+    "home": "Trang chủ",
+    "about": "Giới thiệu",
+    "course": "Khóa học",
+    "codeEditor": "Code Editor",
+    "login": "Đăng nhập",
+    "signup": "Đăng ký",
+    "logout": "Đăng xuất",
+    "profile": "Hồ sơ",
+    "settings": "Cài đặt",
+    "changePassword": "Đổi mật khẩu"
+  },
+  "auth": {
+    "login": {
+      "title": "Đăng nhập",
+      "subtitle": "Chào mừng bạn trở lại L-Edu",
+      "email": "Email",
+      "password": "Mật khẩu",
+      "forgotPassword": "Quên mật khẩu?",
+      "loginButton": "Đăng nhập",
+      "or": "Hoặc",
+      "noAccount": "Chưa có tài khoản?",
+      "signupLink": "Đăng ký ngay",
+      "loginWith": "Đăng nhập bằng"
+    },
+    "signup": {
+      "title": "Đăng ký",
+      "subtitle": "Tạo tài khoản mới để bắt đầu học tập",
+      "fullName": "Họ và tên",
+      "email": "Email",
+      "password": "Mật khẩu",
+      "confirmPassword": "Xác nhận mật khẩu",
+      "agreeTerms": "Tôi đồng ý với",
+      "termsLink": "điều khoản L-Edu",
+      "signupButton": "Đăng ký",
+      "or": "Hoặc",
+      "hasAccount": "Đã có tài khoản?",
+      "loginLink": "Đăng nhập",
+      "signupWith": "Đăng ký bằng"
+    },
+    "changePassword": {
+      "title": "Đổi mật khẩu",
+      "subtitle": "Để bảo mật tài khoản, vui lòng nhập mật khẩu hiện tại và mật khẩu mới",
+      "currentPassword": "Mật khẩu hiện tại",
+      "currentPasswordPlaceholder": "Nhập mật khẩu hiện tại",
+      "newPassword": "Mật khẩu mới",
+      "newPasswordPlaceholder": "Nhập mật khẩu mới",
+      "confirmNewPassword": "Xác nhận mật khẩu mới",
+      "confirmNewPasswordPlaceholder": "Nhập lại mật khẩu mới",
+      "changePasswordButton": "Đổi mật khẩu",
+      "backButton": "Quay lại"
+    },
+    "copyright": "Bản quyền thuộc về",
+    "validation": {
+      "emailRequired": "Email là bắt buộc",
+      "emailInvalid": "Email không hợp lệ",
+      "passwordRequired": "Mật khẩu là bắt buộc",
+      "passwordMinLength": "Mật khẩu phải có ít nhất 6 ký tự",
+      "fullNameRequired": "Họ và tên là bắt buộc",
+      "confirmPasswordRequired": "Xác nhận mật khẩu là bắt buộc",
+      "passwordsNotMatch": "Mật khẩu xác nhận không khớp",
+      "currentPasswordRequired": "Mật khẩu hiện tại là bắt buộc"
+    },
+    "messages": {
+      "loginSuccess": "Đăng nhập thành công",
+      "loginWelcome": "Chào mừng bạn trở lại!",
+      "loginFailed": "Đăng nhập thất bại",
+      "signupSuccess": "Đăng ký thành công",
+      "signupFailed": "Đăng ký thất bại",
+      "changePasswordSuccess": "Đổi mật khẩu thành công",
+      "changePasswordFailed": "Đổi mật khẩu thất bại",
+      "passwordUpdated": "Mật khẩu của bạn đã được cập nhật"
+    }
+  },
+  "course": {
+    "title": "Khóa học",
+    "ourCourses": "Khóa học của chúng tôi",
+    "sessions": "buổi học",
+    "locked": "Đã khóa",
+    "joinCourse": "Tham gia khóa học",
+    "update": "Cập nhật",
+    "createNewCourse": "Tạo khóa học mới",
+    "adminOnly": "Chỉ Admin mới có quyền tạo khóa học mới",
+    "searchPlaceholder": "Tìm kiếm khóa học...",
+    "lessons": "bài học",
+    "enrollNow": "Đăng ký ngay",
+    "noCourses": "Chưa có khóa học nào",
+    "loading": "Đang tải khóa học...",
+    "error": "Có lỗi khi tải khóa học",
+    "retry": "Thử lại",
+    "createCourse": "Tạo khóa học",
+    "updateCourse": "Cập nhật khóa học",
+    "courseCreated": "Khóa học đã được tạo",
+    "courseUpdated": "Khóa học đã được cập nhật",
+    "courseDeleted": "Khóa học đã được xóa"
+  },
+  "chatbot": {
+    "title": "L-Edu Assistant",
+    "placeholder": "Nhập tin nhắn...",
+    "send": "Gửi",
+    "clear": "Xóa cuộc trò chuyện",
+    "typing": "AI đang trả lời...",
+    "clearConfirm": "Bạn có chắc chắn muốn xóa cuộc trò chuyện?",
+    "clearSuccess": "Đã xóa cuộc trò chuyện và tạo mới (ảnh cũng đã được xóa khỏi Cloudinary)",
+    "addImage": "Thêm ảnh",
+    "viewLarge": "🔍 Xem lớn",
+    "removeImage": "Xóa ảnh"
+  },
+  "theme": {
+    "light": "Chế độ sáng",
+    "dark": "Chế độ tối",
+    "switchToLight": "Chuyển sang chế độ sáng",
+    "switchToDark": "Chuyển sang chế độ tối"
+  },
+  "language": {
+    "vietnamese": "Tiếng Việt",
+    "english": "English",
+    "switchLanguage": "Chuyển đổi ngôn ngữ"
+  },
+  "about": {
+    "title": "Giới thiệu",
+    "welcome": "Chào mừng đến với nền tảng học lập trình của chúng tôi! 🚀",
+    "description1": "Chúng tôi cam kết giúp bạn thành thạo phát triển web, Python và các lĩnh vực lập trình khác. Dù bạn là người mới bắt đầu hay developer có kinh nghiệm muốn nâng cao kỹ năng, nền tảng của chúng tôi cung cấp hướng dẫn toàn diện, dự án thực hành và hướng dẫn chuyên gia để hỗ trợ hành trình của bạn.",
+    "description2": "Từ việc xây dựng ứng dụng web hiện đại đến thành thạo khoa học dữ liệu với Python, chúng tôi làm cho việc học trở nên tương tác, thực tế và dễ tiếp cận. Hãy cùng code, tạo ra và đổi mới! 💻✨",
+    "team": "Đội ngũ",
+    "member1": {
+      "name": "Nguyễn Thanh Tùng",
+      "description": "Là một lập trình viên tại L Edu, Nguyễn Thanh Tùng có nhiều năm kinh nghiệm trong phát triển web và ứng dụng. Với tư duy sáng tạo và kỹ năng chuyên môn vững vàng, anh luôn mang đến những bài giảng thực tế và dễ hiểu cho học viên."
+    },
+    "member2": {
+      "name": "Trần Minh Đức",
+      "description": "Trần Minh Đức là một chuyên gia trong lĩnh vực phát triển phần mềm với nhiều năm kinh nghiệm. Anh có kiến thức sâu rộng về các công nghệ web hiện đại và luôn sẵn sàng chia sẻ kinh nghiệm với học viên."
+    },
+    "member3": {
+      "name": "Lê Thị Hồng Nhung",
+      "description": "Lê Thị Hồng Nhung, Tech Lead tại L Edu, là chuyên gia trong lĩnh vực phát triển phần mềm. Với nhiều năm kinh nghiệm quản lý dự án và xây dựng hệ thống lớn, anh mang đến cho học viên những kiến thức chuyên sâu và kỹ năng thực chiến."
+    },
+    "unlockPotential": "Khơi dậy tiềm năng lập trình của bạn",
+    "believeLearning": "Chúng tôi tin rằng việc học lập trình mở ra vô số cơ hội cho sự sáng tạo và đổi mới.",
+    "expertInstructors": "Với đội ngũ giảng viên chuyên nghiệp và các dự án thực hành, chúng tôi cam kết cung cấp các khóa học lập trình chất lượng cao, từ phát triển web đến Python và hơn thế nữa.",
+    "meetTeam": "Gặp gỡ đội ngũ của chúng tôi",
+    "contactUs": "Liên hệ với chúng tôi",
+    "haveQuestions": "Có câu hỏi? Hãy liên hệ với chúng tôi tại",
+    "address": "Địa chỉ",
+    "addressValue": "Cầu Giấy, Hà Nội, Việt Nam",
+    "phone": "Điện thoại",
+    "followUs": "Theo dõi chúng tôi trên",
+    "ourTeachers": "Giảng viên của chúng tôi",
+    "ourTeachersDescription": "Các giảng viên của chúng tôi là những nhà phát triển có kinh nghiệm và các chuyên gia trong ngành, đam mê chia sẻ kiến thức. Với nhiều năm kinh nghiệm thực tế trong phát triển phần mềm, họ cung cấp những hiểu biết thực tế, phương pháp tốt nhất và sự hướng dẫn tận tình.\n\nMỗi bài học được thiết kế để hấp dẫn và dễ theo dõi, đảm bảo bạn học được không chỉ lý thuyết mà còn cách áp dụng hiệu quả. Dù bạn cần hướng dẫn về debug, tối ưu hóa hiệu suất, hay chuẩn bị cho phỏng vấn xin việc, các giảng viên tận tâm của chúng tôi luôn sẵn sàng hỗ trợ bạn từng bước! 🚀",
+    "learnMore": "Tìm hiểu thêm",
+    "ourCoursesDescription": "Chúng tôi cung cấp nhiều khóa học lập trình được thiết kế để trang bị cho bạn những kỹ năng cần thiết để phát triển trong ngành công nghệ. Dù bạn muốn xây dựng ứng dụng web hiện đại, phát triển ứng dụng di động, hay khám phá khoa học dữ liệu với Python, các khóa học có cấu trúc của chúng tôi cung cấp các dự án thực hành, ứng dụng thực tế và kiến thức chuyên sâu.\n\nTừ HTML, CSS, JavaScript, React, và Next.js đến Python, AI, và phát triển backend với NestJS, chương trình học của chúng tôi được thiết kế cho cả người mới bắt đầu và người học nâng cao. Dù bạn bắt đầu từ đâu, bạn sẽ có được kinh nghiệm thực tế và tự tin trong lập trình!"
+  },
+  "mentors": {
+    "title": "Mentor khóa học của chúng tôi",
+    "mentor1": {
+      "title": "Mentor về React Native"
+    },
+    "mentor2": {
+      "title": "Mentor về React"
+    },
+    "mentor3": {
+      "title": "Mentor về Lập trình Web cơ bản"
+    },
+    "mentor4": {
+      "title": "Mentor về Phát triển Web"
+    }
+  },
+  "partners": {
+    "title": "Mạng lưới đối tác"
+  },
+  "subscribe": {
+    "title": "Nếu bạn quan tâm đến các khóa học của chúng tôi và muốn biết tin tức mới nhất, hãy đăng ký nhận bản tin của chúng tôi",
+    "emailPlaceholder": "Nhập email của bạn",
+    "button": "Đăng ký"
+  },
+  "blog": {
+    "subtitle": "Bài viết blog của chúng tôi",
+    "title": "Bài viết mới nhất từ blog",
+    "description": "Khám phá những bài viết mới nhất về lập trình, công nghệ và kinh nghiệm học tập từ đội ngũ chuyên gia của chúng tôi.",
+    "post1": {
+      "title": "Hướng dẫn React Native cho người mới bắt đầu",
+      "description": "Tìm hiểu cách xây dựng ứng dụng di động đa nền tảng với React Native từ cơ bản đến nâng cao."
+    },
+    "post2": {
+      "title": "JavaScript ES6+ - Những tính năng quan trọng",
+      "description": "Khám phá các tính năng mới trong JavaScript ES6+ giúp bạn viết code hiệu quả và hiện đại hơn."
+    }
+  },
+  "categories": {
+    "title": "Khám phá danh mục",
+    "courses": "khóa học",
+    "webBasic": "Web Cơ bản",
+    "webDeveloper": "Phát triển Web",
+    "computerScience": "Khoa học Máy tính",
+    "appProducer": "Sản xuất Ứng dụng",
+    "dataScience": "Khoa học Dữ liệu",
+    "reactReactNative": "React & React Native",
+    "javascriptBasic": "JavaScript Cơ bản",
+    "codementum": "Codementum"
+  },
+  "statistics": {
+    "studentsEnrolled": "Học viên đã đăng ký",
+    "expertMentors": "Mentor chuyên gia",
+    "studentReviews": "Đánh giá học viên",
+    "success": "Thành công"
+  },
+  "codeEditor": {
+    "title": "🔧 Online Code Editor",
+    "subtitle": "code. compile. run. debug. share.",
+    "language": "Ngôn ngữ:",
+    "run": "Chạy",
+    "debug": "Debug",
+    "share": "Chia sẻ",
+    "newFile": "File mới",
+    "saveFile": "Lưu file",
+    "loadFile": "Tải file",
+    "fullscreen": "Toàn màn hình",
+    "exitFullscreen": "Thoát toàn màn hình",
+    "console": "Console",
+    "output": "Kết quả",
+    "input": "Đầu vào",
+    "compile": "Biên dịch",
+    "execute": "Thực thi",
+    "clear": "Xóa",
+    "copyCode": "Sao chép code",
+    "downloadCode": "Tải xuống code",
+    "shareCode": "Chia sẻ code",
+    "languages": {
+      "cpp": "C++",
+      "c": "C",
+      "javascript": "JavaScript",
+      "python": "Python",
+      "java": "Java",
+      "html": "HTML",
+      "css": "CSS"
+    },
+    "placeholders": {
+      "cpp": "// Viết code C++ của bạn ở đây\n#include <iostream>\nusing namespace std;\n\nint main() {\n    cout << \"Hello World!\" << endl;\n    return 0;\n}",
+      "c": "// Viết code C của bạn ở đây\n#include <stdio.h>\n\nint main() {\n    printf(\"Hello World!\\n\");\n    return 0;\n}",
+      "javascript": "// Viết code JavaScript của bạn ở đây\nconsole.log('Hello World!');",
+      "python": "# Viết code Python của bạn ở đây\nprint('Hello World!')",
+      "java": "// Viết code Java của bạn ở đây\npublic class Main {\n    public static void main(String[] args) {\n        System.out.println(\"Hello World!\");\n    }\n}",
+      "html": "<!-- Viết HTML của bạn ở đây -->\n<!DOCTYPE html>\n<html>\n<head>\n    <title>Hello World</title>\n</head>\n<body>\n    <h1>Hello World!</h1>\n</body>\n</html>",
+      "css": "/* Viết CSS của bạn ở đây */\nbody {\n    font-family: Arial, sans-serif;\n    margin: 0;\n    padding: 20px;\n}"
+    },
+    "messages": {
+      "running": "Đang chạy...",
+      "compiled": "Biên dịch thành công",
+      "executed": "Thực thi thành công",
+      "error": "Lỗi",
+      "noCode": "Không có code để chạy",
+      "selectLanguage": "Vui lòng chọn ngôn ngữ",
+      "fileSaved": "File đã được lưu",
+      "fileLoaded": "File đã được tải",
+      "codeCopied": "Code đã được sao chép",
+      "codeShared": "Code đã được chia sẻ"
+    }
+  },
+  "hero": {
+    "title": "Học lập trình từ cơ bản đến nâng cao",
+    "subtitle": "Khám phá thế giới lập trình với các khóa học chất lượng cao, được thiết kế bởi các chuyên gia hàng đầu",
+    "enrolled": "học viên đã đăng ký",
+    "getStarted": "Bắt đầu học ngay",
+    "learnMore": "Tìm hiểu thêm"
+  },
+  "courseOverview": {
+    "title": "Tại sao chọn L-Edu?",
+    "feature1": {
+      "title": "Khóa học chất lượng cao",
+      "description": "Các khóa học được thiết kế bởi chuyên gia với nội dung cập nhật và thực tế"
+    },
+    "feature2": {
+      "title": "Hỗ trợ 24/7",
+      "description": "Đội ngũ mentor luôn sẵn sàng hỗ trợ bạn trong quá trình học tập"
+    },
+    "feature3": {
+      "title": "Dự án thực tế",
+      "description": "Thực hành với các dự án thực tế để nâng cao kỹ năng lập trình"
+    },
+    "feature4": {
+      "title": "Chứng chỉ hoàn thành",
+      "description": "Nhận chứng chỉ sau khi hoàn thành khóa học để chứng minh năng lực"
+    }
+  },
+  "reviews": {
+    "title": "Đánh giá từ học viên",
+    "subtitle": "Những chia sẻ chân thực từ cộng đồng học viên của chúng tôi",
+    "loadMore": "Xem thêm đánh giá",
+    "noReviews": "Chưa có đánh giá nào",
+    "review1": "Khoá học rất bổ ích! Giảng viên hướng dẫn chi tiết, giúp mình hiểu rõ cách xây dựng ứng dụng di động với React Native. Mình có thể tự tin làm một app cơ bản sau khi hoàn thành khoá học.",
+    "review2": "Mình đã học nhiều khoá về lập trình trước đây nhưng đây là khoá React Native dễ hiểu nhất. Giảng viên dạy rất có tâm, nội dung bài học thực tế và có nhiều bài tập giúp mình thực hành ngay.",
+    "review3": "Khoá học tuyệt vời! Mình đã có chút kiến thức về JavaScript, sau khi học xong khoá này mình có thể tự viết ứng dụng React Native hoàn chỉnh. Cảm ơn đội ngũ giảng viên!"
+  },
+  "footer": {
+    "company": "Công ty",
+    "aboutUs": "Về chúng tôi",
+    "contact": "Liên hệ",
+    "careers": "Tuyển dụng",
+    "support": "Hỗ trợ",
+    "helpCenter": "Trung tâm trợ giúp",
+    "documentation": "Tài liệu",
+    "community": "Cộng đồng",
+    "legal": "Pháp lý",
+    "privacy": "Chính sách bảo mật",
+    "terms": "Điều khoản sử dụng",
+    "cookies": "Chính sách cookie",
+    "followUs": "Theo dõi chúng tôi",
+    "newsletter": "Đăng ký nhận tin",
+    "newsletterPlaceholder": "Nhập email của bạn",
+    "subscribe": "Đăng ký",
+    "copyright": "© 2024 L-Edu. Tất cả quyền được bảo lưu.",
+    "madeWith": "Được tạo với ❤️ bởi đội ngũ L-Edu",
+    "description": "Nền tảng học lập trình toàn diện",
+    "course": "Khóa học",
+    "contactInfo": "Thông tin liên hệ",
+    "courses": "Khóa học",
+    "features": "Tính năng",
+    "design": "Thiết kế",
+    "language": "Ngôn ngữ",
+    "marketing": "Marketing",
+    "testimonial": "Đánh giá",
+    "developer": "Developer"
+  },
+  "courseDetail": {
+    "lesson": "Bài học",
+    "views": "lượt xem",
+    "view": "Xem",
+    "locked": "Đã khóa",
+    "updateSession": "Cập nhật bài học",
+    "temporarilyLocked": "Tạm thời bị khóa",
+    "addSession": "Thêm bài học",
+    "noteDocument": "Tài liệu ghi chú",
+    "videoDocument": "Tài liệu video",
+    "quizDocument": "Tài liệu quiz",
+    "courseDescription": "Mô tả khóa học",
+    "sessions": "Các bài học",
+    "noSessions": "Chưa có bài học nào",
+    "loading": "Đang tải khóa học...",
+    "error": "Có lỗi khi tải khóa học",
+    "retry": "Thử lại"
+  }
+}

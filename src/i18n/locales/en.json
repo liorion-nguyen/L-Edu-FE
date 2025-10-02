@@ -1,0 +1,392 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "success": "Success",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "save": "Save",
+    "edit": "Edit",
+    "delete": "Delete",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "close": "Close",
+    "open": "Open",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "refresh": "Refresh",
+    "submit": "Submit",
+    "reset": "Reset",
+    "yes": "Yes",
+    "no": "No",
+    "ok": "OK",
+    "continue": "Continue",
+    "finish": "Finish",
+    "start": "Start",
+    "stop": "Stop",
+    "pause": "Pause",
+    "resume": "Resume",
+    "retry": "Retry",
+    "skip": "Skip",
+    "view": "View",
+    "hide": "Hide",
+    "show": "Show",
+    "more": "More",
+    "less": "Less",
+    "all": "All",
+    "none": "None",
+    "select": "Select",
+    "clear": "Clear",
+    "upload": "Upload",
+    "download": "Download",
+    "copy": "Copy",
+    "paste": "Paste",
+    "cut": "Cut",
+    "undo": "Undo",
+    "redo": "Redo",
+    "returnToPrevious": "Return to previous page"
+  },
+  "navigation": {
+    "home": "Home",
+    "about": "About",
+    "course": "Course",
+    "codeEditor": "Code Editor",
+    "login": "Login",
+    "signup": "Sign Up",
+    "logout": "Logout",
+    "profile": "Profile",
+    "settings": "Settings",
+    "changePassword": "Change Password"
+  },
+  "auth": {
+    "login": {
+      "title": "Login",
+      "subtitle": "Welcome back to L-Edu",
+      "email": "Email",
+      "password": "Password",
+      "forgotPassword": "Forgot password?",
+      "loginButton": "Login",
+      "or": "Or",
+      "noAccount": "Don't have an account?",
+      "signupLink": "Sign up now",
+      "loginWith": "Login with"
+    },
+    "signup": {
+      "title": "Sign Up",
+      "subtitle": "Create a new account to start learning",
+      "fullName": "Full Name",
+      "email": "Email",
+      "password": "Password",
+      "confirmPassword": "Confirm Password",
+      "agreeTerms": "I agree with",
+      "termsLink": "L-Edu terms",
+      "signupButton": "Sign Up",
+      "or": "Or",
+      "hasAccount": "Already have an account?",
+      "loginLink": "Login",
+      "signupWith": "Sign up with"
+    },
+    "changePassword": {
+      "title": "Change Password",
+      "subtitle": "To secure your account, please enter your current password and new password",
+      "currentPassword": "Current Password",
+      "currentPasswordPlaceholder": "Enter current password",
+      "newPassword": "New Password",
+      "newPasswordPlaceholder": "Enter new password",
+      "confirmNewPassword": "Confirm New Password",
+      "confirmNewPasswordPlaceholder": "Re-enter new password",
+      "changePasswordButton": "Change Password",
+      "backButton": "Back"
+    },
+    "copyright": "Copyright belongs to",
+    "validation": {
+      "emailRequired": "Email is required",
+      "emailInvalid": "Invalid email",
+      "passwordRequired": "Password is required",
+      "passwordMinLength": "Password must be at least 6 characters",
+      "fullNameRequired": "Full name is required",
+      "confirmPasswordRequired": "Confirm password is required",
+      "passwordsNotMatch": "Passwords do not match",
+      "currentPasswordRequired": "Current password is required"
+    },
+    "messages": {
+      "loginSuccess": "Login successful",
+      "loginWelcome": "Welcome back!",
+      "loginFailed": "Login failed",
+      "signupSuccess": "Sign up successful",
+      "signupFailed": "Sign up failed",
+      "changePasswordSuccess": "Password changed successfully",
+      "changePasswordFailed": "Failed to change password",
+      "passwordUpdated": "Your password has been updated"
+    }
+  },
+  "course": {
+    "title": "Courses",
+    "ourCourses": "Our Courses",
+    "sessions": "sessions",
+    "locked": "Locked",
+    "joinCourse": "Join Course",
+    "update": "Update",
+    "createNewCourse": "Create New Course",
+    "adminOnly": "Only Admin can create new courses",
+    "searchPlaceholder": "Search for a course...",
+    "lessons": "lessons",
+    "enrollNow": "Enroll Now",
+    "noCourses": "No courses available",
+    "loading": "Loading courses...",
+    "error": "Error loading courses",
+    "retry": "Retry",
+    "createCourse": "Create Course",
+    "updateCourse": "Update Course",
+    "courseCreated": "Course created successfully",
+    "courseUpdated": "Course updated successfully",
+    "courseDeleted": "Course deleted successfully"
+  },
+  "chatbot": {
+    "title": "L-Edu Assistant",
+    "placeholder": "Type a message...",
+    "send": "Send",
+    "clear": "Clear conversation",
+    "typing": "AI is typing...",
+    "clearConfirm": "Are you sure you want to clear the conversation?",
+    "clearSuccess": "Conversation cleared and new one created (images also deleted from Cloudinary)",
+    "addImage": "Add image",
+    "viewLarge": "🔍 View large",
+    "removeImage": "Remove image"
+  },
+  "theme": {
+    "light": "Light mode",
+    "dark": "Dark mode",
+    "switchToLight": "Switch to light mode",
+    "switchToDark": "Switch to dark mode"
+  },
+  "language": {
+    "vietnamese": "Tiếng Việt",
+    "english": "English",
+    "switchLanguage": "Switch language"
+  },
+  "about": {
+    "title": "About Us",
+    "welcome": "Welcome to our programming learning platform! 🚀",
+    "description1": "We are committed to helping you master web development, Python, and various other programming disciplines. Whether you're a beginner taking your first steps in coding or an experienced developer looking to enhance your skills, our platform provides comprehensive tutorials, hands-on projects, and expert guidance to support your journey.",
+    "description2": "From building modern web applications to mastering data science with Python, we make learning interactive, practical, and accessible. Let's code, create, and innovate together! 💻✨",
+    "team": "Our Team",
+    "member1": {
+      "name": "Nguyễn Thanh Tùng",
+      "description": "As a programmer at L Edu, Nguyễn Thanh Tùng has many years of experience in web and application development. With creative thinking and solid professional skills, he always brings practical and easy-to-understand lessons to students."
+    },
+    "member2": {
+      "name": "Trần Minh Đức",
+      "description": "Trần Minh Đức is an expert in software development with many years of experience. He has extensive knowledge of modern web technologies and is always ready to share his experience with students."
+    },
+    "member3": {
+      "name": "Lê Thị Hồng Nhung",
+      "description": "Lê Thị Hồng Nhung, Tech Lead at L Edu, is an expert in software development. With many years of experience in project management and building large systems, he brings students in-depth knowledge and practical skills."
+    },
+    "unlockPotential": "Unlock Your Coding Potential",
+    "believeLearning": "We believe that learning to code opens up endless opportunities for creativity and innovation.",
+    "expertInstructors": "With expert instructors and hands-on projects, we are committed to providing high-quality programming courses, from web development to Python and beyond.",
+    "meetTeam": "Meet Our Team",
+    "contactUs": "Contact Us",
+    "haveQuestions": "Have questions? Feel free to reach out to us at",
+    "address": "Address",
+    "addressValue": "CauGiay, Hanoi, Vietnam",
+    "phone": "Phone",
+    "followUs": "Follow us on",
+    "ourTeachers": "Our Teachers",
+    "ourTeachersDescription": "Our instructors are experienced developers and industry professionals passionate about sharing their knowledge. With years of real-world experience in software development, they provide practical insights, best practices, and hands-on mentorship.\n\nEach lesson is designed to be engaging and easy to follow, ensuring you learn not just the theory but also how to apply it effectively. Whether you need guidance on debugging, optimizing performance, or preparing for job interviews, our dedicated teachers are here to support you every step of the way! 🚀",
+    "learnMore": "Learn More",
+    "ourCoursesDescription": "We offer a wide range of programming courses designed to equip you with the skills needed to thrive in the tech industry. Whether you want to build modern web applications, develop mobile apps, or dive into data science with Python, our structured courses provide hands-on projects, real-world applications, and in-depth knowledge.\n\nFrom HTML, CSS, JavaScript, React, and Next.js to Python, AI, and backend development with NestJS, our curriculum is tailored for both beginners and advanced learners. No matter your starting point, you'll gain practical experience and confidence in coding!"
+  },
+  "mentors": {
+    "title": "Our Courses Mentors",
+    "mentor1": {
+      "title": "React Native Mentor"
+    },
+    "mentor2": {
+      "title": "React Mentor"
+    },
+    "mentor3": {
+      "title": "Basic Web Programming Mentor"
+    },
+    "mentor4": {
+      "title": "Web Development Mentor"
+    }
+  },
+  "partners": {
+    "title": "Partner Network"
+  },
+  "subscribe": {
+    "title": "If you're interested in our courses and want to know our latest news, please subscribe to our newsletter",
+    "emailPlaceholder": "Enter your email",
+    "button": "Subscribe"
+  },
+  "blog": {
+    "subtitle": "Our Blog Post",
+    "title": "Latest Post from Blog",
+    "description": "Discover the latest articles about programming, technology, and learning experiences from our expert team.",
+    "post1": {
+      "title": "React Native Guide for Beginners",
+      "description": "Learn how to build cross-platform mobile applications with React Native from basic to advanced."
+    },
+    "post2": {
+      "title": "JavaScript ES6+ - Important Features",
+      "description": "Explore new features in JavaScript ES6+ that help you write more efficient and modern code."
+    }
+  },
+  "categories": {
+    "title": "Explore Categories",
+    "courses": "Courses",
+    "webBasic": "Web Basic",
+    "webDeveloper": "Web Developer",
+    "computerScience": "Computer Science",
+    "appProducer": "App Producer",
+    "dataScience": "Data Science",
+    "reactReactNative": "React & React Native",
+    "javascriptBasic": "JavaScript Basic",
+    "codementum": "Codementum"
+  },
+  "statistics": {
+    "studentsEnrolled": "Students Enrolled",
+    "expertMentors": "Expert Mentors",
+    "studentReviews": "Student Reviews",
+    "success": "Success"
+  },
+  "codeEditor": {
+    "title": "🔧 Online Code Editor",
+    "subtitle": "code. compile. run. debug. share.",
+    "language": "Language:",
+    "run": "Run",
+    "debug": "Debug",
+    "share": "Share",
+    "newFile": "New File",
+    "saveFile": "Save File",
+    "loadFile": "Load File",
+    "fullscreen": "Fullscreen",
+    "exitFullscreen": "Exit Fullscreen",
+    "console": "Console",
+    "output": "Output",
+    "input": "Input",
+    "compile": "Compile",
+    "execute": "Execute",
+    "clear": "Clear",
+    "copyCode": "Copy Code",
+    "downloadCode": "Download Code",
+    "shareCode": "Share Code",
+    "languages": {
+      "cpp": "C++",
+      "c": "C",
+      "javascript": "JavaScript",
+      "python": "Python",
+      "java": "Java",
+      "html": "HTML",
+      "css": "CSS"
+    },
+    "placeholders": {
+      "cpp": "// Write your C++ code here\n#include <iostream>\nusing namespace std;\n\nint main() {\n    cout << \"Hello World!\" << endl;\n    return 0;\n}",
+      "c": "// Write your C code here\n#include <stdio.h>\n\nint main() {\n    printf(\"Hello World!\\n\");\n    return 0;\n}",
+      "javascript": "// Write your JavaScript code here\nconsole.log('Hello World!');",
+      "python": "# Write your Python code here\nprint('Hello World!')",
+      "java": "// Write your Java code here\npublic class Main {\n    public static void main(String[] args) {\n        System.out.println(\"Hello World!\");\n    }\n}",
+      "html": "<!-- Write your HTML here -->\n<!DOCTYPE html>\n<html>\n<head>\n    <title>Hello World</title>\n</head>\n<body>\n    <h1>Hello World!</h1>\n</body>\n</html>",
+      "css": "/* Write your CSS here */\nbody {\n    font-family: Arial, sans-serif;\n    margin: 0;\n    padding: 20px;\n}"
+    },
+    "messages": {
+      "running": "Running...",
+      "compiled": "Compiled successfully",
+      "executed": "Executed successfully",
+      "error": "Error",
+      "noCode": "No code to run",
+      "selectLanguage": "Please select a language",
+      "fileSaved": "File saved",
+      "fileLoaded": "File loaded",
+      "codeCopied": "Code copied",
+      "codeShared": "Code shared"
+    }
+  },
+  "hero": {
+    "title": "Learn Programming from Basic to Advanced",
+    "subtitle": "Discover the world of programming with high-quality courses designed by leading experts",
+    "enrolled": "students enrolled",
+    "getStarted": "Get Started",
+    "learnMore": "Learn More"
+  },
+  "courseOverview": {
+    "title": "Why Choose L-Edu?",
+    "feature1": {
+      "title": "High-Quality Courses",
+      "description": "Courses designed by experts with updated and practical content"
+    },
+    "feature2": {
+      "title": "24/7 Support",
+      "description": "Our mentor team is always ready to support you in your learning journey"
+    },
+    "feature3": {
+      "title": "Real Projects",
+      "description": "Practice with real projects to enhance your programming skills"
+    },
+    "feature4": {
+      "title": "Completion Certificates",
+      "description": "Receive certificates after completing courses to prove your competence"
+    }
+  },
+  "reviews": {
+    "title": "Student Reviews",
+    "subtitle": "Honest feedback from our student community",
+    "loadMore": "Load More Reviews",
+    "noReviews": "No reviews yet",
+    "review1": "The course is very helpful! The instructor provides detailed guidance, helping me understand how to build mobile applications with React Native. I can confidently create a basic app after completing the course.",
+    "review2": "I've studied many programming courses before, but this is the most understandable React Native course. The instructor teaches with heart, the content is practical and has many exercises to help me practice immediately.",
+    "review3": "Excellent course! I already had some knowledge of JavaScript, after completing this course I can write a complete React Native application myself. Thank you to the instructor team!"
+  },
+  "footer": {
+    "company": "Company",
+    "aboutUs": "About Us",
+    "contact": "Contact",
+    "careers": "Careers",
+    "support": "Support",
+    "helpCenter": "Help Center",
+    "documentation": "Documentation",
+    "community": "Community",
+    "legal": "Legal",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "cookies": "Cookie Policy",
+    "followUs": "Follow Us",
+    "newsletter": "Newsletter",
+    "newsletterPlaceholder": "Enter your email",
+    "subscribe": "Subscribe",
+    "copyright": "© 2024 L-Edu. All rights reserved.",
+    "madeWith": "Made with ❤️ by the L-Edu team",
+    "description": "Comprehensive programming learning platform",
+    "course": "Course",
+    "contactInfo": "Contact Information",
+    "courses": "Courses",
+    "features": "Features",
+    "design": "Design",
+    "language": "Language",
+    "marketing": "Marketing",
+    "testimonial": "Testimonial",
+    "developer": "Developer"
+  },
+  "courseDetail": {
+    "lesson": "Lesson",
+    "views": "views",
+    "view": "View",
+    "locked": "Locked",
+    "updateSession": "Update Session",
+    "temporarilyLocked": "Temporarily Locked",
+    "addSession": "Add Session",
+    "noteDocument": "Note document",
+    "videoDocument": "Video document",
+    "quizDocument": "Quiz document",
+    "courseDescription": "Course Description",
+    "sessions": "Sessions",
+    "noSessions": "No sessions available",
+    "loading": "Loading course...",
+    "error": "Error loading course",
+    "retry": "Retry"
+  }
+}

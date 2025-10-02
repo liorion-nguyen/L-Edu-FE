@@ -1,6 +1,7 @@
 import { Avatar, Col, Image, Row, Typography } from "antd";
 import Title from "antd/es/typography/Title";
 import { CSSProperties } from "react";
+import { useTranslationWithRerender } from "../../hooks/useLanguageChange";
 import { COLORS, RADIUS, SPACING } from "../../constants/colors";
 import SectionLayout from "../../layouts/SectionLayout";
 
@@ -11,10 +12,12 @@ const ImageHero = ({ path, alt }: { path: string; alt: string }) => {
 };
 
 const Hero = () => {
+  const { t } = useTranslationWithRerender();
+  
   return (
     <SectionLayout style={styles.sectionLayout}>
       <Title level={1} style={styles.title}>
-        Advance Your Career with Our Online Courses
+        {t('hero.title')}
       </Title>
       <Row justify="space-between" align="bottom" gutter={[30, 30]} style={{ paddingBottom: "60px" }}>
         <Col lg={10} md={10} sm={24} xs={24}>
@@ -23,7 +26,7 @@ const Hero = () => {
         <Col lg={14} md={14} sm={24} xs={24}>
           <Row justify="end">
             <Text style={styles.subtitle}>
-              Our courses cover a range of topics, including accounting, finance, marketing, human resources, and more. You'll have access to expert instructors
+              {t('hero.subtitle')}
             </Text>
           </Row>
           <Row gutter={[30, 30]} align="bottom">
@@ -50,7 +53,7 @@ const Hero = () => {
                       size={40}
                     />
                   </Avatar.Group>
-                  <Text style={styles.textCountEnrolled}>200k Enrolled Students</Text>
+                  <Text style={styles.textCountEnrolled}>200k {t('hero.enrolled')}</Text>
                 </Col>
                 <ImageHero path="/images/landing/sections/hero/hero3.png" alt="hero3" />
               </Row>
@@ -73,7 +76,7 @@ const styles: {
   textCountEnrolled: CSSProperties;
 } = {
   sectionLayout: {
-    background: COLORS.gradient.primary,
+    background: "var(--bg-primary)",
     position: "relative",
     overflow: "hidden",
     minHeight: "600px",
@@ -84,13 +87,13 @@ const styles: {
     fontWeight: "bold",
     marginBottom: SPACING.xl,
     textAlign: "right",
-    color: COLORS.text.heading,
+    color: "var(--text-primary)",
   },
   subtitle: {
     display: "block",
     fontSize: "1.2rem",
     marginBottom: SPACING.lg,
-    color: COLORS.text.secondary,
+    color: "var(--text-secondary)",
     width: "70%",
     lineHeight: "1.8",
   },
@@ -104,7 +107,7 @@ const styles: {
   },
   textCountEnrolled: {
     width: "fit-content",
-    color: COLORS.text.primary,
+    color: "var(--text-primary)",
     fontSize: "16px",
     margin: `${SPACING.sm} 0`,
   },

@@ -1,12 +1,14 @@
 import { Button, Card, Carousel, Col, Row, Typography } from 'antd';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslationWithRerender } from '../../../hooks/useLanguageChange';
 import SectionLayout from '../../../layouts/SectionLayout';
 
 const { Title, Paragraph } = Typography;
 
 const AboutUs = () => {
     const navigate = useNavigate();
+    const { t } = useTranslationWithRerender();
     
     useEffect(() => {
         console.log('AboutUs component mounted/rendered');
@@ -17,41 +19,39 @@ const AboutUs = () => {
 
     const team = [
         {
-            name: "Nguyễn Thanh Tùng",
+            name: t('about.member1.name'),
             image: 'https://png.pngtree.com/png-vector/20240314/ourmid/pngtree-cartoon-of-thai-male-teacher-holding-a-stick-in-front-of-png-image_11960362.png',
-            description: "Là một lập trình viên tại L Edu, Nguyễn Thanh Tùng có nhiều năm kinh nghiệm trong phát triển web và ứng dụng. Với tư duy sáng tạo và kỹ năng chuyên môn vững vàng, anh luôn mang đến những bài giảng thực tế và dễ hiểu cho học viên.",
+            description: t('about.member1.description'),
             link: 'https://www.facebook.com/chungg.203',
         },
         {
-            name: "Trần Minh Đức",
+            name: t('about.member2.name'),
             image: 'https://png.pngtree.com/png-vector/20240314/ourmid/pngtree-cartoon-of-thai-male-teacher-holding-a-stick-in-front-of-png-image_11960363.png',
-            description: "Giảng viên Trần Minh Đức tại L Edu không chỉ có nền tảng vững chắc về công nghệ mà còn có khả năng truyền đạt xuất sắc. Anh giúp học viên tiếp cận lập trình một cách dễ dàng, từ cơ bản đến nâng cao, với nhiều ví dụ thực tế.",
+            description: t('about.member2.description'),
             link: 'https://www.facebook.com/chungg.203',
         },
         {
-            name: "Lê Thị Hồng Nhung",
+            name: t('about.member3.name'),
             image: 'https://img.pikbest.com/png-images/qiantu/original-cute-cartoon-teacher-classroom-hand-drawn-free-buckle-element_2732027.png!sw800',
-            description: "Lê Thị Hồng Nhung, Tech Lead tại L Edu, là chuyên gia trong lĩnh vực phát triển phần mềm. Với nhiều năm kinh nghiệm quản lý dự án và xây dựng hệ thống lớn, anh mang đến cho học viên những kiến thức chuyên sâu và kỹ năng thực chiến.",
+            description: t('about.member3.description'),
             link: 'https://www.facebook.com/chungg.203',
         },
     ];
     return (
-        <SectionLayout title='About Us' style={styles.container}>
-            <Title level={1} style={{ textAlign: "center" }}>About Us</Title>
-            <Title level={4}>Welcome to our programming learning platform! 🚀</Title>
-            <Paragraph>We are committed to helping you master web development, Python, and various other programming disciplines. Whether you're a beginner taking your first steps in coding or an experienced developer looking to enhance your skills, our platform provides comprehensive tutorials, hands-on projects, and expert guidance to support your journey.</Paragraph>
-            <Paragraph>From building modern web applications to mastering data science with Python, we make learning interactive, practical, and accessible. Let's code, create, and innovate together! 💻✨.</Paragraph>
+        <SectionLayout title={t('about.title')} style={styles.container}>
+            <Title level={1} style={{ textAlign: "center", color: "var(--text-primary)" }}>{t('about.title')}</Title>
+            <Title level={4} style={{ color: "var(--text-primary)" }}>{t('about.welcome')}</Title>
+            <Paragraph style={{ color: "var(--text-secondary)" }}>{t('about.description1')}</Paragraph>
+            <Paragraph style={{ color: "var(--text-secondary)" }}>{t('about.description2')}</Paragraph>
 
             <Row gutter={[16, 16]}>
                 <Col xs={24} md={12}>
                     <Card
                         cover={<img alt="Our Courses" src="/images/landing/about/cover-course.png" style={{ height: 300, objectFit: 'cover' }} />}
                     >
-                        <Card.Meta title="Our Courses" description="We offer a wide range of programming courses designed to equip you with the skills needed to thrive in the tech industry. Whether you want to build modern web applications, develop mobile apps, or dive into data science with Python, our structured courses provide hands-on projects, real-world applications, and in-depth knowledge.
-
-From HTML, CSS, JavaScript, React, and Next.js to Python, AI, and backend development with NestJS, our curriculum is tailored for both beginners and advanced learners. No matter your starting point, you’ll gain practical experience and confidence in coding!" />
+                        <Card.Meta title={t('course.ourCourses')} description={t('about.ourCoursesDescription')} />
                         <Button type="primary" style={{ marginTop: 16 }} onClick={() => navigate('/hotels')}>
-                            Learn More
+                            {t('about.learnMore')}
                         </Button>
                     </Card>
                 </Col>
@@ -59,25 +59,23 @@ From HTML, CSS, JavaScript, React, and Next.js to Python, AI, and backend develo
                     <Card
                         cover={<img alt="Our Teachers" src="/images/landing/about/cover-teacher.png" style={{ height: 300, objectFit: 'cover' }} />}
                     >
-                        <Card.Meta title="Our Teachers" description="Our instructors are experienced developers and industry professionals passionate about sharing their knowledge. With years of real-world experience in software development, they provide practical insights, best practices, and hands-on mentorship.
-
-Each lesson is designed to be engaging and easy to follow, ensuring you learn not just the theory but also how to apply it effectively. Whether you need guidance on debugging, optimizing performance, or preparing for job interviews, our dedicated teachers are here to support you every step of the way! 🚀" />
+                        <Card.Meta title={t('about.ourTeachers')} description={t('about.ourTeachersDescription')} />
                         <Button type="primary" style={{ marginTop: 16 }} onClick={() => navigate('/tours')}>
-                            Learn More
+                            {t('about.learnMore')}
                         </Button>
                     </Card>
                 </Col>
             </Row>
 
-            <div style={{ marginTop: 40, backgroundColor: '#f5f5f5', padding: 24, borderRadius: 8 }}>
-                <Title level={2} style={{ color: '#003366', textAlign: "center" }}>Unlock Your Coding Potential</Title>
-                <Paragraph>We believe that learning to code opens up endless opportunities for creativity and innovation.</Paragraph>
-                <Paragraph>With expert instructors and hands-on projects, we are committed to providing high-quality programming courses, from web development to Python and beyond.</Paragraph>
+            <div style={{ marginTop: 40, backgroundColor: 'var(--bg-secondary)', padding: 24, borderRadius: 8, border: '1px solid var(--border-color)' }}>
+                <Title level={2} style={{ color: 'var(--text-primary)', textAlign: "center" }}>{t('about.unlockPotential')}</Title>
+                <Paragraph style={{ color: 'var(--text-secondary)' }}>{t('about.believeLearning')}</Paragraph>
+                <Paragraph style={{ color: 'var(--text-secondary)' }}>{t('about.expertInstructors')}</Paragraph>
             </div>
 
 
             <div style={{ marginTop: 40 }}>
-                <Title level={2} style={{ textAlign: "center" }}>Meet Our Team</Title>
+                <Title level={2} style={{ textAlign: "center", color: "var(--text-primary)" }}>{t('about.meetTeam')}</Title>
                 {/* <SliderCustom Html={relatedTeam()} /> */}
                 <Carousel autoplay>
                     {
@@ -94,22 +92,22 @@ Each lesson is designed to be engaging and easy to follow, ensuring you learn no
                 </Carousel>
             </div>
 
-            <div style={{ marginTop: 40, backgroundColor: '#f5f5f5', padding: 24, borderRadius: 8 }}>
-                <Title level={2} style={{ textAlign: "center", color: "#003366" }}>Contact Us</Title>
-                <Paragraph style={{ textAlign: "center" }}>
-                    Have questions? Feel free to reach out to us at <a href="mailto:liorion.nguyen@gmail.com">liorion.nguyen@gmail.com</a>
+            <div style={{ marginTop: 40, backgroundColor: 'var(--bg-secondary)', padding: 24, borderRadius: 8, border: '1px solid var(--border-color)' }}>
+                <Title level={2} style={{ textAlign: "center", color: "var(--text-primary)" }}>{t('about.contactUs')}</Title>
+                <Paragraph style={{ textAlign: "center", color: 'var(--text-secondary)' }}>
+                    {t('about.haveQuestions')} <a href="mailto:liorion.nguyen@gmail.com" style={{ color: 'var(--accent-color)' }}>liorion.nguyen@gmail.com</a>
                 </Paragraph>
-                <Paragraph style={{ textAlign: "center" }}>
-                    📍 Address: Hanoi National University of Education, Hanoi, Vietnam
+                <Paragraph style={{ textAlign: "center", color: 'var(--text-secondary)' }}>
+                    📍 {t('about.address')}: {t('about.addressValue')}
                 </Paragraph>
-                <Paragraph style={{ textAlign: "center" }}>
-                    📞 Phone: +84 123 456 789
+                <Paragraph style={{ textAlign: "center", color: 'var(--text-secondary)' }}>
+                    📞 {t('about.phone')}: +84 708 200 334
                 </Paragraph>
-                <Paragraph style={{ textAlign: "center" }}>
-                    🌐 Follow us on:
-                    <a href="https://www.facebook.com/chungg.203" target="_blank" rel="noopener noreferrer" style={{ marginLeft: 8 }}>Facebook</a> |
-                    <a href="mailto:stu715105031@hnue.edu.vn" target="_blank" rel="noopener noreferrer" style={{ marginLeft: 8 }}>Gmail</a> |
-                    <a href="https://zalo.me/your-zalo-id" target="_blank" rel="noopener noreferrer" style={{ marginLeft: 8 }}>Zalo</a>
+                <Paragraph style={{ textAlign: "center", color: 'var(--text-secondary)' }}>
+                    🌐 {t('about.followUs')}:
+                    <a href="https://www.facebook.com/chungg.203" target="_blank" rel="noopener noreferrer" style={{ marginLeft: 8, color: 'var(--accent-color)' }}>Facebook</a> |
+                    <a href="mailto:liorion.nguyen@gmail.com" target="_blank" rel="noopener noreferrer" style={{ marginLeft: 8, color: 'var(--accent-color)' }}>Gmail</a> |
+                    <a href="https://zalo.me/0708200334" target="_blank" rel="noopener noreferrer" style={{ marginLeft: 8, color: 'var(--accent-color)' }}>Zalo</a>
                 </Paragraph>
 
             </div>
@@ -125,12 +123,9 @@ const styles: {
 } = {
     container: {
         minHeight: "100vh",
-        background: "linear-gradient(135deg, #0A2E2E 0%, #1A4A4A 100%)", // Dark teal gradient
+        background: "var(--bg-primary)",
         position: "relative",
         overflow: "hidden",
         padding: "40px 20px",
-        // Subtle circuit pattern in lighter teal
-        backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath d='M10 10h80v80H10z' fill='none' stroke='%234ECDC4' stroke-opacity='0.05' stroke-width='1'/%3E%3Cpath d='M20 20h60v60H20z' fill='none' stroke='%234ECDC4' stroke-opacity='0.05' stroke-width='1'/%3E%3C/svg%3E")`,
-        backgroundSize: "200px 200px",
     },
 };
