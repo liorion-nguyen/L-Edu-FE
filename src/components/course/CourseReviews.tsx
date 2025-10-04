@@ -66,10 +66,12 @@ const CourseReviews: React.FC<CourseReviewsProps> = ({ courseId }) => {
       const response = await reviewService.getCourseReviews(courseId, {
         page: pagination.current,
         limit: pagination.pageSize,
-        status: 'APPROVED', // Only show approved reviews
+        // Remove status filter since reviews are now auto-approved
       });
       
       if (response.success) {
+        console.log('Reviews fetched:', response.data);
+        console.log('Reviews length:', response.data.length);
         setReviews(response.data);
         setPagination(prev => ({
           ...prev,
@@ -170,6 +172,41 @@ const CourseReviews: React.FC<CourseReviewsProps> = ({ courseId }) => {
     });
   };
 
+  // Debug log for render state
+  console.log('Render state - loading:', loading, 'reviews:', reviews, 'reviews.length:', reviews.length);
+
+  // Check if user can edit or delete review
+  const canEditOrDelete = (review: Review) => {
+    if (!user) return false;
+    const isOwner = user._id === (typeof review.userId === 'string' ? review.userId : review.userId._id);
+    return isOwner;
+  };
+
+  const canEdit = (review: Review) => {
+    if (!canEditOrDelete(review)) return false;
+    
+    // Check edit count (max 1 edit)
+    if ((review.editCount || 0) >= 1) return false;
+    
+    // Check if review is older than 1 day
+    const oneDayAgo = new Date();
+    oneDayAgo.setDate(oneDayAgo.getDate() - 1);
+    const reviewDate = new Date(review.createdAt);
+    
+    return reviewDate >= oneDayAgo;
+  };
+
+  const canDelete = (review: Review) => {
+    if (!canEditOrDelete(review)) return false;
+    
+    // Check if review is older than 1 day
+    const oneDayAgo = new Date();
+    oneDayAgo.setDate(oneDayAgo.getDate() - 1);
+    const reviewDate = new Date(review.createdAt);
+    
+    return reviewDate >= oneDayAgo;
+  };
+
   const getRatingColor = (rating: number) => {
     if (rating >= 4) return '#52c41a';
     if (rating >= 3) return '#faad14';
@@ -254,13 +291,13 @@ const CourseReviews: React.FC<CourseReviewsProps> = ({ courseId }) => {
                     <div style={styles.userInfo}>
                       <Avatar
                         size={48}
-                        src={review.isAnonymous ? undefined : review.user?.avatar}
+                        src={review.isAnonymous ? undefined : (typeof review.userId === 'object' ? review.userId.avatar : review.user?.avatar)}
                         icon={<UserOutlined />}
                         style={styles.avatar}
                       />
                       <div style={styles.userDetails}>
                         <Text strong style={styles.userName}>
-                          {review.isAnonymous ? t('reviews.anonymous') : review.user?.fullName}
+                          {review.isAnonymous ? t('reviews.anonymous') : (typeof review.userId === 'object' ? review.userId.fullName : review.user?.fullName)}
                         </Text>
                         <Text style={styles.reviewDate}>
                           {formatDate(review.createdAt)}
@@ -276,31 +313,47 @@ const CourseReviews: React.FC<CourseReviewsProps> = ({ courseId }) => {
                           value={review.rating}
                           style={styles.rating}
                         />
-                        {user && user._id === review.userId && (
+                        {user && user._id === (typeof review.userId === 'string' ? review.userId : review.userId._id) && canEditOrDelete(review) && (
                           <Space>
-                            <Button
-                              type="text"
-                              icon={<EditOutlined />}
-                              onClick={() => handleEditReview(review)}
-                              size="small"
-                            >
-                              {t('reviews.edit')}
-                            </Button>
-                            <Button
-                              type="text"
-                              danger
-                              icon={<DeleteOutlined />}
-                              onClick={() => handleDeleteReview(review._id)}
-                              size="small"
-                            >
-                              {t('reviews.delete')}
-                            </Button>
+                            {canEdit(review) && (
+                              <Button
+                                type="text"
+                                icon={<EditOutlined />}
+                                onClick={() => handleEditReview(review)}
+                                size="small"
+                              >
+                                {t('reviews.edit')}
+                              </Button>
+                            )}
+                            {canDelete(review) && (
+                              <Button
+                                type="text"
+                                danger
+                                icon={<DeleteOutlined />}
+                                onClick={() => handleDeleteReview(review._id)}
+                                size="small"
+                              >
+                                {t('reviews.delete')}
+                              </Button>
+                            )}
                           </Space>
                         )}
                       </div>
                       <Paragraph style={styles.comment}>
                         {review.comment}
                       </Paragraph>
+                      {/* Show edit info if review was edited */}
+                      {review.editCount && review.editCount > 0 && review.lastEditedAt && (
+                        <Text style={{ fontSize: '12px', color: '#999', fontStyle: 'italic' }}>
+                          {t('reviews.edited')}: {formatDate(review.lastEditedAt)} ({review.editCount} {t('reviews.editCount')})
+                        </Text>
+                      )}
+                      {/* Show restriction message if user can't edit/delete */}
+                      {user && user._id === (typeof review.userId === 'string' ? review.userId : review.userId._id) && !canEditOrDelete(review) && (
+                        <Text style={{ fontSize: '12px', color: '#ff4d4f' }}>
+                          {t('reviews.cannotModify')}
+                        </Text>
+                      )}
                     </div>
                   </Col>
                 </Row>

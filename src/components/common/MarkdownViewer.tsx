@@ -119,11 +119,11 @@ const MarkdownViewer: React.FC<MarkdownViewerProps> = ({
             const highlightedText = selectedText
               ? childrenArray.map((child, index) =>
                   typeof child === 'string' && child.includes(selectedText) ? (
-                    <span key={index} className="bg-yellow-200 text-black px-1 rounded">
+                    <span key={`highlight-${index}`} className="bg-yellow-200 text-black px-1 rounded">
                       {child}
                     </span>
                   ) : (
-                    child
+                    <React.Fragment key={`child-${index}`}>{child}</React.Fragment>
                   )
                 )
               : childrenArray;

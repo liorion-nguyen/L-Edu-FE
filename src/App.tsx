@@ -33,6 +33,10 @@ import CourseManagement from "./pages/dashboard/CourseManagement";
 import SessionManagement from "./pages/dashboard/SessionManagement";
 import ReviewManagement from "./pages/dashboard/ReviewManagement";
 import FooterManagement from "./pages/dashboard/FooterManagement";
+import ContactManagement from "./pages/dashboard/ContactManagement";
+import ChatManagement from "./pages/dashboard/ChatManagement";
+import WebSocketDebug from "./components/debug/WebSocketDebug";
+import ContentManagement from "./pages/dashboard/ContentManagement";
 import CategoryManagement from "./pages/dashboard/CategoryManagement";
 
 function App() {
@@ -74,6 +78,10 @@ function App() {
         <Route path="/dashboard/sessions" element={<DashboardLayout><SessionManagement /></DashboardLayout>} />
         <Route path="/dashboard/reviews" element={<DashboardLayout><ReviewManagement /></DashboardLayout>} />
         <Route path="/dashboard/footer" element={<DashboardLayout><FooterManagement /></DashboardLayout>} />
+        <Route path="/dashboard/contact" element={<DashboardLayout><ContactManagement /></DashboardLayout>} />
+        <Route path="/dashboard/chat" element={<DashboardLayout><ChatManagement /></DashboardLayout>} />
+        <Route path="/debug/websocket" element={<WebSocketDebug />} />
+        <Route path="/dashboard/content" element={<DashboardLayout><ContentManagement /></DashboardLayout>} />
         <Route path="/dashboard/categories" element={<DashboardLayout><CategoryManagement /></DashboardLayout>} />
 
         {/* 404 Not Found */}

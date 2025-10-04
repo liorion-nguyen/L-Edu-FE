@@ -51,7 +51,7 @@ const CourseCard = ({ course }: { course: CourseType }) => {
         </div>
       }
       style={styles.card}
-      bodyStyle={styles.cardBody}
+      styles={{ body: styles.cardBody }}
     >
       <Title level={4} style={styles.nameCourse}>
         {course.name}

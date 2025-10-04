@@ -10,7 +10,9 @@ import {
   LogoutOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
-  AppstoreOutlined
+  AppstoreOutlined,
+  ContactsOutlined,
+  FileTextOutlined
 } from "@ant-design/icons";
 import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -68,14 +70,29 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
       label: t('dashboard.reviewManagement'),
     },
     {
+      key: "/dashboard/contact",
+      icon: <ContactsOutlined />,
+      label: t('dashboard.contactManagement'),
+    },
+    {
+      key: "/dashboard/content",
+      icon: <FileTextOutlined />,
+      label: t('dashboard.contentManagement'),
+    },
+    {
       key: "/dashboard/footer",
       icon: <SettingOutlined />,
       label: t('dashboard.footerManagement'),
     },
     {
-      key: "/dashboard/chats",
+      key: "/dashboard/chat",
       icon: <MessageOutlined />,
       label: t('dashboard.chatManagement'),
+    },
+    {
+      key: "/dashboard/conversations",
+      icon: <MessageOutlined />,
+      label: t('dashboard.conversationManagement'),
     },
   ], [t]);
 

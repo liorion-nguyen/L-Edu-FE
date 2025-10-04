@@ -5,12 +5,22 @@ const API_URL = `${envConfig.serverURL}/reviews`;
 
 export interface Review {
   _id: string;
-  userId: string;
-  courseId: string;
+  userId: string | {
+    _id: string;
+    fullName: string;
+    avatar?: string;
+  };
+  courseId: string | {
+    _id: string;
+    name: string;
+  };
   rating: number;
   comment: string;
   status: 'PENDING' | 'APPROVED' | 'REJECTED';
   isAnonymous: boolean;
+  isHidden?: boolean;
+  editCount?: number;
+  lastEditedAt?: string;
   createdAt: string;
   updatedAt: string;
   user?: {

@@ -220,7 +220,9 @@
     }
   },
   "partners": {
-    "title": "Mạng lưới đối tác"
+    "title": "Mạng lưới đối tác",
+    "description": "Các đối tác tin cậy đồng hành cùng chúng tôi trong việc cung cấp giáo dục chất lượng",
+    "footerText": "Quan tâm đến việc trở thành đối tác? Liên hệ với chúng tôi để biết thêm thông tin."
   },
   "subscribe": {
     "title": "Nếu bạn quan tâm đến các khóa học của chúng tôi và muốn biết tin tức mới nhất, hãy đăng ký nhận bản tin của chúng tôi",
@@ -358,6 +360,11 @@
     "submit": "Gửi đánh giá",
     "update": "Cập nhật",
     "cancel": "Hủy",
+    "edit": "Sửa",
+    "delete": "Xóa",
+    "edited": "Đã sửa",
+    "editCount": "lần",
+    "cannotModify": "Đánh giá này không thể chỉnh sửa hoặc xóa (đã quá 1 ngày hoặc đã sửa 1 lần)",
     "createSuccess": "Đánh giá đã được gửi thành công",
     "updateSuccess": "Đánh giá đã được cập nhật thành công",
     "deleteSuccess": "Đánh giá đã được xóa thành công",
@@ -419,8 +426,10 @@
     "categoryManagement": "Quản lý danh mục",
     "sessionManagement": "Quản lý bài học",
     "reviewManagement": "Quản lý đánh giá",
+    "contactManagement": "Quản lý liên hệ",
+    "conversationManagement": "Quản lý cuộc trò chuyện",
+    "contentManagement": "Quản lý nội dung",
     "footerManagement": "Quản lý footer",
-    "chatManagement": "Quản lý chat",
     "welcome": "Chào mừng đến với Dashboard",
     "profile": "Hồ sơ",
     "logout": "Đăng xuất",
