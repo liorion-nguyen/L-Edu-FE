@@ -108,7 +108,7 @@ export const getSessionById = createAsyncThunk(
     async (id: string) => {
         try {
             const result = await axios.get(`${envConfig.serverURL}/dashboard/sessions/${id}`);
-            const session: SessionResponse = result.data.data;
+            const session: SessionResponse = result.data.data || result.data;
             return session;
         } catch (error: any) {
             const errorMessage = error.response ? error.response.data.message : "Something went wrong";

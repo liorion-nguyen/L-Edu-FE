@@ -32,7 +32,6 @@ const MarkdownViewer: React.FC<MarkdownViewerProps> = ({
   selectedText 
 }) => {
   const { isDark } = useTheme();
-  
   // Initialize theme on component load
   useEffect(() => {
     if (!document.getElementById('highlight-theme')) {
@@ -74,11 +73,21 @@ const MarkdownViewer: React.FC<MarkdownViewerProps> = ({
     );
   }
 
-  return (
-    <div className={`markdown-viewer ${className}`} style={styles.container}>
-      <ReactMarkdown
-        rehypePlugins={[rehypeHighlight, rehypeRaw]}
-        remarkPlugins={[remarkGfm]}
+  // Fallback: if content is empty or ReactMarkdown fails, show raw content
+  if (!content || content.trim().length === 0) {
+    return (
+      <div className={`markdown-viewer ${className}`} style={styles.container}>
+        <p style={{ color: '#666', fontStyle: 'italic' }}>No content to display</p>
+      </div>
+    );
+  }
+
+  try {
+    return (
+      <div className={`markdown-viewer ${className}`} style={styles.container}>
+        <ReactMarkdown
+          rehypePlugins={[rehypeHighlight, rehypeRaw]}
+          remarkPlugins={[remarkGfm]}
         components={{
           h1: ({ children, ...props }) => (
             <h1 className="aui-md-h1" {...props}>{children}</h1>
@@ -230,6 +239,24 @@ const MarkdownViewer: React.FC<MarkdownViewerProps> = ({
       </ReactMarkdown>
     </div>
   );
+  } catch (error) {
+    return (
+      <div className={`markdown-viewer ${className}`} style={styles.container}>
+        <div>
+          <p style={{ color: '#ff6b6b', fontWeight: 'bold' }}>Error rendering markdown:</p>
+          <pre style={{ background: '#f5f5f5', padding: '16px', borderRadius: '8px', overflow: 'auto' }}>
+            {error instanceof Error ? error.message : String(error)}
+          </pre>
+          <details style={{ marginTop: '16px' }}>
+            <summary style={{ cursor: 'pointer', fontWeight: 'bold' }}>Raw content:</summary>
+            <pre style={{ background: '#f0f0f0', padding: '16px', borderRadius: '8px', overflow: 'auto', marginTop: '8px' }}>
+              {content}
+            </pre>
+          </details>
+        </div>
+      </div>
+    );
+  }
 };
 
 const styles = {
