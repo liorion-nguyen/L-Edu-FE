@@ -137,9 +137,6 @@ const MarkdownViewer: React.FC<MarkdownViewerProps> = ({
           code: ({ children, className, ...props }) => {
             const match = /language-(\w+)/.exec(className || '');
             
-            // Debug children content in development
-            debugChildren(children, 'code children');
-            
             // Convert children to string safely
             const codeContent = childrenToString(children).replace(/\n$/, '');
             
@@ -303,18 +300,6 @@ const childrenToString = (children: React.ReactNode): string => {
   // Fallback
   const str = String(children);
   return str === '[object Object]' ? '[Complex Content]' : str;
-};
-
-// Debug function to inspect children content
-const debugChildren = (children: React.ReactNode, label: string = 'children') => {
-  if (process.env.NODE_ENV === 'development') {
-    console.log(`[MarkdownViewer Debug] ${label}:`, {
-      type: typeof children,
-      isArray: Array.isArray(children),
-      content: children,
-      stringified: childrenToString(children)
-    });
-  }
 };
 
 // Helper functions for markdown processing

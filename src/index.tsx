@@ -7,6 +7,7 @@ import App from "./App";
 import { Toaster } from "./components/common/Toaster";
 import setupAxiosInterceptors from "./config/axios-interceptor";
 import "./index.css";
+import "./styles/modal-fix.css";
 import { store } from "./redux/store";
 import reportWebVitals from "./reportWebVitals";
 import getAntdTheme from "./theme";

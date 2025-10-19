@@ -1,0 +1,109 @@
+/* Chat Content Management Theme Variables */
+
+/* Light Theme (Default) */
+:root {
+  --user-message-bg: #f0f2f5;
+  --ai-message-bg: #e6f7ff;
+  --user-message-border: #d9d9d9;
+  --ai-message-border: #91d5ff;
+  --user-avatar-bg: #1890ff;
+  --ai-avatar-bg: #52c41a;
+  --primary-color-light: #e6f7ff;
+  --primary-color-border: #91d5ff;
+  --bg-secondary: #fafafa;
+  --text-secondary: #666;
+  --border-color: #d9d9d9;
+  --text-primary: #262626;
+}
+
+/* Dark Theme */
+[data-theme="dark"] {
+  --user-message-bg: #2a2a2a;
+  --ai-message-bg: #1f2937;
+  --user-message-border: #404040;
+  --ai-message-border: #374151;
+  --user-avatar-bg: #1890ff;
+  --ai-avatar-bg: #52c41a;
+  --primary-color-light: #111827;
+  --primary-color-border: #374151;
+  --bg-secondary: #1f1f1f;
+  --text-secondary: #a3a3a3;
+  --border-color: #404040;
+  --text-primary: #ffffff;
+}
+
+/* Auto Dark Theme Detection */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --user-message-bg: #2a2a2a;
+    --ai-message-bg: #1f2937;
+    --user-message-border: #404040;
+    --ai-message-border: #374151;
+    --user-avatar-bg: #1890ff;
+    --ai-avatar-bg: #52c41a;
+    --primary-color-light: #111827;
+    --primary-color-border: #374151;
+    --bg-secondary: #1f1f1f;
+    --text-secondary: #a3a3a3;
+    --border-color: #404040;
+    --text-primary: #ffffff;
+  }
+}
+
+/* Chat Content Management Styles */
+.chat-content-management {
+  --user-message-bg: var(--user-message-bg);
+  --ai-message-bg: var(--ai-message-bg);
+  --user-message-border: var(--user-message-border);
+  --ai-message-border: var(--ai-message-border);
+  --user-avatar-bg: var(--user-avatar-bg);
+  --ai-avatar-bg: var(--ai-avatar-bg);
+}
+
+/* Message Styles */
+.message-user {
+  background: var(--user-message-bg) !important;
+  border-color: var(--user-message-border) !important;
+  color: var(--text-primary) !important;
+}
+
+.message-ai {
+  background: var(--ai-message-bg) !important;
+  border-color: var(--ai-message-border) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Avatar Styles */
+.avatar-user {
+  background: var(--user-avatar-bg) !important;
+}
+
+.avatar-ai {
+  background: var(--ai-avatar-bg) !important;
+}
+
+/* Debug Info Styles */
+.debug-info {
+  background: var(--bg-secondary) !important;
+  color: var(--text-secondary) !important;
+  border-color: var(--border-color) !important;
+}
+
+/* Success Info Styles */
+.success-info {
+  background: var(--primary-color-light) !important;
+  color: var(--primary-color) !important;
+  border-color: var(--primary-color-border) !important;
+}
+
+/* Empty State Styles */
+.empty-state {
+  background: var(--bg-secondary) !important;
+  color: var(--text-secondary) !important;
+}
+
+/* Loading State Styles */
+.loading-state {
+  background: var(--bg-secondary) !important;
+  color: var(--text-secondary) !important;
+}

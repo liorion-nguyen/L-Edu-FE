@@ -38,6 +38,7 @@ import ChatManagement from "./pages/dashboard/ChatManagement";
 import WebSocketDebug from "./components/debug/WebSocketDebug";
 import ContentManagement from "./pages/dashboard/ContentManagement";
 import CategoryManagement from "./pages/dashboard/CategoryManagement";
+import CourseRegistrationManagement from "./components/admin/CourseRegistrationManagement";
 
 function App() {
   return (
@@ -83,6 +84,7 @@ function App() {
         <Route path="/debug/websocket" element={<WebSocketDebug />} />
         <Route path="/dashboard/content" element={<DashboardLayout><ContentManagement /></DashboardLayout>} />
         <Route path="/dashboard/categories" element={<DashboardLayout><CategoryManagement /></DashboardLayout>} />
+        <Route path="/dashboard/course-registrations" element={<DashboardLayout><CourseRegistrationManagement /></DashboardLayout>} />
 
         {/* 404 Not Found */}
         <Route path="*" element={<MainLayout><NotFound/></MainLayout>} />

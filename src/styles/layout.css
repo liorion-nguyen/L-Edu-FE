@@ -1,0 +1,211 @@
+/* Fixed Layout Styles */
+
+/* Custom Scrollbar for Content Area */
+.dashboard-content {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-color) transparent;
+}
+
+.dashboard-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.dashboard-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.dashboard-content::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 3px;
+}
+
+.dashboard-content::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
+}
+
+/* Custom Scrollbar for Sidebar Menu */
+.ant-menu {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-color) transparent;
+}
+
+.ant-menu::-webkit-scrollbar {
+  width: 4px;
+}
+
+.ant-menu::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.ant-menu::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 2px;
+}
+
+.ant-menu::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
+}
+
+/* Smooth Transitions */
+.ant-layout-sider {
+  transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+.ant-layout-header {
+  transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+/* Fixed Layout Adjustments */
+.fixed-layout .ant-layout {
+  height: 100vh !important;
+  overflow: hidden;
+}
+
+.fixed-layout .ant-layout-sider {
+  position: fixed !important;
+  height: 100vh !important;
+  left: 0 !important;
+  top: 0 !important;
+  bottom: 0 !important;
+  z-index: 100 !important;
+}
+
+.fixed-layout .ant-layout-header {
+  position: fixed !important;
+  top: 0 !important;
+  right: 0 !important;
+  z-index: 99 !important;
+  height: 64px !important;
+}
+
+.fixed-layout .ant-layout-content {
+  margin-top: 88px !important;
+  height: calc(100vh - 112px) !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .ant-layout-sider {
+    z-index: 1000 !important;
+  }
+  
+  .ant-layout-header {
+    left: 0 !important;
+  }
+  
+  .ant-layout-content {
+    margin-left: 0 !important;
+    margin-top: 88px !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .dashboard-content {
+    margin: 16px 8px !important;
+    padding: 16px !important;
+    height: calc(100vh - 120px) !important;
+  }
+  
+  .ant-layout-header {
+    padding: 0 16px !important;
+  }
+}
+
+/* Dark Theme Scrollbar */
+[data-theme="dark"] .dashboard-content::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+}
+
+[data-theme="dark"] .dashboard-content::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
+}
+
+[data-theme="dark"] .ant-menu::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+}
+
+[data-theme="dark"] .ant-menu::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
+}
+
+/* Content Area Enhancements */
+.dashboard-content {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 24px;
+}
+
+/* Prevent Content Overflow */
+.dashboard-content * {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Ensure Charts are Visible */
+.dashboard-content .chart-container {
+  height: 300px !important;
+  width: 100% !important;
+}
+
+.dashboard-content .recharts-wrapper {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Smooth Scrolling */
+.dashboard-content {
+  scroll-behavior: smooth;
+}
+
+/* Dashboard Header Home Button - chỉ áp dụng cho dashboard layout */
+.dashboard-layout .ant-layout-header .ant-btn-primary {
+  background: var(--primary-color, #1890ff);
+  border-color: var(--primary-color, #1890ff);
+  box-shadow: 0 2px 4px rgba(24, 144, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.dashboard-layout .ant-layout-header .ant-btn-primary:hover {
+  background: var(--primary-color-hover, #40a9ff);
+  border-color: var(--primary-color-hover, #40a9ff);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(24, 144, 255, 0.3);
+}
+
+/* Dashboard Header Button Group - chỉ áp dụng cho dashboard layout */
+.dashboard-layout .ant-layout-header > div:first-child {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Focus States for Accessibility */
+.dashboard-content:focus-within {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+/* Loading State */
+.dashboard-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  color: var(--text-secondary);
+}
+
+/* Error State */
+.dashboard-error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  color: var(--error-color);
+  background: var(--error-bg);
+  border: 1px solid var(--error-border);
+  border-radius: 8px;
+  margin: 24px;
+}

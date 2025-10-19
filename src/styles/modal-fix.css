@@ -1,0 +1,80 @@
+/* Global CSS fixes for modal blocking issues */
+
+/* Ensure modals don't block interactions */
+.ant-modal-mask {
+  pointer-events: auto !important;
+}
+
+/* Remove orphaned modal masks */
+.ant-modal-mask[style*="display: none"],
+.ant-modal-mask[style*="opacity: 0"] {
+  display: none !important;
+}
+
+/* Ensure body is scrollable when no modals are open */
+body:not(.ant-modal-open) {
+  overflow: auto !important;
+  padding-right: 0 !important;
+}
+
+/* Fix for buttons not responding after modal closes */
+button:not(:disabled):hover,
+button:not(:disabled):focus {
+  pointer-events: auto !important;
+}
+
+/* Ensure table interactions work after modal closes */
+.ant-table-tbody > tr > td {
+  pointer-events: auto !important;
+}
+
+/* Fix for any elements that might be blocked */
+.ant-card,
+.ant-card-body,
+.ant-table,
+.ant-table-container {
+  pointer-events: auto !important;
+}
+
+/* Remove any invisible overlays that might block clicks */
+.ant-modal-mask[style*="opacity: 0"] {
+  pointer-events: none !important;
+  z-index: -1 !important;
+}
+
+/* Ensure proper z-index stacking */
+.ant-modal {
+  z-index: 1000 !important;
+}
+
+.ant-modal-mask {
+  z-index: 999 !important;
+}
+
+/* Fix for any lingering backdrop elements */
+[class*="backdrop"],
+[class*="overlay"] {
+  pointer-events: none !important;
+}
+
+/* Ensure all interactive elements are clickable */
+a, button, input, select, textarea, [role="button"] {
+  pointer-events: auto !important;
+}
+
+/* Remove any styles that might block interactions */
+*[style*="pointer-events: none"]:not(.ant-modal-mask[style*="opacity: 0"]) {
+  pointer-events: auto !important;
+}
+
+/* Force cleanup of modal states */
+.ant-modal-hidden .ant-modal-mask {
+  display: none !important;
+  pointer-events: none !important;
+}
+
+/* Ensure proper cleanup when modal is destroyed */
+.ant-modal-wrap[style*="display: none"] .ant-modal-mask {
+  display: none !important;
+  pointer-events: none !important;
+}

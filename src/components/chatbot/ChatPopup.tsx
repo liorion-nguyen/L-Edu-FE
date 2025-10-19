@@ -21,6 +21,7 @@ interface ChatPopupProps {
   onSendMessage: (text: string, imageUrls?: string[]) => Promise<void>;
   onClearMessages: () => Promise<void>;
   isLoading: boolean;
+  showHeader?: boolean;
 }
 
 const ChatPopup: React.FC<ChatPopupProps> = ({
@@ -30,6 +31,7 @@ const ChatPopup: React.FC<ChatPopupProps> = ({
   onSendMessage,
   onClearMessages,
   isLoading,
+  showHeader = true,
 }) => {
   const [inputText, setInputText] = React.useState('');
   const [isExpanded, setIsExpanded] = useState(false);
@@ -168,13 +170,13 @@ const ChatPopup: React.FC<ChatPopupProps> = ({
     <div className={`chat-popup ${isExpanded ? 'expanded' : ''}`} onClick={handleClickOutside}>
       {isExpanded && (
         <Card
-          title={
+          title={showHeader ? (
             <div className="chat-header">
               <RobotOutlined style={{ color: '#1890ff', marginRight: 8 }} />
               AI Assistant
             </div>
-          }
-          extra={
+          ) : null}
+          extra={showHeader ? (
             <div style={{ display: 'flex', gap: '8px' }}>
               <Popconfirm
                 title="Xóa cuộc trò chuyện?"
@@ -192,7 +194,9 @@ const ChatPopup: React.FC<ChatPopupProps> = ({
               </Popconfirm>
               <Button type="text" icon={<CloseOutlined />} onClick={handleClose} />
             </div>
-          }
+          ) : (
+            <Button type="text" icon={<CloseOutlined />} onClick={handleClose} />
+          )}
           className="chat-card"
         >
           <div className="chat-messages">

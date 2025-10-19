@@ -147,7 +147,13 @@ class SessionService {
 
   async createSession(data: CreateSessionData): Promise<SessionResponse> {
     try {
-      const response = await axios.post(API_URL, data, {
+      // Add required fields - let backend handle sessionNumber conversion
+      const payload = {
+        ...data,
+        description: data.description || "", // Add required description field
+      };
+      
+      const response = await axios.post(API_URL, payload, {
         headers: this.getAuthHeaders(),
       });
       return response.data;
@@ -159,7 +165,13 @@ class SessionService {
 
   async updateSession(id: string, data: UpdateSessionData): Promise<SessionResponse> {
     try {
-      const response = await axios.put(`${API_URL}/${id}`, data, {
+      // Let backend handle sessionNumber conversion if provided
+      const payload = {
+        ...data,
+        description: data.description || "", // Add required description field
+      };
+      
+      const response = await axios.put(`${API_URL}/${id}`, payload, {
         headers: this.getAuthHeaders(),
       });
       return response.data;

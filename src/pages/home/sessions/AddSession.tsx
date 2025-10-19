@@ -31,6 +31,7 @@ const AddSession = () => {
                             courseId: id,
                             sessionNumber: "",
                             title: "",
+                            description: "",
                             quizId: "",
                             modeQuizId: "CLOSE",
                             videoUrl: "",
@@ -50,6 +51,10 @@ const AddSession = () => {
 
                         <Form.Item label="Tiêu đề" name="title" rules={[{ required: true, message: "Vui lòng nhập tiêu đề!" }]}>
                             <Input />
+                        </Form.Item>
+
+                        <Form.Item label="Mô tả" name="description" rules={[{ required: true, message: "Vui lòng nhập mô tả!" }]}>
+                            <Input.TextArea rows={3} />
                         </Form.Item>
 
                         <Flex justify="space-between" align="middle" gap={10}>

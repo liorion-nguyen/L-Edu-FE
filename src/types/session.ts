@@ -12,6 +12,7 @@ export type initialValuesType = {
     courseId: string;
     sessionNumber: number;
     title: string;
+    description?: string; // Add description field
     quizId: string;
     modeQuizId: string;
     videoUrl: string;

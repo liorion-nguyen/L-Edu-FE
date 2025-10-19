@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { notification } from 'antd';
+import { getStoredTokens, refreshAccessToken, isTokenExpired } from '../utils/tokenUtils';
 
 interface Message {
   id: string;
@@ -22,6 +23,7 @@ interface UseChatbotReturn {
   toggleChatbot: () => void;
   currentConversationId: string | null;
   createNewConversation: () => Promise<void>;
+  loadConversationHistory: (conversationId: string) => Promise<void>;
 }
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
@@ -34,22 +36,54 @@ const useChatbot = (): UseChatbotReturn => {
   const [currentConversationId, setCurrentConversationId] = useState<string | null>(null);
   const socketRef = useRef<Socket | null>(null);
   const isInitializedRef = useRef(false);
+  const listenersRegisteredRef = useRef(false);
 
-  // Initialize socket connection
-  useEffect(() => {
-    const token = localStorage.getItem('jwt-access-token');
+  // Initialize socket connection only when needed
+  const initializeSocketConnection = useCallback(() => {
+    const tokens = getStoredTokens();
     
-    if (!token) {
+    if (!tokens) {
       console.error('❌ No JWT token found in localStorage');
       notification.error({
         message: 'Chưa đăng nhập',
         description: 'Vui lòng đăng nhập để sử dụng chatbot.',
       });
-      return;
+      return false;
     }
 
-    console.log('🔑 JWT Token found:', token.substring(0, 20) + '...');
-    
+    // Check if token is expired and try to refresh
+    if (isTokenExpired()) {
+      console.log('🔄 Token expired, attempting refresh...');
+      refreshAccessToken().then((result) => {
+        if (result) {
+          console.log('✅ Token refreshed successfully');
+          initializeSocket(result.access_token);
+        } else {
+          console.error('❌ Token refresh failed');
+          notification.error({
+            message: 'Phiên đăng nhập hết hạn',
+            description: 'Vui lòng đăng nhập lại.',
+          });
+        }
+      });
+      return false;
+    }
+
+    console.log('🔑 JWT Token found:', tokens.accessToken.substring(0, 20) + '...');
+    initializeSocket(tokens.accessToken);
+    return true;
+  }, []);
+
+  // Helper function to ensure socket connection
+  const ensureSocketConnection = useCallback(() => {
+    if (!socketRef.current || !socketRef.current.connected || !(socketRef.current as any).isReady) {
+      console.log('🔄 Ensuring socket connection...');
+      return initializeSocketConnection();
+    }
+    return true;
+  }, [initializeSocketConnection]);
+
+  const initializeSocket = (token: string) => {
     if (!socketRef.current) {
       console.log('🔌 Connecting to socket:', API_URL);
       
@@ -61,12 +95,30 @@ const useChatbot = (): UseChatbotReturn => {
         reconnectionDelay: 1000,
       });
 
+      // Đăng ký tất cả listeners trước khi connect (chỉ một lần)
+      if (!listenersRegisteredRef.current) {
+        console.log('🔗 Registering socket listeners...');
+        listenersRegisteredRef.current = true;
+
+        // Debug: Log tất cả events
+        socketRef.current.onAny((eventName, ...args) => {
+          console.log('🔍 Socket event received:', eventName, args);
+        });
+
       socketRef.current.on('connect', () => {
         console.log('✅ Socket connected:', socketRef.current?.id);
+        // Set a flag to indicate connection is ready
+        if (socketRef.current) {
+          (socketRef.current as any).isReady = true;
+        }
       });
 
       socketRef.current.on('disconnect', (reason) => {
         console.log('❌ Socket disconnected. Reason:', reason);
+        // Clear ready flag on disconnect
+        if (socketRef.current) {
+          (socketRef.current as any).isReady = false;
+        }
         if (reason === 'io server disconnect') {
           // Server disconnected us, probably auth error
           console.error('❌ Server disconnected - likely auth error');
@@ -84,9 +136,12 @@ const useChatbot = (): UseChatbotReturn => {
 
       // Nhận streaming response từ AI
       socketRef.current.on('streaming_message', (message: any) => {
+        console.log('📨 Received streaming_message event:', message);
+        console.log('📨 Message ID:', message.id, 'isComplete:', message.isComplete);
         // Log streaming progress
         if (message.isComplete) {
           console.log('✅ AI response complete. Length:', message.content.length);
+          console.log('🔄 Setting isLoading to false');
         } else {
           console.log('📡 Streaming... Length:', message.content.length);
         }
@@ -121,6 +176,12 @@ const useChatbot = (): UseChatbotReturn => {
         // Tắt loading khi AI trả lời xong
         if (message.isComplete) {
           setIsLoading(false);
+          console.log('✅ Loading state set to false');
+          // Clear any pending timeout
+          if ((window as any).currentLoadingTimeout) {
+            clearTimeout((window as any).currentLoadingTimeout);
+            (window as any).currentLoadingTimeout = null;
+          }
         }
       });
 
@@ -134,8 +195,64 @@ const useChatbot = (): UseChatbotReturn => {
         });
         setIsLoading(false);
       });
-    }
 
+      // Handle token expiration
+      socketRef.current.on('token_expired', async (data: any) => {
+        console.log('🔄 Token expired, attempting refresh...', data);
+        
+        try {
+          const refreshToken = localStorage.getItem('jwt-refresh-token');
+          if (!refreshToken) {
+            console.error('❌ No refresh token available');
+            notification.error({
+              message: 'Phiên đăng nhập hết hạn',
+              description: 'Vui lòng đăng nhập lại.',
+              duration: 5,
+            });
+            return;
+          }
+
+          // Request token refresh from server
+          socketRef.current?.emit('refresh_token', { refresh_token: refreshToken });
+        } catch (error) {
+          console.error('❌ Token refresh failed:', error);
+          notification.error({
+            message: 'Không thể làm mới token',
+            description: 'Vui lòng đăng nhập lại.',
+            duration: 5,
+          });
+        }
+      });
+
+      // Handle successful token refresh
+      socketRef.current.on('token_refreshed', (data: any) => {
+        console.log('✅ Token refreshed successfully');
+        
+        // Update stored access token
+        localStorage.setItem('jwt-access-token', data.access_token);
+        
+        notification.success({
+          message: 'Token đã được làm mới',
+          description: 'Kết nối chatbot đã được khôi phục.',
+          duration: 3,
+        });
+      });
+
+      // Handle token refresh errors
+      socketRef.current.on('refresh_error', (error: any) => {
+        console.error('❌ Token refresh failed:', error);
+        notification.error({
+          message: 'Không thể làm mới token',
+          description: error.message || 'Vui lòng đăng nhập lại.',
+          duration: 5,
+        });
+      });
+      }
+    }
+  };
+
+  // Cleanup function
+  useEffect(() => {
     return () => {
       if (socketRef.current) {
         socketRef.current.disconnect();
@@ -144,16 +261,65 @@ const useChatbot = (): UseChatbotReturn => {
     };
   }, []);
 
-  // Load conversation history khi có conversationId
-  const loadConversationHistory = useCallback(async (conversationId: string) => {
+  // Load conversation history by ID
+  const loadConversationHistoryById = useCallback(async (conversationId: string) => {
     try {
-      console.log('📖 Loading conversation history:', conversationId);
-      const token = localStorage.getItem('jwt-access-token');
+      console.log('📂 Loading conversation history for:', conversationId);
+      const tokens = getStoredTokens();
+      console.log('🔑 Token available:', !!tokens?.accessToken, tokens?.accessToken ? tokens.accessToken.substring(0, 20) + '...' : 'No token');
+      
       const response = await fetch(`${API_URL}/chat/conversations/${conversationId}/messages`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          'Authorization': `Bearer ${tokens?.accessToken}`,
+        },
+      });
+
+      console.log('📡 Response status:', response.status);
+      console.log('📡 Response headers:', Object.fromEntries(response.headers.entries()));
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('📦 Response data:', data);
+        
+        const messages = data.data.map((msg: any) => ({
+          id: msg._id,
+          content: msg.content,
+          role: msg.role,
+          timestamp: new Date(msg.createdAt),
+          isComplete: msg.isComplete,
+          imageUrls: msg.imageUrls || [],
+        }));
+        
+        console.log('✅ Loaded', messages.length, 'messages');
+        setMessages(messages);
+        setCurrentConversationId(conversationId);
+        
+        // Join conversation room
+        if (socketRef.current) {
+          socketRef.current.emit('join_conversation', { conversationId });
+          console.log('🔗 Joined conversation room:', conversationId);
+          console.log('🔗 Socket ID:', socketRef.current.id);
+        }
+      } else {
+        console.error('❌ Failed to load history:', response.status, await response.text());
+      }
+    } catch (error) {
+      console.error('❌ Error loading conversation history:', error);
+    }
+  }, []);
+
+  // Load conversation history khi có conversationId
+  const loadConversationHistory = useCallback(async (conversationId: string) => {
+    try {
+      console.log('📖 Loading conversation history:', conversationId);
+      const tokens = getStoredTokens();
+      const response = await fetch(`${API_URL}/chat/conversations/${conversationId}/messages`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${tokens?.accessToken}`,
         },
       });
 
@@ -194,14 +360,14 @@ const useChatbot = (): UseChatbotReturn => {
 
     try {
       console.log('📂 Getting user conversation...');
-      const token = localStorage.getItem('jwt-access-token');
       
       // API sẽ tự động get hoặc tạo conversation cho user
+      const tokens = getStoredTokens();
       const response = await fetch(`${API_URL}/chat/my-conversation`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          'Authorization': `Bearer ${tokens?.accessToken}`,
         },
       });
 
@@ -219,6 +385,7 @@ const useChatbot = (): UseChatbotReturn => {
         if (socketRef.current) {
           socketRef.current.emit('join_conversation', { conversationId });
           console.log('🔗 Joined conversation room:', conversationId);
+          console.log('🔗 Socket ID:', socketRef.current.id);
         }
 
         // Load history
@@ -268,12 +435,28 @@ const useChatbot = (): UseChatbotReturn => {
       return;
     }
 
-    if (!socketRef.current || !socketRef.current.connected) {
-      console.error('❌ Socket not connected');
+    // Ensure socket is connected before sending message
+    if (!ensureSocketConnection()) {
       notification.error({
-        message: 'Lỗi',
-        description: 'Chưa kết nối đến server.',
+        message: 'Lỗi kết nối',
+        description: 'Không thể kết nối đến server. Vui lòng thử lại.',
       });
+      return;
+    }
+    
+    // Double check socket connection and readiness
+    if (!socketRef.current || !socketRef.current.connected || !(socketRef.current as any).isReady) {
+      console.log('🔄 Socket still not ready, retrying in 1 second...');
+      setTimeout(() => {
+        if (socketRef.current && socketRef.current.connected && (socketRef.current as any).isReady) {
+          sendMessage(text, imageUrls);
+        } else {
+          notification.error({
+            message: 'Lỗi kết nối',
+            description: 'Không thể kết nối đến server. Vui lòng thử lại.',
+          });
+        }
+      }, 1000);
       return;
     }
 
@@ -282,6 +465,15 @@ const useChatbot = (): UseChatbotReturn => {
       console.log('   With images:', imageUrls.length);
     }
     setIsLoading(true);
+    
+    // Fallback timeout để tắt loading sau 30 giây
+    const loadingTimeout = setTimeout(() => {
+      console.log('⏰ Loading timeout - forcing isLoading to false');
+      setIsLoading(false);
+    }, 30000);
+    
+    // Store timeout reference để có thể clear sau này
+    (window as any).currentLoadingTimeout = loadingTimeout;
 
     // 1. Hiển thị tin nhắn user ngay lập tức
     const userMessage: Message = {
@@ -294,7 +486,11 @@ const useChatbot = (): UseChatbotReturn => {
     };
     setMessages(prev => [...prev, userMessage]);
 
-    // 2. Gửi tin nhắn qua socket → Backend sẽ:
+    // 2. Đảm bảo join room trước khi gửi message
+    console.log('🔗 Ensuring client is in conversation room:', currentConversationId);
+    socketRef.current.emit('join_conversation', { conversationId: currentConversationId });
+    
+    // 3. Gửi tin nhắn qua socket → Backend sẽ:
     //    - Lưu tin nhắn user vào DB
     //    - Gọi Gemini API (với ảnh nếu có)
     //    - Stream response về qua socket event 'streaming_message'
@@ -309,9 +505,23 @@ const useChatbot = (): UseChatbotReturn => {
 
   const openChatbot = useCallback(() => {
     console.log('👋 Opening chatbot');
-    setIsOpen(true);
-    initializeConversation();
-  }, [initializeConversation]);
+    if (initializeSocketConnection()) {
+      setIsOpen(true);
+      // Wait for socket to connect before initializing conversation
+      setTimeout(() => {
+        if (socketRef.current && socketRef.current.connected && (socketRef.current as any).isReady) {
+          initializeConversation();
+        } else {
+          console.log('⚠️ Socket not ready yet, retrying...');
+          setTimeout(() => {
+            if (socketRef.current && socketRef.current.connected && (socketRef.current as any).isReady) {
+              initializeConversation();
+            }
+          }, 1000);
+        }
+      }, 500);
+    }
+  }, [initializeConversation, initializeSocketConnection]);
 
   const closeChatbot = useCallback(() => {
     console.log('👋 Closing chatbot');
@@ -323,11 +533,27 @@ const useChatbot = (): UseChatbotReturn => {
       const newState = !prev;
       console.log(newState ? '👋 Opening chatbot' : '👋 Closing chatbot');
       if (newState) {
-        initializeConversation();
+        if (initializeSocketConnection()) {
+          // Wait for socket to connect before initializing conversation
+          setTimeout(() => {
+            if (socketRef.current && socketRef.current.connected && (socketRef.current as any).isReady) {
+              initializeConversation();
+            } else {
+              console.log('⚠️ Socket not ready yet, retrying...');
+              setTimeout(() => {
+                if (socketRef.current && socketRef.current.connected && (socketRef.current as any).isReady) {
+                  initializeConversation();
+                }
+              }, 1000);
+            }
+          }, 500);
+        } else {
+          return prev; // Don't open if initialization failed
+        }
       }
       return newState;
     });
-  }, [initializeConversation]);
+  }, [initializeConversation, initializeSocketConnection]);
 
   const clearMessages = useCallback(async () => {
     console.log('🗑️ Clearing conversation');
@@ -338,14 +564,13 @@ const useChatbot = (): UseChatbotReturn => {
     }
 
     try {
-      const token = localStorage.getItem('jwt-access-token');
-      
       // Gọi API để xóa conversation cũ và tạo mới
+      const tokens = getStoredTokens();
       const response = await fetch(`${API_URL}/chat/my-conversation`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          'Authorization': `Bearer ${tokens?.accessToken}`,
         },
       });
 
@@ -395,6 +620,7 @@ const useChatbot = (): UseChatbotReturn => {
     toggleChatbot,
     currentConversationId,
     createNewConversation,
+    loadConversationHistory: loadConversationHistoryById,
   };
 };
 

@@ -1,4 +1,4 @@
-import { EditOutlined, LockOutlined, LoginOutlined, SearchOutlined, PlusOutlined, FilterOutlined, StarOutlined } from "@ant-design/icons";
+import { EditOutlined, LockOutlined, LoginOutlined, SearchOutlined, PlusOutlined, FilterOutlined, StarOutlined, UserAddOutlined, ClockCircleOutlined } from "@ant-design/icons";
 import { Avatar, Button, Card, Col, Input, Row, Skeleton, Space, Tooltip, Typography, Select, Rate } from "antd";
 import { CSSProperties, useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -11,6 +11,8 @@ import { RootState, useDispatch, useSelector } from "../../../redux/store";
 import { CourseType } from "../../../types/course";
 import { useIsAdmin } from "../../../utils/auth";
 import { categoryService, Category } from "../../../services/categoryService";
+import CourseRegistrationModal from "../../../components/course/CourseRegistrationModal";
+import courseRegistrationService from "../../../services/courseRegistrationService";
 
 const { Title, Text } = Typography;
 
@@ -18,6 +20,10 @@ const CourseCard = ({ course }: { course: CourseType }) => {
   const navigate = useNavigate();
   const isAdmin = useIsAdmin();
   const { t } = useTranslationWithRerender();
+  const [registrationModalVisible, setRegistrationModalVisible] = useState(false);
+  const [registrationStatus, setRegistrationStatus] = useState<'none' | 'pending' | 'approved' | 'rejected'>('none');
+  const [loadingRegistration, setLoadingRegistration] = useState(false);
+  const { user } = useSelector((state: RootState) => state.auth);
 
   const handleJoinCourse = () => {
     navigate(`/course/${course._id}`);
@@ -27,6 +33,76 @@ const CourseCard = ({ course }: { course: CourseType }) => {
     navigate(`/course/update/${course._id}`);
   };
 
+  const handleRegistrationSuccess = () => {
+    setRegistrationModalVisible(false);
+    setRegistrationStatus('pending'); // Cập nhật trạng thái sau khi đăng ký thành công
+  };
+
+  // Kiểm tra trạng thái đăng ký của user cho khóa học này
+  const checkRegistrationStatus = async () => {
+    if (!user) {
+      console.log('No user found, skipping registration check');
+      return;
+    }
+    
+    setLoadingRegistration(true);
+    try {
+      console.log('Checking registration status for course:', course._id, 'user:', user._id);
+      
+      // Kiểm tra token
+      const token = localStorage.getItem('accessToken');
+      if (!token) {
+        console.log('No access token found');
+        setRegistrationStatus('none');
+        return;
+      }
+      
+      const myRegistrations = await courseRegistrationService.getMyRegistrations();
+      console.log('My registrations:', myRegistrations);
+      
+      const courseRegistration = myRegistrations.find(reg => reg.courseId === course._id);
+      console.log('Found registration for this course:', courseRegistration);
+      
+      if (courseRegistration) {
+        const status = courseRegistration.status.toLowerCase() as 'pending' | 'approved' | 'rejected';
+        console.log('Setting registration status to:', status);
+        setRegistrationStatus(status);
+      } else {
+        console.log('No registration found, setting status to none');
+        setRegistrationStatus('none');
+      }
+    } catch (error: any) {
+      console.error('Error checking registration status:', error);
+      console.error('Error response:', error.response?.data);
+      console.error('Error status:', error.response?.status);
+      
+      // Nếu lỗi 401 hoặc 403, có thể là vấn đề authentication
+      if (error.response?.status === 401 || error.response?.status === 403) {
+        console.log('Authentication error, setting status to none');
+      }
+      
+      setRegistrationStatus('none');
+    } finally {
+      setLoadingRegistration(false);
+    }
+  };
+
+  // Kiểm tra trạng thái đăng ký khi component mount
+  useEffect(() => {
+    checkRegistrationStatus();
+  }, [user, course._id]);
+
+  // Kiểm tra user đã tham gia khóa học chưa
+  const isUserEnrolled = user && course.students && course.students.includes(user._id);
+  
+  // Hiển thị nút đăng ký nếu:
+  // 1. User chưa tham gia khóa học
+  // 2. Không phải admin (admin có thể edit trực tiếp)
+  // 3. Chưa có đơn đăng ký hoặc đơn đăng ký bị từ chối
+  const showRegistrationButton = !isUserEnrolled && !isAdmin && (registrationStatus === 'none' || registrationStatus === 'rejected');
+  
+  // Hiển thị nút "Chờ duyệt" nếu đã đăng ký và đang chờ duyệt
+  const showPendingButton = !isUserEnrolled && !isAdmin && registrationStatus === 'pending';
   return (
     <Card
       hoverable
@@ -70,16 +146,50 @@ const CourseCard = ({ course }: { course: CourseType }) => {
       </div>
       
       <Space direction="horizontal" size="middle" style={{ width: "100%", justifyContent: "center" }}>
-        <Button
-          type="primary"
-          icon={course.mode === Mode.CLOSE ? <LockOutlined /> : <LoginOutlined />}
-          size="large"
-          onClick={handleJoinCourse}
-          disabled={course.mode === Mode.CLOSE}
-          style={styles.joinButton}
-        >
-          {course.mode === Mode.CLOSE ? t('course.locked') : t('course.joinCourse')}
-        </Button>
+        {isUserEnrolled ? (
+          <Button
+            type="primary"
+            icon={<LoginOutlined />}
+            size="large"
+            onClick={handleJoinCourse}
+            style={styles.joinButton}
+          >
+            {t('course.joinCourse')}
+          </Button>
+        ) : showPendingButton ? (
+          <Tooltip title="Đơn đăng ký của bạn đang chờ admin duyệt. Bạn sẽ nhận được thông báo khi có kết quả.">
+            <Button
+              type="primary"
+              icon={<ClockCircleOutlined />}
+              size="large"
+              disabled
+              style={styles.pendingButton}
+            >
+              Chờ duyệt
+            </Button>
+          </Tooltip>
+        ) : showRegistrationButton ? (
+          <Button
+            type="primary"
+            icon={<UserAddOutlined />}
+            size="large"
+            onClick={() => setRegistrationModalVisible(true)}
+            loading={loadingRegistration}
+            style={course.mode === Mode.CLOSE ? styles.lockedRegistrationButton : styles.registrationButton}
+          >
+            {course.mode === Mode.CLOSE ? 'Đăng ký khóa học (Chờ duyệt)' : 'Đăng ký khóa học'}
+          </Button>
+        ) : (
+          <Button
+            type="primary"
+            icon={<LockOutlined />}
+            size="large"
+            disabled
+            style={styles.joinButton}
+          >
+            {t('course.locked')}
+          </Button>
+        )}
         {isAdmin && (
           <Button
             type="default"
@@ -92,6 +202,16 @@ const CourseCard = ({ course }: { course: CourseType }) => {
           </Button>
         )}
       </Space>
+
+      <CourseRegistrationModal
+        visible={registrationModalVisible}
+        onCancel={() => setRegistrationModalVisible(false)}
+        onSuccess={handleRegistrationSuccess}
+        courseId={course._id}
+        courseTitle={course.name}
+        isLocked={course.mode === Mode.CLOSE}
+        isRejected={registrationStatus === 'rejected'}
+      />
     </Card>
   );
 };
@@ -314,6 +434,9 @@ const styles: {
   cardBody: CSSProperties;
   joinButton: CSSProperties;
   updateButton: CSSProperties;
+  registrationButton: CSSProperties;
+  lockedRegistrationButton: CSSProperties;
+  pendingButton: CSSProperties;
   ratingSection: CSSProperties;
   rating: CSSProperties;
   ratingText: CSSProperties;
@@ -492,5 +615,31 @@ const styles: {
     borderRadius: "8px",
     color: "var(--accent-color)",
     fontWeight: 500,
+  },
+  registrationButton: {
+    background: "linear-gradient(135deg, #52c41a 0%, #389e0d 100%)",
+    color: "white",
+    border: "none",
+    borderRadius: "8px",
+    fontWeight: 500,
+    boxShadow: "0 4px 12px rgba(82, 196, 26, 0.3)",
+  },
+  lockedRegistrationButton: {
+    background: "linear-gradient(135deg, #faad14 0%, #d48806 100%)",
+    color: "white",
+    border: "none",
+    borderRadius: "8px",
+    fontWeight: 500,
+    boxShadow: "0 4px 12px rgba(250, 173, 20, 0.3)",
+  },
+  pendingButton: {
+    background: "linear-gradient(135deg, #722ed1 0%, #531dab 100%)",
+    color: "white",
+    border: "none",
+    borderRadius: "8px",
+    fontWeight: 500,
+    boxShadow: "0 4px 12px rgba(114, 46, 209, 0.3)",
+    opacity: 0.7,
+    cursor: "not-allowed",
   },
 };

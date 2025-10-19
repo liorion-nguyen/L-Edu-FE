@@ -1,0 +1,241 @@
+/* Dashboard Styles */
+.dashboard-container {
+  padding: 24px;
+  background: var(--bg-primary, #f5f5f5);
+  min-height: 100vh;
+}
+
+.dashboard-title {
+  color: var(--text-primary, #1f2937);
+  margin-bottom: 24px;
+  font-weight: 600;
+}
+
+/* Statistics Cards */
+.statistics-card {
+  background: var(--bg-secondary, #ffffff);
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  height: 100%;
+}
+
+.statistics-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.statistics-icon {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-secondary, #6b7280);
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.statistics-value {
+  color: var(--text-primary, #1f2937);
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.statistics-change {
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.statistics-change.positive {
+  color: #10b981;
+}
+
+.statistics-change.negative {
+  color: #ef4444;
+}
+
+.statistics-suffix {
+  font-size: 10px;
+  color: var(--text-secondary, #6b7280);
+  margin-top: 4px;
+}
+
+/* Charts */
+.chart-card {
+  background: var(--bg-secondary, #ffffff);
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 24px;
+}
+
+.chart-title {
+  color: var(--text-primary, #1f2937);
+  font-weight: 600;
+  margin-bottom: 16px;
+  font-size: 16px;
+}
+
+.chart-container {
+  height: 300px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .dashboard-container {
+    padding: 16px;
+  }
+  
+  .statistics-card {
+    margin-bottom: 16px;
+  }
+  
+  .chart-container {
+    height: 250px;
+  }
+}
+
+@media (max-width: 576px) {
+  .chart-container {
+    height: 200px;
+  }
+  
+  .statistics-value {
+    font-size: 20px;
+  }
+}
+
+/* Dark Theme */
+[data-theme="dark"] .dashboard-container {
+  background: var(--bg-primary, #111827);
+}
+
+[data-theme="dark"] .statistics-card {
+  background: var(--bg-secondary, #1f2937);
+  border-color: var(--border-color, #374151);
+}
+
+[data-theme="dark"] .chart-card {
+  background: var(--bg-secondary, #1f2937);
+  border-color: var(--border-color, #374151);
+}
+
+[data-theme="dark"] .statistics-icon {
+  color: var(--text-secondary, #9ca3af);
+}
+
+[data-theme="dark"] .statistics-value {
+  color: var(--text-primary, #f9fafb);
+}
+
+[data-theme="dark"] .statistics-suffix {
+  color: var(--text-secondary, #9ca3af);
+}
+
+[data-theme="dark"] .chart-title {
+  color: var(--text-primary, #f9fafb);
+}
+
+/* Loading States */
+.dashboard-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 400px;
+  background: var(--bg-secondary, #ffffff);
+  border-radius: 12px;
+  border: 1px solid var(--border-color, #e5e7eb);
+}
+
+.dashboard-error {
+  margin: 24px;
+  border-radius: 8px;
+}
+
+/* Activity Table */
+.activity-table {
+  background: transparent;
+}
+
+.activity-table .ant-table-thead > tr > th {
+  background: var(--bg-secondary, #f9fafb);
+  color: var(--text-primary, #1f2937);
+  border-bottom: 1px solid var(--border-color, #e5e7eb);
+  font-weight: 600;
+}
+
+.activity-table .ant-table-tbody > tr > td {
+  background: transparent;
+  color: var(--text-primary, #1f2937);
+  border-bottom: 1px solid var(--border-color, #e5e7eb);
+}
+
+.activity-table .ant-table-tbody > tr:hover > td {
+  background: var(--bg-secondary, #f9fafb);
+}
+
+/* Chart Customizations */
+.recharts-wrapper {
+  font-family: inherit;
+}
+
+.recharts-cartesian-axis-tick-value {
+  fill: var(--text-secondary, #6b7280);
+  font-size: 12px;
+}
+
+.recharts-legend-item-text {
+  color: var(--text-primary, #1f2937);
+  font-size: 12px;
+}
+
+.recharts-tooltip-wrapper {
+  background: var(--bg-secondary, #ffffff);
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.recharts-tooltip-label {
+  color: var(--text-primary, #1f2937);
+  font-weight: 600;
+}
+
+.recharts-tooltip-item {
+  color: var(--text-secondary, #6b7280);
+}
+
+/* Grid Lines */
+.recharts-cartesian-grid-horizontal line,
+.recharts-cartesian-grid-vertical line {
+  stroke: var(--border-color, #e5e7eb);
+  opacity: 0.3;
+}
+
+/* Home Button Styling */
+.dashboard-container .ant-btn-primary {
+  background: var(--primary-color, #1890ff);
+  border-color: var(--primary-color, #1890ff);
+  box-shadow: 0 2px 4px rgba(24, 144, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.dashboard-container .ant-btn-primary:hover {
+  background: var(--primary-color-hover, #40a9ff);
+  border-color: var(--primary-color-hover, #40a9ff);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(24, 144, 255, 0.3);
+}
+
+/* Dashboard Header */
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-color, #e0e0e0);
+}

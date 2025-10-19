@@ -13,6 +13,9 @@
   --success-color: #52c41a;
   --warning-color: #faad14;
   --error-color: #ff4d4f;
+  --primary-color: #1890ff;
+  --warning-bg: #fff7e6;
+  --info-bg: #e6f7ff;
 }
 
 /* Dark theme colors */
@@ -29,6 +32,9 @@
   --success-color: #49aa19;
   --warning-color: #d89614;
   --error-color: #d32029;
+  --primary-color: #177ddc;
+  --warning-bg: #2b2111;
+  --info-bg: #111b26;
 }
 
 /* Apply theme colors globally */

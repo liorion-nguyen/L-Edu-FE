@@ -12,7 +12,8 @@ import {
   MenuUnfoldOutlined,
   AppstoreOutlined,
   ContactsOutlined,
-  FileTextOutlined
+  FileTextOutlined,
+  UserAddOutlined
 } from "@ant-design/icons";
 import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -20,7 +21,9 @@ import { useTranslationWithRerender } from "../hooks/useLanguageChange";
 import { useTheme } from "../contexts/ThemeContext";
 import { useSelector } from "../redux/store";
 import { RootState } from "../redux/store";
+import { Role } from "../enum/user.enum";
 import i18n from "../i18n";
+import "../styles/layout.css";
 
 const { Header, Sider, Content } = Layout;
 const { Text } = Typography;
@@ -53,6 +56,12 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
       key: "/dashboard/courses",
       icon: <BookOutlined />,
       label: t('dashboard.courseManagement'),
+    },
+    {
+      key: "/dashboard/course-registrations",
+      icon: <UserAddOutlined />,
+      label: t('dashboard.courseRegistrationManagement'),
+      roles: [Role.ADMIN, Role.TEACHER],
     },
     {
       key: "/dashboard/categories",
@@ -89,11 +98,6 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
       icon: <MessageOutlined />,
       label: t('dashboard.chatManagement'),
     },
-    {
-      key: "/dashboard/conversations",
-      icon: <MessageOutlined />,
-      label: t('dashboard.conversationManagement'),
-    },
   ], [t]);
 
   const handleMenuClick = ({ key }: { key: string }) => {
@@ -122,7 +126,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   ], [t]);
 
   return (
-    <Layout style={{ minHeight: "100vh", background: "var(--bg-primary)" }}>
+    <Layout className="dashboard-layout" style={{ height: "100vh", background: "var(--bg-primary)" }}>
       <Sider 
         trigger={null} 
         collapsible 
@@ -130,6 +134,12 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
         style={{
           background: "var(--bg-secondary)",
           borderRight: "1px solid var(--border-color)",
+          position: "fixed",
+          height: "100vh",
+          left: 0,
+          top: 0,
+          bottom: 0,
+          zIndex: 100,
         }}
       >
         <div style={{ 
@@ -153,28 +163,52 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
             background: "transparent",
             border: "none",
             marginTop: "16px",
+            height: "calc(100vh - 80px)",
+            overflowY: "auto",
           }}
         />
       </Sider>
       
-      <Layout>
+      <Layout style={{ marginLeft: collapsed ? 80 : 200, transition: "margin-left 0.2s" }}>
         <Header style={{ 
           padding: "0 24px", 
           background: "var(--bg-primary)",
           borderBottom: "1px solid var(--border-color)",
           display: "flex",
           alignItems: "center",
-          justifyContent: "space-between"
+          justifyContent: "space-between",
+          position: "fixed",
+          top: 0,
+          right: 0,
+          left: collapsed ? 80 : 200,
+          zIndex: 99,
+          height: 64,
+          transition: "left 0.2s",
         }}>
-          <Button
-            type="text"
-            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-            onClick={() => setCollapsed(!collapsed)}
-            style={{
-              fontSize: "16px",
-              color: "var(--text-primary)",
-            }}
-          />
+          <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+            <Button
+              type="text"
+              icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+              onClick={() => setCollapsed(!collapsed)}
+              style={{
+                fontSize: "16px",
+                color: "var(--text-primary)",
+              }}
+            />
+            
+            <Button
+              type="primary"
+              icon={<HomeOutlined />}
+              onClick={() => navigate('/')}
+              size="middle"
+              style={{
+                background: "var(--primary-color, #1890ff)",
+                borderColor: "var(--primary-color, #1890ff)",
+              }}
+            >
+              {!collapsed && "Quay lại Home"}
+            </Button>
+          </div>
           
           <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
             <Button
@@ -215,14 +249,14 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
           </div>
         </Header>
         
-        <Content style={{ 
-          margin: "24px 16px", 
-          padding: 24,
-          background: "var(--bg-primary)",
-          borderRadius: "8px",
-          border: "1px solid var(--border-color)",
-          minHeight: 280,
-        }}>
+        <Content 
+          className="dashboard-content"
+          style={{ 
+            margin: "24px 16px", 
+            marginTop: 88, // Space for fixed header
+            height: "calc(100vh - 112px)", // Full height minus header and margins
+          }}
+        >
           {children}
         </Content>
       </Layout>

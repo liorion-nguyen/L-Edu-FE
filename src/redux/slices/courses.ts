@@ -72,10 +72,12 @@ export const createSession = createAsyncThunk(
     'courses/createSession',
     async (values: initialValuesType) => {
         try {
-            await axios.post(`${envConfig.serverURL}/session`, {
+            await axios.post(`${envConfig.serverURL}/dashboard/sessions`, {
                 "courseId": values.courseId,
-                "sessionNumber": values.sessionNumber,
+                "sessionNumber": values.sessionNumber, // Keep as string, backend will convert
                 "title": values.title,
+                "description": values.description || "", // Add required description field
+                "mode": values.mode || "OPEN",
                 "quizId": {
                     "quizId": values.quizId,
                     "mode": values.modeQuizId
@@ -105,7 +107,7 @@ export const getSessionById = createAsyncThunk(
     'courses/getSessionById',
     async (id: string) => {
         try {
-            const result = await axios.get(`${envConfig.serverURL}/session/${id}`);
+            const result = await axios.get(`${envConfig.serverURL}/dashboard/sessions/${id}`);
             const session: SessionResponse = result.data.data;
             return session;
         } catch (error: any) {
@@ -120,9 +122,10 @@ export const updateSession = createAsyncThunk(
     'courses/updateSession',
     async ({ id, values }: { id: string; values: initialValuesType }) => {
         try {
-            await axios.put(`${envConfig.serverURL}/session/${id}`, {
-                "sessionNumber": values.sessionNumber,
+            await axios.put(`${envConfig.serverURL}/dashboard/sessions/${id}`, {
+                "sessionNumber": values.sessionNumber, // Keep as string, backend will convert
                 "title": values.title,
+                "description": values.description || "", // Add required description field
                 "quizId": {
                     "quizId": values.quizId,
                     "mode": values.modeQuizId
@@ -135,7 +138,7 @@ export const updateSession = createAsyncThunk(
                     "notesMd": values.notesMd,
                     "mode": values.modeNoteMd
                 },
-                "mode": values.mode
+                "mode": values.mode || "OPEN"
             });
             showNotification(ToasterType.success, 'Session updated successfully');
             return values;
