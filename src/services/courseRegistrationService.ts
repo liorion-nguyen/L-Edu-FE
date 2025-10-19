@@ -47,7 +47,7 @@ export interface RegistrationStats {
 
 class CourseRegistrationService {
   private getAuthHeaders() {
-    const token = localStorage.getItem('accessToken');
+    const token = localStorage.getItem('jwt-access-token');
     return token ? { Authorization: `Bearer ${token}` } : {};
   }
 
@@ -68,6 +68,7 @@ class CourseRegistrationService {
       const response = await axios.get(API_URL, {
         headers: this.getAuthHeaders(),
       });
+      console.log('getAllRegistrations response:', response.data);
       return response.data;
     } catch (error) {
       console.error('Error fetching all registrations:', error);

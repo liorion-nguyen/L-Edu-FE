@@ -175,16 +175,22 @@ const CourseRegistrationManagement: React.FC = () => {
       dataIndex: 'course',
       key: 'course',
       width: 200,
-      render: (course: any) => (
-        <div>
-          <div style={{ fontWeight: 'bold', fontSize: '13px' }}>
-            {course?.title || 'Unknown Course'}
+      render: (course: any) => {
+        console.log('Course data in render:', course);
+        // Strip HTML tags from description
+        const cleanDescription = course?.description?.replace(/<[^>]*>/g, '').substring(0, 50) || '';
+        
+        return (
+          <div>
+            <div style={{ fontWeight: 'bold', fontSize: '13px' }}>
+              {course?.title || 'Unknown Course'}
+            </div>
+            <div style={{ fontSize: '11px', color: '#666' }}>
+              {cleanDescription}...
+            </div>
           </div>
-          <div style={{ fontSize: '11px', color: '#666' }}>
-            {course?.description?.substring(0, 50)}...
-          </div>
-        </div>
-      ),
+        );
+      },
     },
     {
       title: 'Trạng thái',
