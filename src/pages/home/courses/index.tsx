@@ -103,6 +103,9 @@ const CourseCard = ({ course }: { course: CourseType }) => {
   
   // Hiển thị nút "Chờ duyệt" nếu đã đăng ký và đang chờ duyệt
   const showPendingButton = !isUserEnrolled && !isAdmin && registrationStatus === 'pending';
+  
+  // Admin có thể truy cập khóa học ngay cả khi chưa enroll
+  const showAdminAccessButton = !isUserEnrolled && isAdmin;
   return (
     <Card
       hoverable
@@ -155,6 +158,16 @@ const CourseCard = ({ course }: { course: CourseType }) => {
             style={styles.joinButton}
           >
             {t('course.joinCourse')}
+          </Button>
+        ) : showAdminAccessButton ? (
+          <Button
+            type="primary"
+            icon={<LoginOutlined />}
+            size="large"
+            onClick={handleJoinCourse}
+            style={styles.joinButton}
+          >
+            Truy cập khóa học (Admin)
           </Button>
         ) : showPendingButton ? (
           <Tooltip title="Đơn đăng ký của bạn đang chờ admin duyệt. Bạn sẽ nhận được thông báo khi có kết quả.">
