@@ -1,13 +1,15 @@
 import { EyeOutlined, LockOutlined, LogoutOutlined, PlusOutlined, ProductOutlined } from "@ant-design/icons";
-import { Button, Col, Flex, Grid, Image, Row, Typography } from "antd";
+import { Button, Col, Flex, Grid, Image, Modal, Row, Typography } from "antd";
 import Title from "antd/es/typography/Title";
-import { CSSProperties, useEffect } from "react";
+import { CSSProperties, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslationWithRerender } from "../../../hooks/useLanguageChange";
 import Loading from "../../../components/common/Loading";
 import ReturnPage from "../../../components/common/ReturnPage";
 import { COLORS } from "../../../constants/colors";
 import { Mode } from "../../../enum/course.enum";
+import { examService } from "../../../services/examService";
+import { ExamSummary, ExamVisibility } from "../../../types/exam";
 import { Role } from "../../../enum/user.enum";
 import SectionLayout from "../../../layouts/SectionLayout";
 import { getCourseById } from "../../../redux/slices/courses";
@@ -18,20 +20,35 @@ import CourseReviews from "../../../components/course/CourseReviews";
 const { Text } = Typography;
 const useBreakpoint = Grid.useBreakpoint;
 
-const Session = ({ item, index }: { item: any; index: number }) => {
+const Session = ({ item, exams }: { item: any; exams?: ExamSummary[] }) => {
   const { t } = useTranslationWithRerender();
   
+  const primaryExam = exams && exams.length > 0 ? exams[0] : undefined;
+
   const sections = [
-    { name: t('courseDetail.noteDocument'), icon: "/images/icons/course/doc.png", id: item._id, status: item.modeNoteMd === Mode.OPEN },
-    { name: t('courseDetail.videoDocument'), icon: "/images/icons/course/video.png", id: item._id, status: item.modeVideoUrl === Mode.OPEN },
-    { name: t('courseDetail.quizDocument'), icon: "/images/icons/course/quiz.png", id: item._id, status: item.modeQuizId === Mode.OPEN },
+    { type: "note", name: t('courseDetail.noteDocument'), icon: "/images/icons/course/doc.png", id: item._id, status: item.modeNoteMd === Mode.OPEN },
+    { type: "video", name: t('courseDetail.videoDocument'), icon: "/images/icons/course/video.png", id: item._id, status: item.modeVideoUrl === Mode.OPEN },
+    { type: "quiz", name: t('courseDetail.quizDocument'), icon: "/images/icons/course/quiz.png", id: item._id, status: item.modeQuizId === Mode.OPEN },
+    ...(primaryExam
+      ? [{ type: "exam", name: t('courseDetail.examDocument'), icon: "/images/icons/course/exam.png", id: primaryExam._id, status: true }]
+      : []),
   ];
   const screens = useBreakpoint();
   const navigate = useNavigate();
-  const handleView = (link: string, name: string) => {
-    if (name === t('courseDetail.noteDocument')) navigate(`/course/document/${link}`);
-    if (name === t('courseDetail.videoDocument')) navigate(`/course/video/${link}`);
-    if (name === t('courseDetail.quizDocument')) navigate(`/course/quiz/${link}`);
+  const handleView = (section: { type: string; id: string; name: string }) => {
+    if (section.type === "note") navigate(`/course/document/${section.id}`);
+    if (section.type === "video") navigate(`/course/video/${section.id}`);
+    if (section.type === "quiz") navigate(`/course/quiz/${section.id}`);
+    if (section.type === "exam") {
+      Modal.confirm({
+        title: t('courseDetail.examConfirmTitle'),
+        content: t('courseDetail.examConfirmDesc'),
+        okText: t('courseDetail.startExam'),
+        cancelText: t('common.cancel'),
+        centered: true,
+        onOk: () => navigate(`/exams/${section.id}`),
+      });
+    }
   };
   const isAdmin = useIsAdmin();
 
@@ -53,7 +70,7 @@ const Session = ({ item, index }: { item: any; index: number }) => {
       <Col span={24}>
         <Row gutter={[20, 20]}>
           {sections.map((section, index) => (
-            <Col key={index} span={24}>
+            <Col key={`${section.type}-${index}`} span={24}>
               <Row justify="start" align="middle" style={styles.boxSession}>
                 <Col xs={2} sm={2} md={2} lg={1}>
                   <img src={section.icon} alt={section.name} style={styles.icon} />
@@ -66,9 +83,9 @@ const Session = ({ item, index }: { item: any; index: number }) => {
                     style={styles.button}
                     icon={screens.md ? undefined : <LogoutOutlined />}
                     disabled={!section.status}
-                    onClick={() => handleView(section.id, section.name)}
+                    onClick={() => handleView(section)}
                   >
-                    {!screens.md ? "" : (section.status ? t('courseDetail.view') : t('courseDetail.locked'))}
+                    {!screens.md ? "" : (section.status ? (section.type === "exam" ? t('courseDetail.startExam') : t('courseDetail.view')) : t('courseDetail.locked'))}
                   </Button>
                 </Col>
               </Row>
@@ -108,6 +125,7 @@ const CourseDetail = () => {
   const { t } = useTranslationWithRerender();
   const { course, loading } = useSelector((state: RootState) => state.courses);
   const { user } = useSelector((state: RootState) => state.auth);
+  const [sessionExams, setSessionExams] = useState<Record<string, ExamSummary[]>>({});
 
   useEffect(() => {
     fetch();
@@ -127,6 +145,30 @@ const CourseDetail = () => {
   const handleAddSession = () => {
     navigate(`../session/addSession/${id}`);
   };
+
+  useEffect(() => {
+    const loadExams = async () => {
+      if (!course?._id) {
+        setSessionExams({});
+        return;
+      }
+      try {
+        const exams = await examService.getExams({ courseId: course._id, visibility: ExamVisibility.PUBLISHED });
+        const map: Record<string, ExamSummary[]> = {};
+        exams.forEach((exam) => {
+          exam.sessionIds?.forEach((sessionId) => {
+            if (!map[sessionId]) map[sessionId] = [];
+            map[sessionId].push(exam);
+          });
+        });
+        setSessionExams(map);
+      } catch (error) {
+        setSessionExams({});
+      }
+    };
+
+    loadExams();
+  }, [course?._id]);
 
   return loading ? (
     <Loading />
@@ -170,7 +212,7 @@ const CourseDetail = () => {
             <Row gutter={[20, 40]}>
               {course.sessions?.map((item: any, index: number) => (
                 <Col span={24} key={index}>
-                  <Session item={item} index={index} />
+                  <Session item={item} exams={sessionExams[item._id]} />
                 </Col>
               ))}
             </Row>

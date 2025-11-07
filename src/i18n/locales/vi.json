@@ -46,12 +46,14 @@
     "cut": "Cắt",
     "undo": "Hoàn tác",
     "redo": "Làm lại",
-    "returnToPrevious": "Quay lại trang trước"
+    "returnToPrevious": "Quay lại trang trước",
+    "total": "Tổng"
   },
   "navigation": {
     "home": "Trang chủ",
     "about": "Giới thiệu",
     "course": "Khóa học",
+    "exams": "Bài kiểm tra",
     "codeEditor": "Code Editor",
     "login": "Đăng nhập",
     "signup": "Đăng ký",
@@ -412,12 +414,16 @@
     "noteDocument": "Tài liệu ghi chú",
     "videoDocument": "Tài liệu video",
     "quizDocument": "Tài liệu quiz",
+    "examDocument": "Bài kiểm tra",
     "courseDescription": "Mô tả khóa học",
     "sessions": "Các bài học",
     "noSessions": "Chưa có bài học nào",
     "loading": "Đang tải khóa học...",
     "error": "Có lỗi khi tải khóa học",
-    "retry": "Thử lại"
+    "retry": "Thử lại",
+    "examConfirmTitle": "Bạn đã sẵn sàng làm bài kiểm tra?",
+    "examConfirmDesc": "Thời gian sẽ bắt đầu ngay khi bạn tiếp tục. Hãy đảm bảo bạn đã chuẩn bị đầy đủ trước khi vào bài.",
+    "startExam": "Vào làm bài"
   },
   "dashboard": {
     "overview": "Tổng quan",
@@ -425,6 +431,7 @@
     "courseManagement": "Quản lý khóa học",
     "categoryManagement": "Quản lý danh mục",
     "sessionManagement": "Quản lý bài học",
+    "examManagement": "Quản lý bài kiểm tra",
     "reviewManagement": "Quản lý đánh giá",
     "contactManagement": "Quản lý liên hệ",
     "chatManagement": "Quản lý chatbot",

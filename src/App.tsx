@@ -39,6 +39,10 @@ import WebSocketDebug from "./components/debug/WebSocketDebug";
 import ContentManagement from "./pages/dashboard/ContentManagement";
 import CategoryManagement from "./pages/dashboard/CategoryManagement";
 import CourseRegistrationManagement from "./components/admin/CourseRegistrationManagement";
+import ExamManagementPage from "./pages/dashboard/ExamManagement";
+import ExamOverviewPage from "./pages/exams/ExamOverviewPage";
+import ExamTakingPage from "./pages/exams/ExamTakingPage";
+import ExamResultPage from "./pages/exams/ExamResultPage";
 
 function App() {
   return (
@@ -81,6 +85,10 @@ function App() {
         <Route path="/dashboard/footer" element={<DashboardLayout><FooterManagement /></DashboardLayout>} />
         <Route path="/dashboard/contact" element={<DashboardLayout><ContactManagement /></DashboardLayout>} />
         <Route path="/dashboard/chat" element={<DashboardLayout><ChatManagement /></DashboardLayout>} />
+        <Route path="/dashboard/exams" element={<DashboardLayout><ExamManagementPage /></DashboardLayout>} />
+        <Route path="/exams/:examId" element={<MainLayout><ExamOverviewPage /></MainLayout>} />
+        <Route path="/exams/:examId/take" element={<MainLayout><ExamTakingPage /></MainLayout>} />
+        <Route path="/exams/:examId/result/:attemptId" element={<MainLayout><ExamResultPage /></MainLayout>} />
         <Route path="/debug/websocket" element={<WebSocketDebug />} />
         <Route path="/dashboard/content" element={<DashboardLayout><ContentManagement /></DashboardLayout>} />
         <Route path="/dashboard/categories" element={<DashboardLayout><CategoryManagement /></DashboardLayout>} />

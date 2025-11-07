@@ -13,7 +13,8 @@ import {
   AppstoreOutlined,
   ContactsOutlined,
   FileTextOutlined,
-  UserAddOutlined
+  UserAddOutlined,
+  FileDoneOutlined
 } from "@ant-design/icons";
 import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -72,6 +73,11 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
       key: "/dashboard/sessions",
       icon: <PlayCircleOutlined />,
       label: t('dashboard.sessionManagement'),
+    },
+    {
+      key: "/dashboard/exams",
+      icon: <FileDoneOutlined />,
+      label: t('dashboard.examManagement'),
     },
     {
       key: "/dashboard/reviews",

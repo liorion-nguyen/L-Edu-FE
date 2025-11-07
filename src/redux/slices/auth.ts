@@ -14,6 +14,7 @@ type ForgotPasswordFailureAction = PayloadAction<string>;
 type ResetPasswordFailureAction = PayloadAction<string>;
 type SetUser = PayloadAction<UserType>;
 type SetAuth = PayloadAction<{ access_token: string; refresh_token: string; isAuthenticated: boolean }>;
+type UpdateUserParams = { id: string; data: Partial<Omit<UserType, '_id' | 'email' | 'password'>> };
 
 const initialState: AuthenticationState = {
     loading: false,
@@ -146,6 +147,24 @@ export const getUser = createAsyncThunk(
                 ? error.response.data.message
                 : 'Something went wrong';
             showNotification(ToasterType.error, 'User not found', errorMessage);
+            return rejectWithValue(errorMessage);
+        }
+    }
+);
+
+export const updateUser = createAsyncThunk(
+    'auth/updateUser',
+    async ({ id, data }: UpdateUserParams, { rejectWithValue }) => {
+        try {
+            const result = await axios.put(`${envConfig.serverURL}/users/${id}`, data);
+            const updatedUser: UserType = result.data?.data || result.data;
+            showNotification(ToasterType.success, 'Profile updated successfully');
+            return updatedUser;
+        } catch (error: Error | any) {
+            const errorMessage: string = error.response
+                ? error.response.data.message
+                : 'Something went wrong';
+            showNotification(ToasterType.error, 'Failed to update profile', errorMessage);
             return rejectWithValue(errorMessage);
         }
     }
@@ -297,6 +316,19 @@ export const authenticationSlice = createSlice({
                 state.user = action.payload;
             })
             .addCase(getUser.rejected, (state, action) => {
+                state.loading = false;
+                state.errorMessage = action.payload as string;
+            })
+            // Update user
+            .addCase(updateUser.pending, (state) => {
+                state.loading = true;
+                state.errorMessage = '';
+            })
+            .addCase(updateUser.fulfilled, (state, action) => {
+                state.loading = false;
+                state.user = action.payload as UserType;
+            })
+            .addCase(updateUser.rejected, (state, action) => {
                 state.loading = false;
                 state.errorMessage = action.payload as string;
             });

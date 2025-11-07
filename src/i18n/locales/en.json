@@ -46,12 +46,14 @@
     "cut": "Cut",
     "undo": "Undo",
     "redo": "Redo",
-    "returnToPrevious": "Return to previous page"
+    "returnToPrevious": "Return to previous page",
+    "total": "Total"
   },
   "navigation": {
     "home": "Home",
     "about": "About",
     "course": "Course",
+    "exams": "Exams",
     "codeEditor": "Code Editor",
     "login": "Login",
     "signup": "Sign Up",
@@ -412,12 +414,16 @@
     "noteDocument": "Note document",
     "videoDocument": "Video document",
     "quizDocument": "Quiz document",
+    "examDocument": "Exam",
     "courseDescription": "Course Description",
     "sessions": "Sessions",
     "noSessions": "No sessions available",
     "loading": "Loading course...",
     "error": "Error loading course",
-    "retry": "Retry"
+    "retry": "Retry",
+    "examConfirmTitle": "Ready to start the exam?",
+    "examConfirmDesc": "The timer will start as soon as you continue. Make sure you are fully prepared before beginning.",
+    "startExam": "Start exam"
   },
   "dashboard": {
     "overview": "Overview",
@@ -425,6 +431,7 @@
     "courseManagement": "Course Management",
     "categoryManagement": "Category Management",
     "sessionManagement": "Session Management",
+    "examManagement": "Exam Management",
     "reviewManagement": "Review Management",
     "contactManagement": "Contact Management",
     "chatManagement": "Chatbot Management",
