@@ -1,4 +1,4 @@
-import { EyeOutlined, LockOutlined, LogoutOutlined, PlusOutlined, ProductOutlined } from "@ant-design/icons";
+import { DownOutlined, EyeOutlined, LockOutlined, LogoutOutlined, PlusOutlined, ProductOutlined, UpOutlined } from "@ant-design/icons";
 import { Button, Col, Flex, Grid, Image, Modal, Row, Typography } from "antd";
 import Title from "antd/es/typography/Title";
 import { CSSProperties, useEffect, useState } from "react";
@@ -126,6 +126,7 @@ const CourseDetail = () => {
   const { course, loading } = useSelector((state: RootState) => state.courses);
   const { user } = useSelector((state: RootState) => state.auth);
   const [sessionExams, setSessionExams] = useState<Record<string, ExamSummary[]>>({});
+  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
 
   useEffect(() => {
     fetch();
@@ -203,10 +204,42 @@ const CourseDetail = () => {
             />
           </Col>
           <Col span={24}>
-            <div
-              style={styles.description}
-              dangerouslySetInnerHTML={{ __html: course.description }}
-            />
+            <div style={styles.descriptionContainer}>
+              <div style={{ position: 'relative' }}>
+                <div
+                  style={{
+                    ...styles.description,
+                    maxHeight: isDescriptionExpanded ? 'none' : '150px',
+                    overflow: isDescriptionExpanded ? 'visible' : 'hidden',
+                    transition: 'max-height 0.3s ease',
+                  }}
+                  dangerouslySetInnerHTML={{ __html: course.description }}
+                />
+                {!isDescriptionExpanded && (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      height: '60px',
+                      background: 'linear-gradient(to bottom, transparent, var(--bg-primary))',
+                      pointerEvents: 'none',
+                    }}
+                  />
+                )}
+              </div>
+              {course.description && (
+                <Button
+                  type="text"
+                  icon={isDescriptionExpanded ? <UpOutlined /> : <DownOutlined />}
+                  onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
+                  style={styles.expandButton}
+                >
+                  {isDescriptionExpanded ? t('courseDetail.collapse') : t('courseDetail.expand')}
+                </Button>
+              )}
+            </div>
           </Col>
           <Col span={24}>
             <Row gutter={[20, 40]}>
@@ -256,15 +289,30 @@ const styles: {
     height: "500px",
     objectFit: "cover",
   },
+  descriptionContainer: {
+    background: "var(--bg-primary)",
+    borderRadius: "12px",
+    border: "1px solid var(--border-color)",
+    margin: "20px 0",
+    position: "relative",
+  },
   description: {
     color: "var(--text-primary)",
     fontSize: "16px",
     lineHeight: "1.8",
-    background: "var(--bg-primary)",
     padding: "20px",
-    borderRadius: "12px",
-    border: "1px solid var(--border-color)",
-    margin: "20px 0",
+  },
+  expandButton: {
+    width: "100%",
+    color: "var(--accent-color)",
+    padding: "10px 20px",
+    borderTop: "1px solid var(--border-color)",
+    borderRadius: "0 0 12px 12px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "8px",
+    fontWeight: 500,
   },
   container: {
     padding: "20px",

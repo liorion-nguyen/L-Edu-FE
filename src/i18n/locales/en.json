@@ -423,7 +423,9 @@
     "retry": "Retry",
     "examConfirmTitle": "Ready to start the exam?",
     "examConfirmDesc": "The timer will start as soon as you continue. Make sure you are fully prepared before beginning.",
-    "startExam": "Start exam"
+    "startExam": "Start exam",
+    "expand": "Show more",
+    "collapse": "Show less"
   },
   "dashboard": {
     "overview": "Overview",

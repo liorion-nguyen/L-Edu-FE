@@ -423,7 +423,9 @@
     "retry": "Thử lại",
     "examConfirmTitle": "Bạn đã sẵn sàng làm bài kiểm tra?",
     "examConfirmDesc": "Thời gian sẽ bắt đầu ngay khi bạn tiếp tục. Hãy đảm bảo bạn đã chuẩn bị đầy đủ trước khi vào bài.",
-    "startExam": "Vào làm bài"
+    "startExam": "Vào làm bài",
+    "expand": "Xem thêm",
+    "collapse": "Thu gọn"
   },
   "dashboard": {
     "overview": "Tổng quan",
