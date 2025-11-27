@@ -41,19 +41,28 @@ const normalizeId = (value: unknown): string => {
 const transformExamDetail = (detail: ExamDetail) => {
   const questionIdMap: Record<string, string> = {};
   const optionIdMap: Record<string, Record<string, string>> = {};
+  const questionOriginalIdMap: Record<string, string> = {};
+  const optionOriginalIdMap: Record<string, Record<string, string>> = {};
 
   const normalizedQuestions = detail.questions.map((question, questionIndex) => {
-    const rawQuestionId = question._id;
-    const normalizedQuestionId = normalizeId(rawQuestionId) || `question-${questionIndex}`;
-    questionIdMap[normalizeId(rawQuestionId) || normalizedQuestionId] = normalizedQuestionId;
+    const rawQuestionIdCandidate =
+      (question as any)?._id ?? (question as any)?.id ?? (question as any)?.questionId ?? question.originalId ?? `question-${questionIndex}`;
+    const normalizedQuestionId = normalizeId(rawQuestionIdCandidate) || `question-${questionIndex}`;
+    questionIdMap[normalizeId(rawQuestionIdCandidate) || normalizedQuestionId] = normalizedQuestionId;
     questionIdMap[normalizedQuestionId] = normalizedQuestionId;
+    const originalQuestionId = normalizeId(rawQuestionIdCandidate) || normalizedQuestionId;
+    questionOriginalIdMap[normalizedQuestionId] = originalQuestionId;
 
     const optionMap: Record<string, string> = {};
+    const optionOriginalMap: Record<string, string> = {};
     const normalizedOptions = (question.options ?? []).map((option, optionIndex) => {
-      const rawOptionId = option.id ?? (option as any)?._id ?? `${normalizedQuestionId}-option-${optionIndex}`;
-      const normalizedOptionId = normalizeId(rawOptionId) || `${normalizedQuestionId}-option-${optionIndex}`;
-      optionMap[normalizeId(rawOptionId) || normalizedOptionId] = normalizedOptionId;
+      const optionRawCandidate =
+        option.id ?? (option as any)?._id ?? (option as any)?.optionId ?? (option as any)?.value ?? `${normalizedQuestionId}-option-${optionIndex}`;
+      const normalizedOptionId = normalizeId(optionRawCandidate) || `${normalizedQuestionId}-option-${optionIndex}`;
+      optionMap[normalizeId(optionRawCandidate) || normalizedOptionId] = normalizedOptionId;
       optionMap[normalizedOptionId] = normalizedOptionId;
+      const originalOptionId = normalizeId(optionRawCandidate) || normalizedOptionId;
+      optionOriginalMap[normalizedOptionId] = originalOptionId;
       return {
         ...option,
         id: normalizedOptionId,
@@ -61,6 +70,7 @@ const transformExamDetail = (detail: ExamDetail) => {
     });
 
     optionIdMap[normalizedQuestionId] = optionMap;
+    optionOriginalIdMap[normalizedQuestionId] = optionOriginalMap;
 
     const normalizedCorrectAnswers = question.correctAnswers?.map((answerId, answerIndex) => {
       const rawAnswerId = normalizeId(answerId);
@@ -70,6 +80,7 @@ const transformExamDetail = (detail: ExamDetail) => {
     return {
       ...question,
       _id: normalizedQuestionId,
+      originalId: normalizeId(rawQuestionIdCandidate) || normalizedQuestionId,
       options: normalizedOptions,
       correctAnswers: normalizedCorrectAnswers,
     };
@@ -82,6 +93,8 @@ const transformExamDetail = (detail: ExamDetail) => {
     },
     questionIdMap,
     optionIdMap,
+    questionOriginalIdMap,
+    optionOriginalIdMap,
   };
 };
 
@@ -97,71 +110,94 @@ const ExamTakingPage: React.FC = () => {
   const [saving, setSaving] = useState(false);
   const [answersMap, setAnswersMap] = useState<Record<string, AttemptAnswerPayload>>({});
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const answersMapRef = useRef<Record<string, AttemptAnswerPayload>>({});
+  useEffect(() => {
+    answersMapRef.current = answersMap;
+  }, [answersMap]);
   const [questionIdMap, setQuestionIdMap] = useState<Record<string, string>>({});
   const [optionIdMaps, setOptionIdMaps] = useState<Record<string, Record<string, string>>>({});
   const [attemptQuestionMap, setAttemptQuestionMap] = useState<Record<string, string>>({});
+  const [questionOriginalIdMap, setQuestionOriginalIdMap] = useState<Record<string, string>>({});
+  const [optionOriginalIdMaps, setOptionOriginalIdMaps] = useState<Record<string, Record<string, string>>>({});
 
   const attemptIdFromUrl = searchParams.get("attemptId");
 
-  const loadExam = useCallback(async () => {
-    if (!examId) return;
-    try {
-      const rawDetail = await examService.getExamDetail(examId);
-      const transformed = transformExamDetail(rawDetail);
-      setExam(transformed.exam);
-      setQuestionIdMap(transformed.questionIdMap);
-      setOptionIdMaps(transformed.optionIdMap);
-      // map original ids to normalized ids for future lookups
-      const map: Record<string, string> = {};
-      Object.entries(transformed.questionIdMap).forEach(([rawId, normalized]) => {
-        map[rawId] = normalized;
-      });
-      transformed.exam.questions.forEach((question) => {
-        if (question.originalId) {
-          map[question.originalId] = question._id;
-        }
-      });
-      setAttemptQuestionMap(map);
-      return transformed.exam;
-    } catch (error: any) {
-      const message = error?.response?.data?.message || "Không thể tải đề thi";
-      showNotification(ToasterType.error, "Exam", message);
-      return null;
-    }
-  }, [examId]);
-
-  const loadAttempt = useCallback(
-    async (detail: ExamDetail | null) => {
+  useEffect(() => {
+    let mounted = true;
+    const init = async () => {
       if (!examId || !user?._id) return;
       try {
-        const data = attemptIdFromUrl
-          ? await examService.getAttempt(examId, attemptIdFromUrl)
-          : await examService.createAttempt(examId, {
-              studentId: user._id,
-              deviceInfo: { userAgent: window.navigator.userAgent },
-            });
-        setAttempt(data);
+        const rawDetail = await examService.getExamDetail(examId);
+        if (!mounted) return;
+        const transformed = transformExamDetail(rawDetail);
+        const optionMapState: Record<string, Record<string, string>> = { ...transformed.optionIdMap };
+        const optionOriginalMapState: Record<string, Record<string, string>> = { ...transformed.optionOriginalIdMap };
+        const questionMapState: Record<string, string> = { ...transformed.questionIdMap };
+        const questionOriginalMapState: Record<string, string> = { ...transformed.questionOriginalIdMap };
+        const attemptMap: Record<string, string> = {};
+        Object.entries(questionMapState).forEach(([rawId, normalized]) => {
+          attemptMap[rawId] = normalized;
+        });
+        transformed.exam.questions.forEach((question) => {
+          if (question.originalId) {
+            attemptMap[normalizeId(question.originalId)] = question._id;
+          }
+        });
+
+        let data: ExamAttempt;
+        if (attemptIdFromUrl) {
+          data = await examService.getAttempt(examId, attemptIdFromUrl);
+        } else {
+          data = await examService.createAttempt(examId, {
+            studentId: user._id,
+            deviceInfo: { userAgent: window.navigator.userAgent },
+          });
+        }
+        if (!mounted) return;
+
         const initialAnswers: Record<string, AttemptAnswerPayload> = {};
         data.answers?.forEach((answer) => {
           const rawQuestionId = normalizeId(answer.questionId);
-          const normalizedQuestionId = attemptQuestionMap[rawQuestionId] ?? questionIdMap[rawQuestionId] ?? rawQuestionId;
+          const normalizedQuestionId = attemptMap[rawQuestionId] ?? questionMapState[rawQuestionId] ?? rawQuestionId;
           if (!normalizedQuestionId) return;
 
-          const optionMap = optionIdMaps[normalizedQuestionId] ?? {};
+          let optionMap = optionMapState[normalizedQuestionId];
+          let optionOriginalMap = optionOriginalMapState[normalizedQuestionId];
+          if (!optionMap) {
+            optionMap = {};
+            optionMapState[normalizedQuestionId] = optionMap;
+          }
+          if (!optionOriginalMap) {
+            optionOriginalMap = {};
+            optionOriginalMapState[normalizedQuestionId] = optionOriginalMap;
+          }
+
           if (answer.selectedOptionIds && answer.selectedOptionIds.length > 0 && Object.keys(optionMap).length === 0) {
-            const question = detail?.questions.find((q) => normalizeId(q._id) === normalizedQuestionId || normalizeId(q.originalId) === normalizedQuestionId);
+            const question = transformed.exam.questions.find(
+              (q) => normalizeId(q._id) === normalizedQuestionId || normalizeId(q.originalId) === normalizedQuestionId,
+            );
             if (question?.options) {
               const nextMap: Record<string, string> = {};
+              const nextOriginalMap: Record<string, string> = optionOriginalMapState[normalizedQuestionId] ?? {};
               question.options.forEach((option) => {
                 const rawOptionId = normalizeId(option.id);
-                nextMap[rawOptionId] = rawOptionId;
+                if (rawOptionId) {
+                  nextMap[rawOptionId] = rawOptionId;
+                  if (!nextOriginalMap[rawOptionId]) {
+                    nextOriginalMap[rawOptionId] = rawOptionId;
+                  }
+                }
               });
-              optionIdMaps[normalizedQuestionId] = nextMap;
+              optionMapState[normalizedQuestionId] = nextMap;
+              optionOriginalMapState[normalizedQuestionId] = nextOriginalMap;
+              optionMap = nextMap;
+              optionOriginalMap = nextOriginalMap;
             }
           }
+
           const normalizedOptionIds = (answer.selectedOptionIds ?? []).map((optionId) => {
             const rawOptionId = normalizeId(optionId);
-            return optionMap[rawOptionId] ?? rawOptionId;
+            return optionMap?.[rawOptionId] ?? rawOptionId;
           });
 
           initialAnswers[normalizedQuestionId] = {
@@ -170,24 +206,21 @@ const ExamTakingPage: React.FC = () => {
             textAnswer: answer.textAnswer,
           };
         });
+
+        setExam(transformed.exam);
+        setQuestionIdMap(questionMapState);
+        setOptionIdMaps(optionMapState);
+        setAttemptQuestionMap(attemptMap);
+        setQuestionOriginalIdMap(questionOriginalMapState);
+        setOptionOriginalIdMaps(optionOriginalMapState);
+        setAttempt(data);
         setAnswersMap(initialAnswers);
-        if (!attemptIdFromUrl) {
+        if (!attemptIdFromUrl && data?._id) {
           navigate(`/exams/${examId}/take?attemptId=${data._id}`, { replace: true });
         }
       } catch (error: any) {
-        const message = error?.response?.data?.message || "Không thể tải phiên làm bài";
+        const message = error?.response?.data?.message || "Không thể tải dữ liệu bài kiểm tra";
         showNotification(ToasterType.error, "Exam", message);
-      }
-    },
-    [attemptIdFromUrl, examId, navigate, optionIdMaps, questionIdMap, user?._id],
-  );
-
-  useEffect(() => {
-    let mounted = true;
-    const init = async () => {
-      const detail = await loadExam();
-      if (detail && mounted) {
-        await loadAttempt(detail);
       }
     };
     init();
@@ -198,14 +231,35 @@ const ExamTakingPage: React.FC = () => {
         saveTimeoutRef.current = null;
       }
     };
-  }, [loadExam, loadAttempt]);
+  }, [attemptIdFromUrl, examId, navigate, user?._id]);
 
-  const scheduleSave = (payload: { answers: AttemptAnswerPayload[] }) => {
-    if (!examId || !attempt) return;
-    if (saveTimeoutRef.current) {
-      clearTimeout(saveTimeoutRef.current);
-    }
-    saveTimeoutRef.current = setTimeout(async () => {
+  const buildBackendAnswers = useCallback(
+    (answers: Record<string, AttemptAnswerPayload>) => {
+      return Object.values(answers).map((answer) => {
+        const normalizedQuestionId = normalizeId(answer.questionId);
+        const originalQuestionId = questionOriginalIdMap[normalizedQuestionId] ?? normalizedQuestionId;
+        let originalOptionIds: string[] | undefined;
+        if (answer.selectedOptionIds) {
+          const optionOriginalMap = optionOriginalIdMaps[normalizedQuestionId] ?? {};
+          originalOptionIds = answer.selectedOptionIds.map((optionId) => {
+            const normalizedOptionId = normalizeId(optionId);
+            return optionOriginalMap[normalizedOptionId] ?? normalizedOptionId;
+          });
+        }
+        return {
+          questionId: originalQuestionId,
+          selectedOptionIds: originalOptionIds,
+          textAnswer: answer.textAnswer,
+        };
+      });
+    },
+    [optionOriginalIdMaps, questionOriginalIdMap],
+  );
+
+  const persistAnswers = useCallback(
+    async (answers: Record<string, AttemptAnswerPayload>) => {
+      if (!examId || !attempt) return;
+      const payload = { answers: buildBackendAnswers(answers) };
       try {
         setSaving(true);
         const updated = await examService.saveAttemptProgress(examId, attempt._id, payload);
@@ -216,8 +270,31 @@ const ExamTakingPage: React.FC = () => {
       } finally {
         setSaving(false);
       }
-    }, 800);
-  };
+    },
+    [attempt, buildBackendAnswers, examId],
+  );
+
+  const scheduleSave = useCallback(
+    (answers: Record<string, AttemptAnswerPayload>) => {
+      if (!examId || !attempt) return;
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
+      saveTimeoutRef.current = setTimeout(() => {
+        saveTimeoutRef.current = null;
+        void persistAnswers(answers);
+      }, 800);
+    },
+    [attempt, examId, persistAnswers],
+  );
+
+  const flushPendingSave = useCallback(async () => {
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+      saveTimeoutRef.current = null;
+      await persistAnswers(answersMapRef.current ?? {});
+    }
+  }, [persistAnswers]);
 
   const handleAnswerChange = (
     questionId: string,
@@ -240,7 +317,8 @@ const ExamTakingPage: React.FC = () => {
         ...prev,
         [normalizedId]: updatedAnswer,
       };
-      scheduleSave({ answers: Object.values(next) });
+      answersMapRef.current = next;
+      scheduleSave(next);
       return next;
     });
   };
@@ -248,6 +326,7 @@ const ExamTakingPage: React.FC = () => {
   const handleSubmit = async (auto = false) => {
     if (!examId || !attempt) return;
     try {
+      await flushPendingSave();
       const result = await examService.submitAttempt(examId, attempt._id, auto ? { forceSubmit: true } : undefined);
       navigate(`/exams/${examId}/result/${result._id}`);
     } catch (error: any) {

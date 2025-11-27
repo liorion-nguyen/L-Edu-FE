@@ -42,33 +42,34 @@ export const COLORS = {
     900: '#2D2D2D',
   },
 
-  // Background colors - Very light and airy
+  // Background colors - Notion-inspired, very light and airy
   background: {
     primary: '#FFFFFF',
-    secondary: '#FBFBFB',
+    secondary: '#FAFAFA',
     tertiary: '#F7F7F7',
     elevated: '#FFFFFF',
     overlay: 'rgba(255, 255, 255, 0.95)',
-    overlayDark: 'rgba(0, 0, 0, 0.1)',
+    overlayDark: 'rgba(15, 15, 15, 0.05)',
+    hover: 'rgba(55, 53, 47, 0.08)',
   },
 
-  // Text colors - Soft and readable
+  // Text colors - Notion-inspired, soft and readable
   text: {
-    primary: '#4A4A4A',
-    secondary: '#6B6B6B',
-    muted: '#9A9A9A',
+    primary: '#37352f',
+    secondary: '#787774',
+    muted: '#9b9a97',
     inverse: '#FFFFFF',
-    heading: '#2D2D2D',
-    description: '#6B6B6B',
+    heading: '#37352f',
+    description: '#787774',
   },
 
-  // Border colors - Very subtle
+  // Border colors - Notion-inspired, very subtle
   border: {
-    light: 'rgba(232, 232, 232, 0.8)',
-    medium: 'rgba(219, 219, 219, 0.9)',
-    strong: 'rgba(184, 184, 184, 1)',
-    focus: 'rgba(127, 182, 127, 0.3)',
-    accent: 'rgba(212, 197, 160, 0.3)',
+    light: 'rgba(55, 53, 47, 0.09)',
+    medium: 'rgba(55, 53, 47, 0.16)',
+    strong: 'rgba(55, 53, 47, 0.3)',
+    focus: 'rgba(35, 131, 226, 0.4)',
+    accent: 'rgba(35, 131, 226, 0.2)',
   },
 
   // Status colors - Muted and soft

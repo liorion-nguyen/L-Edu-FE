@@ -75,6 +75,14 @@ export const examService = {
     return response.data as ExamAttempt;
   },
 
+  async listAttempts(examId: string, params?: { studentId?: string; from?: string; to?: string }) {
+    const response = await axios.get(`${API_ROOT}/${examId}/attempts`, {
+      headers: withAuth(),
+      params,
+    });
+    return response.data as ExamAttempt[];
+  },
+
   async saveAttemptProgress(examId: string, attemptId: string, payload: { answers: AttemptAnswerPayload[]; deviceInfo?: Record<string, any> }) {
     const response = await axios.patch(`${API_ROOT}/${examId}/attempt/${attemptId}`, payload, {
       headers: withAuth(),

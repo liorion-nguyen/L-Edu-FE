@@ -10,21 +10,42 @@
   color: var(--text-primary);
 }
 
-[data-theme="dark"] .aui-md-h1,
-[data-theme="dark"] .aui-md-h2,
-[data-theme="dark"] .aui-md-h3,
-[data-theme="dark"] .aui-md-h4,
-[data-theme="dark"] .aui-md-h5,
+[data-theme="dark"] .aui-md-h1 {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .aui-md-h2 {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .aui-md-h3 {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .aui-md-h4 {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .aui-md-h5 {
+  color: var(--text-primary) !important;
+}
+
 [data-theme="dark"] .aui-md-h6 {
-  color: var(--text-primary);
+  color: var(--text-primary) !important;
 }
 
 [data-theme="dark"] .aui-md-p {
-  color: var(--text-secondary);
+  color: var(--text-secondary) !important;
 }
 
 [data-theme="dark"] .aui-md-a {
-  color: var(--accent-color);
+  color: #4A9EFF !important;
+  border-bottom-color: rgba(74, 158, 255, 0.3);
+}
+
+[data-theme="dark"] .aui-md-a:hover {
+  border-bottom-color: #4A9EFF;
+  background-color: rgba(74, 158, 255, 0.1);
 }
 
 [data-theme="dark"] .aui-md-a:hover {
@@ -33,9 +54,9 @@
 }
 
 [data-theme="dark"] .aui-md-blockquote {
-  background: var(--bg-secondary);
-  border-left-color: var(--accent-color);
-  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.05);
+  border-left-color: var(--border-color);
+  color: var(--text-secondary) !important;
 }
 
 [data-theme="dark"] .aui-md-hr {
@@ -71,23 +92,22 @@
 }
 
 [data-theme="dark"] .aui-md-pre {
-  background: var(--bg-secondary);
-  color: var(--text-primary);
-  border-color: var(--border-color);
+  background: rgba(30, 30, 30, 1) !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 [data-theme="dark"] .aui-md-inline-code {
-  background: var(--bg-tertiary);
-  color: var(--accent-color);
-  border-color: var(--border-color);
+  background: rgba(255, 255, 255, 0.15) !important;
+  color: #FF6B6B !important;
 }
 
 [data-theme="dark"] .aui-md-strong {
-  color: var(--text-primary);
+  color: rgba(255, 255, 255, 0.9) !important;
 }
 
 [data-theme="dark"] .aui-md-em {
-  color: var(--text-secondary);
+  color: rgba(255, 255, 255, 0.8) !important;
 }
 
 [data-theme="dark"] .aui-code-header-root {
@@ -131,15 +151,20 @@
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
-/* Typography Classes */
+/* Typography Classes - Notion Style */
 .aui-md-h1 {
-  margin-bottom: 32px;
+  margin-bottom: 4px;
+  margin-top: 2em;
   scroll-margin-top: 80px;
-  font-size: 2rem;
-  font-weight: 800;
-  letter-spacing: -0.025em;
-  color: #2D2D2D;
+  font-size: 2em;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: rgba(55, 53, 47, 0.9) !important;
   line-height: 1.2;
+}
+
+.aui-md-h1:first-child {
+  margin-top: 0;
 }
 
 .aui-md-h1:last-child {
@@ -147,13 +172,13 @@
 }
 
 .aui-md-h2 {
-  margin-bottom: 16px;
-  margin-top: 32px;
+  margin-bottom: 4px;
+  margin-top: 1.4em;
   scroll-margin-top: 80px;
-  font-size: 1.5rem;
+  font-size: 1.5em;
   font-weight: 600;
-  letter-spacing: -0.025em;
-  color: #2D2D2D;
+  letter-spacing: -0.03em;
+  color: rgba(55, 53, 47, 0.9) !important;
   line-height: 1.3;
 }
 
@@ -166,13 +191,13 @@
 }
 
 .aui-md-h3 {
-  margin-bottom: 16px;
-  margin-top: 24px;
+  margin-bottom: 4px;
+  margin-top: 1em;
   scroll-margin-top: 80px;
-  font-size: 1.25rem;
+  font-size: 1.25em;
   font-weight: 600;
-  letter-spacing: -0.025em;
-  color: #2D2D2D;
+  letter-spacing: -0.02em;
+  color: rgba(55, 53, 47, 0.85) !important;
   line-height: 1.4;
 }
 
@@ -185,13 +210,13 @@
 }
 
 .aui-md-h4 {
-  margin-bottom: 16px;
-  margin-top: 24px;
+  margin-bottom: 4px;
+  margin-top: 0.8em;
   scroll-margin-top: 80px;
-  font-size: 1rem;
+  font-size: 1.1em;
   font-weight: 600;
-  letter-spacing: -0.025em;
-  color: #2D2D2D;
+  letter-spacing: -0.01em;
+  color: rgba(194, 189, 174, 0.8) !important;
   line-height: 1.5;
 }
 
@@ -204,10 +229,11 @@
 }
 
 .aui-md-h5 {
-  margin: 16px 0;
-  font-size: 0.875rem;
+  margin-bottom: 4px;
+  margin-top: 0.6em;
+  font-size: 1em;
   font-weight: 600;
-  color: #2D2D2D;
+  color: rgba(194, 189, 174, 0.8) !important;
 }
 
 .aui-md-h5:first-child {
@@ -219,10 +245,11 @@
 }
 
 .aui-md-h6 {
-  margin: 16px 0;
-  font-size: 0.75rem;
+  margin-bottom: 4px;
+  margin-top: 0.6em;
+  font-size: 0.9em;
   font-weight: 600;
-  color: #2D2D2D;
+  color: rgba(194, 189, 174, 0.8) !important;
 }
 
 .aui-md-h6:first-child {
@@ -234,10 +261,11 @@
 }
 
 .aui-md-p {
-  margin-bottom: 20px;
-  margin-top: 20px;
-  line-height: 1.7;
-  color: #4A4A4A;
+  margin-bottom: 1px;
+  margin-top: 1px;
+  line-height: 1.6;
+  color: rgba(194, 189, 174, 0.8) !important;
+  font-size: 16px;
 }
 
 .aui-md-p:first-child {
@@ -249,51 +277,60 @@
 }
 
 .aui-md-a {
-  color: #7FB67F;
-  font-weight: 500;
-  text-decoration: underline;
-  text-underline-offset: 4px;
-  transition: color 0.2s ease;
+  color: #0B6BCB !important;
+  font-weight: 400;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(11, 107, 203, 0.2);
+  transition: border-color 0.15s ease;
 }
 
 .aui-md-a:hover {
-  color: #6BA06B;
+  border-bottom-color: #0B6BCB;
+  background-color: rgba(11, 107, 203, 0.05);
 }
 
 .aui-md-blockquote {
-  border-left: 2px solid #7FB67F;
-  padding-left: 24px;
-  font-style: italic;
-  color: #6B6B6B;
-  background: #FBFBFB;
-  padding: 16px 24px;
-  border-radius: 0 8px 8px 0;
-  margin: 20px 0;
+  border-left: 3px solid #E9E9E7;
+  padding-left: 14px;
+  padding-right: 14px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  font-style: normal;
+  color: rgba(55, 53, 47, 0.7) !important;
+  background: rgba(55, 53, 47, 0.03);
+  border-radius: 3px;
+  margin: 4px 0;
 }
 
 .aui-md-ul {
-  margin: 20px 0;
-  margin-left: 24px;
+  margin: 2px 0;
+  margin-left: 1.5em;
+  padding-left: 0.5em;
   list-style-type: disc;
 }
 
 .aui-md-ul > li {
-  margin-top: 8px;
+  margin-top: 2px;
+  padding-left: 0.3em;
+  color: rgba(194, 189, 174, 0.8) !important;
 }
 
 .aui-md-ol {
-  margin: 20px 0;
-  margin-left: 24px;
+  margin: 2px 0;
+  margin-left: 1.5em;
+  padding-left: 0.5em;
   list-style-type: decimal;
 }
 
 .aui-md-ol > li {
-  margin-top: 8px;
+  margin-top: 2px;
+  padding-left: 0.3em;
+  color: rgba(194, 189, 174, 0.8) !important;
 }
 
 .aui-md-hr {
-  margin: 20px 0;
-  border-bottom: 1px solid rgba(232, 232, 232, 0.8);
+  margin: 2em 0;
+  border-bottom: 1px solid rgba(194, 189, 174, 0.8);
   border-top: none;
   border-left: none;
   border-right: none;
@@ -460,15 +497,14 @@
 
 .aui-md-pre {
   overflow-x: auto;
-  border-radius: 0 0 8px 8px;
-  background: #FFFFFF;
-  color: #2D2D2D;
-  margin: 0;
-  border: 1px solid rgba(232, 232, 232, 0.8);
-  border-top: none;
-  padding: 16px 24px;
-  font-family: Monaco, Consolas, "Courier New", monospace;
-  font-size: 0.9em;
+  border-radius: 3px;
+  background: rgba(247, 246, 243, 1) !important;
+  color: rgba(55, 53, 47, 0.9) !important;
+  margin: 4px 0;
+  border: 1px solid rgba(55, 53, 47, 0.09);
+  padding: 16px;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  font-size: 14px;
   line-height: 1.5;
   white-space: pre;
   word-wrap: break-word;
@@ -484,26 +520,26 @@
 }
 
 .aui-md-inline-code {
-  background: #F0F7F0;
-  color: #7FB67F;
-  border-radius: 4px;
-  border: 1px solid rgba(200, 224, 200, 0.5);
-  padding: 2px 6px;
-  font-size: 0.85em;
-  font-weight: 600;
-  font-family: Monaco, Consolas, "Courier New", monospace;
-  white-space: nowrap;
-  word-break: break-all;
+  background: rgba(135, 131, 120, 0.15) !important;
+  color: #EB5757 !important;
+  border-radius: 3px;
+  border: none;
+  padding: 0.2em 0.4em;
+  font-size: 0.9em;
+  font-weight: 400;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 .aui-md-strong {
-  font-weight: 700;
-  color: #2D2D2D;
+  font-weight: 600;
+  color: rgba(55, 53, 47, 0.9) !important;
 }
 
 .aui-md-em {
   font-style: italic;
-  color: #4A4A4A;
+  color: rgba(55, 53, 47, 0.8) !important;
 }
 
 /* Code Header */

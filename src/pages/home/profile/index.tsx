@@ -477,6 +477,7 @@ const Profile: React.FC = () => {
           />
         )}
       </Modal>
+
     </SectionLayout>
   );
 };

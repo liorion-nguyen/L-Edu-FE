@@ -27,6 +27,7 @@ export interface ExamOption {
 }
 
 export interface ExamQuestion {
+  id?: string;
   _id: string;
   originalId?: string;
   type: ExamQuestionType;
@@ -80,6 +81,12 @@ export interface ExamAttempt {
     isCorrect?: boolean;
     scoreEarned?: number;
   }>;
+  student?: {
+    _id: string;
+    fullName?: string;
+    email?: string;
+    avatar?: string;
+  };
 }
 
 export interface ExamFilters {

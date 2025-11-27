@@ -47,7 +47,6 @@ const Header = () => {
       { key: "/", label: t('navigation.home') },
       { key: "/aboutus", label: t('navigation.about') },
       { key: "/course", label: t('navigation.course') },
-      { key: "/exams", label: t('navigation.exams') },
       // { 
       //   key: "/code-editor", 
       //   label: t('navigation.codeEditor'),

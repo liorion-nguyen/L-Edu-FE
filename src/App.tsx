@@ -1,5 +1,4 @@
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
-import { ThemeProvider } from "./contexts/ThemeContext";
 import "./styles/theme.css";
 import "./i18n"; // Initialize i18n
 import AuthLayout from "./layouts/AuthLayout";
@@ -40,14 +39,14 @@ import ContentManagement from "./pages/dashboard/ContentManagement";
 import CategoryManagement from "./pages/dashboard/CategoryManagement";
 import CourseRegistrationManagement from "./components/admin/CourseRegistrationManagement";
 import ExamManagementPage from "./pages/dashboard/ExamManagement";
+import ExamAttemptHistory from "./pages/dashboard/ExamAttemptHistory";
 import ExamOverviewPage from "./pages/exams/ExamOverviewPage";
 import ExamTakingPage from "./pages/exams/ExamTakingPage";
 import ExamResultPage from "./pages/exams/ExamResultPage";
 
 function App() {
   return (
-    <ThemeProvider>
-      <Router>
+    <Router>
       <Routes>
         {/* Test Pages */}
         <Route path="/test/chatbot" element={<MainLayout><ChatbotTestPage /></MainLayout>} />
@@ -86,6 +85,7 @@ function App() {
         <Route path="/dashboard/contact" element={<DashboardLayout><ContactManagement /></DashboardLayout>} />
         <Route path="/dashboard/chat" element={<DashboardLayout><ChatManagement /></DashboardLayout>} />
         <Route path="/dashboard/exams" element={<DashboardLayout><ExamManagementPage /></DashboardLayout>} />
+        <Route path="/dashboard/exams/history" element={<DashboardLayout><ExamAttemptHistory /></DashboardLayout>} />
         <Route path="/exams/:examId" element={<MainLayout><ExamOverviewPage /></MainLayout>} />
         <Route path="/exams/:examId/take" element={<MainLayout><ExamTakingPage /></MainLayout>} />
         <Route path="/exams/:examId/result/:attemptId" element={<MainLayout><ExamResultPage /></MainLayout>} />
@@ -98,8 +98,7 @@ function App() {
         <Route path="*" element={<MainLayout><NotFound/></MainLayout>} />
 
       </Routes>
-      </Router>
-    </ThemeProvider>
+    </Router>
   );
 }
 

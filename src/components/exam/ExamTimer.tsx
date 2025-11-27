@@ -19,14 +19,14 @@ const formatTime = (seconds: number) => {
 
 export const ExamTimer: React.FC<ExamTimerProps> = ({ durationSeconds, onExpire, running = true }) => {
   const [remaining, setRemaining] = useState(durationSeconds);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     setRemaining(durationSeconds);
   }, [durationSeconds]);
 
   useEffect(() => {
-    if (!running) {
+    if (!running || durationSeconds <= 0) {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
         intervalRef.current = null;
@@ -54,9 +54,14 @@ export const ExamTimer: React.FC<ExamTimerProps> = ({ durationSeconds, onExpire,
         intervalRef.current = null;
       }
     };
-  }, [running, onExpire]);
+  }, [running, onExpire, durationSeconds]);
 
-  const percent = useMemo(() => (remaining / durationSeconds) * 100, [remaining, durationSeconds]);
+  const percent = useMemo(() => {
+    if (durationSeconds <= 0) {
+      return 0;
+    }
+    return (remaining / durationSeconds) * 100;
+  }, [remaining, durationSeconds]);
 
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
@@ -69,7 +74,6 @@ export const ExamTimer: React.FC<ExamTimerProps> = ({ durationSeconds, onExpire,
       />
       <div>
         <div style={{ fontWeight: 600, fontSize: 16 }}>Thời gian còn lại</div>
-        <div style={{ color: "var(--text-secondary)" }}>{formatTime(remaining)}</div>
       </div>
     </div>
   );

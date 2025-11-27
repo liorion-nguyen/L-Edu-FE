@@ -5,6 +5,7 @@ import { HelmetProvider } from "react-helmet-async";
 import { Provider } from "react-redux";
 import App from "./App";
 import { Toaster } from "./components/common/Toaster";
+import { ThemeProvider, useTheme } from "./contexts/ThemeContext";
 import setupAxiosInterceptors from "./config/axios-interceptor";
 import "./index.css";
 import "./styles/modal-fix.css";
@@ -14,21 +15,41 @@ import getAntdTheme from "./theme";
 
 setupAxiosInterceptors(() => {});
 
+// Component to wrap ConfigProvider with theme context
+// This must be inside ThemeProvider
+const ThemedConfigProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { theme } = useTheme();
+  const antdTheme = React.useMemo(() => getAntdTheme(theme), [theme]);
+  
+  return (
+    <ConfigProvider theme={antdTheme}>
+      {children}
+    </ConfigProvider>
+  );
+};
+
+// Root component that wraps everything
+const Root: React.FC = () => {
+  return (
+    <ThemeProvider>
+      <ThemedConfigProvider>
+        <HelmetProvider>
+          <React.StrictMode>
+            <Provider store={store}>
+              <Toaster />
+              <App />
+            </Provider>
+          </React.StrictMode>
+        </HelmetProvider>
+      </ThemedConfigProvider>
+    </ThemeProvider>
+  );
+};
+
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
 
-root.render(
-  <ConfigProvider theme={getAntdTheme()}>
-    <HelmetProvider>
-      <React.StrictMode>
-        <Provider store={store}>
-          <Toaster />
-          <App />
-        </Provider>
-      </React.StrictMode>
-    </HelmetProvider>
-  </ConfigProvider>
-);
+root.render(<Root />);
 
 reportWebVitals();

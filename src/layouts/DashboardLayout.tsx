@@ -14,7 +14,8 @@ import {
   ContactsOutlined,
   FileTextOutlined,
   UserAddOutlined,
-  FileDoneOutlined
+  FileDoneOutlined,
+  HistoryOutlined,
 } from "@ant-design/icons";
 import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -80,6 +81,12 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
       label: t('dashboard.examManagement'),
     },
     {
+      key: "/dashboard/exams/history",
+      icon: <HistoryOutlined />,
+      label: "Lịch sử bài làm",
+      roles: [Role.ADMIN, Role.TEACHER],
+    },
+    {
       key: "/dashboard/reviews",
       icon: <StarOutlined />,
       label: t('dashboard.reviewManagement'),
@@ -104,7 +111,11 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
       icon: <MessageOutlined />,
       label: t('dashboard.chatManagement'),
     },
-  ], [t]);
+  ].filter((item) => {
+    if (!item.roles) return true;
+    if (!user?.role) return true;
+    return item.roles.includes(user.role);
+  }), [t, user?.role]);
 
   const handleMenuClick = ({ key }: { key: string }) => {
     navigate(key);

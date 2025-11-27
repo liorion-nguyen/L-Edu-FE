@@ -3,20 +3,32 @@ import { COLORS } from './constants/colors';
 
 const { darkAlgorithm, defaultAlgorithm } = theme;
 
-// Auto-detect theme preference
-const prefersDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+// Get current theme from document attribute or system preference
+const getCurrentTheme = (): 'light' | 'dark' => {
+  const themeAttr = document.documentElement.getAttribute('data-theme');
+  if (themeAttr === 'dark' || themeAttr === 'light') {
+    return themeAttr;
+  }
+  // Fallback to system preference
+  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    return 'dark';
+  }
+  return 'light';
+};
 
-const getAntdTheme = () => ({
-  algorithm: prefersDarkMode ? darkAlgorithm : defaultAlgorithm,
+const getAntdTheme = (themeMode?: 'light' | 'dark') => {
+  const currentTheme = themeMode || getCurrentTheme();
+  return {
+  algorithm: currentTheme === 'dark' ? darkAlgorithm : defaultAlgorithm,
   token: {
-    // Primary colors
-    colorPrimary: COLORS.primary[500],
-    colorPrimaryActive: COLORS.primary[600],
-    colorPrimaryHover: COLORS.primary[400],
-    colorPrimaryBorder: COLORS.primary[500],
-    colorPrimaryText: COLORS.primary[600],
-    colorPrimaryTextHover: COLORS.primary[500],
-    colorPrimaryTextActive: COLORS.primary[700],
+    // Primary colors - Notion-inspired blue
+    colorPrimary: '#2383e2',
+    colorPrimaryActive: '#1a6bc7',
+    colorPrimaryHover: '#2d8ef0',
+    colorPrimaryBorder: '#2383e2',
+    colorPrimaryText: '#2383e2',
+    colorPrimaryTextHover: '#2d8ef0',
+    colorPrimaryTextActive: '#1a6bc7',
     
     // Success colors
     colorSuccess: COLORS.status.success,
@@ -139,25 +151,25 @@ const getAntdTheme = () => ({
   },
   components: {
     Button: {
-      colorPrimary: COLORS.primary[500],
-      colorPrimaryHover: COLORS.primary[400],
-      colorPrimaryActive: COLORS.primary[600],
-      borderRadius: 8,
+      colorPrimary: '#2383e2',
+      colorPrimaryHover: '#2d8ef0',
+      colorPrimaryActive: '#1a6bc7',
+      borderRadius: 6,
       boxShadow: 'none',
       boxShadowSecondary: 'none',
     },
     Card: {
       colorBgContainer: COLORS.background.primary,
       colorBorderSecondary: COLORS.border.light,
-      borderRadius: 12,
+      borderRadius: 8,
       boxShadow: 'none',
       boxShadowTertiary: 'none',
     },
     Input: {
       colorBgContainer: COLORS.background.primary,
       colorBorder: COLORS.border.light,
-      colorPrimary: COLORS.primary[500],
-      borderRadius: 8,
+      colorPrimary: '#2383e2',
+      borderRadius: 6,
       boxShadow: 'none',
     },
     Modal: {
@@ -185,6 +197,7 @@ const getAntdTheme = () => ({
       boxShadow: 'none',
     },
   },
-});
+  };
+};
 
 export default getAntdTheme;

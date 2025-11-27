@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeHighlight from "rehype-highlight";
 import rehypeRaw from "rehype-raw";
@@ -25,6 +25,19 @@ interface MarkdownViewerProps {
   selectedText?: string;
 }
 
+// Helper function to generate slug from text (for anchor links)
+const generateSlug = (text: string): string => {
+  return text
+    .toString()
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, '-')           // Replace spaces with hyphens
+    .replace(/[^\w\-àáảãạăắằẳẵặâấầẩẫậèéẻẽẹêếềểễệìíỉĩịòóỏõọôốồổỗộơớờởỡợùúủũụưứừửữựỳýỷỹỵđ]+/g, '') // Remove special chars but keep Vietnamese
+    .replace(/\-\-+/g, '-')         // Replace multiple hyphens with single hyphen
+    .replace(/^-+/, '')             // Remove leading hyphens
+    .replace(/-+$/, '');              // Remove trailing hyphens
+};
+
 const MarkdownViewer: React.FC<MarkdownViewerProps> = ({ 
   content, 
   className = "", 
@@ -32,6 +45,8 @@ const MarkdownViewer: React.FC<MarkdownViewerProps> = ({
   selectedText 
 }) => {
   const { isDark } = useTheme();
+  const containerRef = useRef<HTMLDivElement>(null);
+  
   // Initialize theme on component load
   useEffect(() => {
     if (!document.getElementById('highlight-theme')) {
@@ -42,6 +57,43 @@ const MarkdownViewer: React.FC<MarkdownViewerProps> = ({
     }
     loadHighlightTheme(isDark);
   }, [isDark]);
+
+  // Handle anchor link clicks for smooth scrolling
+  useEffect(() => {
+    const handleAnchorClick = (e: Event) => {
+      const target = e.target as HTMLElement;
+      const anchor = target.closest('a');
+      
+      if (anchor && anchor.getAttribute('href')?.startsWith('#')) {
+        const href = anchor.getAttribute('href');
+        if (href) {
+          e.preventDefault();
+          const id = href.substring(1); // Remove the # symbol
+          const element = document.getElementById(id);
+          
+          if (element) {
+            const offsetTop = element.offsetTop - 80; // Account for fixed header
+            window.scrollTo({
+              top: offsetTop,
+              behavior: 'smooth'
+            });
+          }
+        }
+      }
+    };
+
+    // Add event listener to the markdown viewer container
+    const container = containerRef.current;
+    if (container) {
+      container.addEventListener('click', handleAnchorClick);
+    }
+
+    return () => {
+      if (container) {
+        container.removeEventListener('click', handleAnchorClick);
+      }
+    };
+  }, [content]);
 
   // Function to highlight selected text
   const highlightText = (text: string) => {
@@ -84,29 +136,53 @@ const MarkdownViewer: React.FC<MarkdownViewerProps> = ({
 
   try {
     return (
-      <div className={`markdown-viewer ${className}`} style={styles.container}>
+      <div ref={containerRef} className={`markdown-viewer ${className}`} style={styles.container}>
         <ReactMarkdown
           rehypePlugins={[rehypeHighlight, rehypeRaw]}
           remarkPlugins={[remarkGfm]}
         components={{
-          h1: ({ children, ...props }) => (
-            <h1 className="aui-md-h1" {...props}>{children}</h1>
-          ),
-          h2: ({ children, ...props }) => (
-            <h2 className="aui-md-h2" {...props}>{children}</h2>
-          ),
-          h3: ({ children, ...props }) => (
-            <h3 className="aui-md-h3" {...props}>{children}</h3>
-          ),
-          h4: ({ children, ...props }) => (
-            <h4 className="aui-md-h4" {...props}>{children}</h4>
-          ),
-          h5: ({ children, ...props }) => (
-            <h5 className="aui-md-h5" {...props}>{children}</h5>
-          ),
-          h6: ({ children, ...props }) => (
-            <h6 className="aui-md-h6" {...props}>{children}</h6>
-          ),
+          h1: ({ children, ...props }) => {
+            const text = childrenToString(children);
+            const id = generateSlug(text);
+            return (
+              <h1 id={id} className="aui-md-h1" {...props}>{children}</h1>
+            );
+          },
+          h2: ({ children, ...props }) => {
+            const text = childrenToString(children);
+            const id = generateSlug(text);
+            return (
+              <h2 id={id} className="aui-md-h2" {...props}>{children}</h2>
+            );
+          },
+          h3: ({ children, ...props }) => {
+            const text = childrenToString(children);
+            const id = generateSlug(text);
+            return (
+              <h3 id={id} className="aui-md-h3" {...props}>{children}</h3>
+            );
+          },
+          h4: ({ children, ...props }) => {
+            const text = childrenToString(children);
+            const id = generateSlug(text);
+            return (
+              <h4 id={id} className="aui-md-h4" {...props}>{children}</h4>
+            );
+          },
+          h5: ({ children, ...props }) => {
+            const text = childrenToString(children);
+            const id = generateSlug(text);
+            return (
+              <h5 id={id} className="aui-md-h5" {...props}>{children}</h5>
+            );
+          },
+          h6: ({ children, ...props }) => {
+            const text = childrenToString(children);
+            const id = generateSlug(text);
+            return (
+              <h6 id={id} className="aui-md-h6" {...props}>{children}</h6>
+            );
+          },
           p: ({ children, ...props }) => {
             const childrenArray = React.Children.toArray(children);
             const hasImage = childrenArray.some(
@@ -202,9 +278,52 @@ const MarkdownViewer: React.FC<MarkdownViewerProps> = ({
           blockquote: ({ children, ...props }) => (
             <blockquote className="aui-md-blockquote" {...props}>{children}</blockquote>
           ),
-          a: ({ children, href, ...props }) => (
-            <a href={href} className="aui-md-a" {...props}>{children}</a>
-          ),
+          a: ({ children, href, ...props }) => {
+            // Handle anchor links (internal links starting with #)
+            if (href?.startsWith('#')) {
+              return (
+                <a 
+                  href={href} 
+                  className="aui-md-a" 
+                  onClick={(e) => {
+                    e.preventDefault();
+                    const id = href.substring(1); // Remove the # symbol
+                    // Try to find element by exact id first
+                    let element = document.getElementById(id);
+                    
+                    // If not found, try to find by matching slug (for cases where id format differs)
+                    if (!element) {
+                      // Try to find heading that matches the slug pattern
+                      const headings = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
+                      headings.forEach((heading) => {
+                        if (heading.id && heading.id.toLowerCase() === id.toLowerCase()) {
+                          element = heading as HTMLElement;
+                        }
+                      });
+                    }
+                    
+                    if (element) {
+                      const offsetTop = element.offsetTop - 80; // Account for fixed header
+                      window.scrollTo({
+                        top: offsetTop,
+                        behavior: 'smooth'
+                      });
+                    } else {
+                      // Fallback: try to scroll to any element with matching text content
+                      console.warn(`Could not find element with id: ${id}`);
+                    }
+                  }}
+                  {...props}
+                >
+                  {children}
+                </a>
+              );
+            }
+            // External links
+            return (
+              <a href={href} className="aui-md-a" target="_blank" rel="noopener noreferrer" {...props}>{children}</a>
+            );
+          },
           table: ({ children, ...props }) => (
             <div className="table-wrapper">
               <table className="aui-md-table" {...props}>{children}</table>

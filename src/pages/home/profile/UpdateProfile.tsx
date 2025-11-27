@@ -15,6 +15,9 @@ import {
 import { UploadOutlined, UserOutlined } from "@ant-design/icons";
 import moment from "moment";
 import { UserType } from "../../../types/user";
+import axios from "axios";
+import { envConfig } from "../../../config";
+import type { UploadChangeParam, UploadFile } from "antd/es/upload/interface";
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -31,17 +34,22 @@ type LocationItem = {
   name: string;
 };
 
-const getBase64 = (file: File): Promise<string> =>
-  new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = (error) => reject(error);
-  });
-
 const UpdateProfile: React.FC<UpdateProfileProps> = ({ user, onSubmit }) => {
   const [form] = Form.useForm();
-  const [fileList, setFileList] = useState<any[]>([]);
+  const [avatarUrl, setAvatarUrl] = useState<string | undefined>(user.avatar ?? undefined);
+  const [avatarFileList, setAvatarFileList] = useState<UploadFile[]>(
+    user.avatar
+      ? [
+          {
+            uid: "-1",
+            name: "avatar",
+            status: "done",
+            url: user.avatar,
+          },
+        ]
+      : [],
+  );
+  const [avatarUploading, setAvatarUploading] = useState(false);
   const [provinces, setProvinces] = useState<LocationItem[]>([]);
   const [districts, setDistricts] = useState<LocationItem[]>([]);
   const [wards, setWards] = useState<LocationItem[]>([]);
@@ -150,17 +158,63 @@ const UpdateProfile: React.FC<UpdateProfileProps> = ({ user, onSubmit }) => {
     [districts, provinces, wards]
   );
 
-  const handleUploadChange = ({ fileList: newFileList }: { fileList: any[] }) => {
-    setFileList(newFileList);
+  const handleAvatarChange = ({ fileList }: UploadChangeParam<UploadFile>) => {
+    setAvatarFileList(fileList);
+    if (fileList.length === 0) {
+      setAvatarUrl(user.avatar ?? undefined);
+    }
+  };
+
+  const beforeUploadAvatar = (file: File) => {
+    const isImage = file.type.startsWith("image/");
+    if (!isImage) {
+      message.error("Vui lòng chọn tệp hình ảnh");
+      return Upload.LIST_IGNORE;
+    }
+    const isLt5M = file.size / 1024 / 1024 < 5;
+    if (!isLt5M) {
+      message.error("Ảnh phải nhỏ hơn 5MB");
+      return Upload.LIST_IGNORE;
+    }
+    return true;
+  };
+
+  const handleUploadAvatar = async ({ file, onSuccess, onError }: any) => {
+    if (!file) return;
+    try {
+      setAvatarUploading(true);
+      const formData = new FormData();
+      formData.append("file", file);
+      const response = await axios.post(`${envConfig.serverURL}/upload`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      const url = response.data?.secure_url;
+      if (!url) {
+        throw new Error("Không nhận được đường dẫn ảnh");
+      }
+      const nextFileList: UploadFile[] = [
+        {
+          uid: file.uid ?? `${Date.now()}`,
+          name: file.name,
+          status: "done",
+          url,
+        },
+      ];
+      setAvatarFileList(nextFileList);
+      setAvatarUrl(url);
+      message.success("Tải ảnh thành công");
+      onSuccess?.(response.data, file);
+    } catch (error: any) {
+      message.error(error?.message || "Tải ảnh thất bại");
+      onError?.(error);
+    } finally {
+      setAvatarUploading(false);
+    }
   };
 
   const handleFinish = async (values: any) => {
     try {
-      let avatar = user.avatar ?? undefined;
-      if (fileList[0]?.originFileObj) {
-        avatar = await getBase64(fileList[0].originFileObj as File);
-      }
-
+      const avatar = avatarUrl;
       const address = values.province && values.district && values.ward
         ? {
             province: values.province,
@@ -195,7 +249,9 @@ const UpdateProfile: React.FC<UpdateProfileProps> = ({ user, onSubmit }) => {
 
       await onSubmit(payload);
       message.success("Cập nhật hồ sơ thành công!");
-      setFileList([]);
+      setAvatarFileList(
+        avatar ? [{ uid: "-1", name: "avatar", status: "done", url: avatar }] : [],
+      );
     } catch (error) {
       message.error("Không thể cập nhật hồ sơ. Vui lòng thử lại.");
     }
@@ -222,23 +278,32 @@ const UpdateProfile: React.FC<UpdateProfileProps> = ({ user, onSubmit }) => {
         <Flex align="center" vertical gap={18}>
           <Avatar
             size={120}
-            src={user.avatar || "/images/landing/sections/fakeImages/avatarStudent.png"}
+            src={avatarUrl || "/images/landing/sections/fakeImages/avatarStudent.png"}
             icon={<UserOutlined />}
             style={styles.avatar}
           />
           <Upload
+            name="avatar"
             accept="image/*"
             listType="picture"
-            fileList={fileList}
-            onChange={handleUploadChange}
-            beforeUpload={() => false}
+            fileList={avatarFileList}
+            onChange={handleAvatarChange}
+            beforeUpload={beforeUploadAvatar}
+            customRequest={handleUploadAvatar}
+            disabled={avatarUploading}
             maxCount={1}
             showUploadList={false}
           >
-            <Button icon={<UploadOutlined />} style={styles.uploadButton} className="profile-upload-btn">
-              Cập nhật ảnh đại diện
+            <Button
+              icon={<UploadOutlined />}
+              style={styles.uploadButton}
+              className="profile-upload-btn"
+              loading={avatarUploading}
+            >
+              Tải ảnh lên
             </Button>
           </Upload>
+          <span style={{ color: "#8de3dd", fontSize: 12 }}>Chỉ chấp nhận ảnh JPG, JPEG, PNG dưới 5MB.</span>
         </Flex>
       </Form.Item>
 
