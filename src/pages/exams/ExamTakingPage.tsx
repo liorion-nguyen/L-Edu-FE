@@ -1,4 +1,4 @@
-import { Alert, Button, Card, Checkbox, Col, Input, Radio, Row, Space, Spin, Typography } from "antd";
+import { Alert, Button, Card, Checkbox, Col, Input, Radio, Row, Segmented, Space, Spin, Typography } from "antd";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { ExamTimer } from "../../components/exam/ExamTimer";
@@ -9,6 +9,7 @@ import { useSelector } from "../../redux/store";
 import { examService } from "../../services/examService";
 import { AttemptAnswerPayload, ExamAttempt, ExamDetail, ExamQuestionType } from "../../types/exam";
 import { RootState } from "../../redux/store";
+import { Role } from "../../enum/user.enum";
 
 const { Title, Paragraph } = Typography;
 
@@ -119,6 +120,7 @@ const ExamTakingPage: React.FC = () => {
   const [attemptQuestionMap, setAttemptQuestionMap] = useState<Record<string, string>>({});
   const [questionOriginalIdMap, setQuestionOriginalIdMap] = useState<Record<string, string>>({});
   const [optionOriginalIdMaps, setOptionOriginalIdMaps] = useState<Record<string, Record<string, string>>>({});
+  const [viewMode, setViewMode] = useState<"single" | "all">("single");
 
   const attemptIdFromUrl = searchParams.get("attemptId");
 
@@ -324,7 +326,14 @@ const ExamTakingPage: React.FC = () => {
   };
 
   const handleSubmit = async (auto = false) => {
-    if (!examId || !attempt) return;
+    if (!examId || !attempt || !exam) return;
+    if (!auto) {
+      const unanswered = exam.questions.filter((q) => !answeredQuestionIds.has(q._id));
+      if (unanswered.length > 0) {
+        showNotification(ToasterType.warning, "Exam", `Bạn còn ${unanswered.length} câu chưa trả lời.`);
+        return;
+      }
+    }
     try {
       await flushPendingSave();
       const result = await examService.submitAttempt(examId, attempt._id, auto ? { forceSubmit: true } : undefined);
@@ -347,6 +356,8 @@ const ExamTakingPage: React.FC = () => {
     return remaining > 0 ? remaining : 0;
   }, [exam, attempt]);
 
+  const isAdmin = user?.role === Role.ADMIN;
+
   const answeredQuestionIds = useMemo(() => {
     return new Set(
       Object.values(answersMap)
@@ -368,18 +379,14 @@ const ExamTakingPage: React.FC = () => {
     );
   }
 
-  const question = exam.questions[currentIndex];
-  const questionId = question?._id ?? "";
-  const answer = questionId ? answersMap[questionId] || { questionId } : { questionId: "" };
-
-  const handleSingleChange = (optionId: string) => {
+  const handleSingleChange = (questionId: string, optionId: string) => {
     if (!questionId) return;
     handleAnswerChange(questionId, () => ({ selectedOptionIds: [optionId], textAnswer: undefined }));
   };
 
-  const handleMultiToggle = (optionId: string) => {
+  const handleMultiToggle = (questionId: string, optionId: string, currentAnswer?: AttemptAnswerPayload) => {
     if (!questionId) return;
-    const current = new Set(answer.selectedOptionIds ?? []);
+    const current = new Set(currentAnswer?.selectedOptionIds ?? []);
     if (current.has(optionId)) {
       current.delete(optionId);
     } else {
@@ -388,10 +395,123 @@ const ExamTakingPage: React.FC = () => {
     handleAnswerChange(questionId, () => ({ selectedOptionIds: Array.from(current), textAnswer: undefined }));
   };
 
-  const handleFillChange = (value: string) => {
+  const handleFillChange = (questionId: string, value: string) => {
     if (!questionId) return;
     handleAnswerChange(questionId, () => ({ textAnswer: value, selectedOptionIds: undefined }));
   };
+
+  const renderQuestionBody = (question: ExamDetail["questions"][number], answer?: AttemptAnswerPayload) => {
+    const questionId = question?._id ?? "";
+    return (
+      <>
+        <Paragraph>{question.content}</Paragraph>
+
+        {question.type === ExamQuestionType.SINGLE && (
+          <Radio.Group
+            value={answer?.selectedOptionIds?.[0]}
+            onChange={(event) => handleSingleChange(questionId, event.target.value)}
+            style={{ display: "flex", flexDirection: "column", gap: 8 }}
+          >
+            {question.options?.map((option) => (
+              <Radio key={option.id} value={option.id}>
+                {option.text}
+              </Radio>
+            ))}
+          </Radio.Group>
+        )}
+
+        {question.type === ExamQuestionType.MULTIPLE && (
+          <Space direction="vertical" size={8} style={{ width: "100%" }}>
+            {question.options?.map((option) => (
+              <Checkbox
+                key={option.id}
+                checked={answer?.selectedOptionIds?.includes(option.id) ?? false}
+                onChange={() => handleMultiToggle(questionId, option.id, answer)}
+              >
+                {option.text}
+              </Checkbox>
+            ))}
+          </Space>
+        )}
+
+        {question.type === ExamQuestionType.FILL_IN && (
+          <Input.TextArea
+            rows={3}
+            value={answer?.textAnswer}
+            onChange={(event) => handleFillChange(questionId, event.target.value)}
+            placeholder="Nhập câu trả lời"
+          />
+        )}
+
+        {question.explanation && isAdmin && (
+          <Alert type="info" message="Ghi chú" description={question.explanation} showIcon />
+        )}
+      </>
+    );
+  };
+
+  const renderSingleQuestion = () => {
+    const question = exam.questions[currentIndex];
+    const questionId = question?._id ?? "";
+    const answer = questionId ? answersMap[questionId] || { questionId } : { questionId: "" };
+
+    return (
+      <Space direction="vertical" style={{ width: "100%" }}>
+        <Paragraph type="secondary" style={{ marginBottom: 0 }}>
+          Câu {currentIndex + 1} / {exam.questions.length}
+        </Paragraph>
+
+        {renderQuestionBody(question, answer)}
+
+        <Space style={{ marginTop: 16 }}>
+          <Button onClick={() => setCurrentIndex((prev) => Math.max(prev - 1, 0))} disabled={currentIndex === 0}>
+            Câu trước
+          </Button>
+          <Button
+            type="primary"
+            onClick={() => setCurrentIndex((prev) => Math.min(prev + 1, exam.questions.length - 1))}
+            disabled={currentIndex === exam.questions.length - 1}
+          >
+            Câu tiếp theo
+          </Button>
+          <Button danger onClick={() => handleSubmit(false)}>
+            Nộp bài
+          </Button>
+        </Space>
+        {saving && <Paragraph type="secondary">Đang lưu...</Paragraph>}
+      </Space>
+    );
+  };
+
+  const renderAllQuestions = () => (
+    <Space direction="vertical" size={16} style={{ width: "100%" }}>
+      <Paragraph type="secondary" style={{ marginBottom: 0 }}>
+        Hiển thị tất cả {exam.questions.length} câu hỏi
+      </Paragraph>
+
+      {exam.questions.map((item, index) => {
+        const qId = item?._id ?? "";
+        const answer = qId ? answersMap[qId] || { questionId: qId } : { questionId: "" };
+        return (
+          <Card key={qId || index} type="inner">
+            <Space direction="vertical" size={12} style={{ width: "100%" }}>
+              <Title level={5} style={{ marginBottom: 0 }}>
+                Câu {index + 1}
+              </Title>
+              {renderQuestionBody(item, answer)}
+            </Space>
+          </Card>
+        );
+      })}
+
+      {saving && <Paragraph type="secondary">Đang lưu...</Paragraph>}
+      <Space>
+        <Button danger onClick={() => handleSubmit(false)}>
+          Nộp bài
+        </Button>
+      </Space>
+    </Space>
+  );
 
   return (
     <div style={{ padding: 24 }}>
@@ -400,67 +520,24 @@ const ExamTakingPage: React.FC = () => {
           <Space direction="vertical" size={16} style={{ width: "100%" }}>
             <Card>
               <Space direction="vertical" style={{ width: "100%" }}>
-                <Title level={4}>{exam.title}</Title>
-                <Paragraph type="secondary">Câu {currentIndex + 1} / {exam.questions.length}</Paragraph>
-                <Paragraph>{question.content}</Paragraph>
-
-                {question.type === ExamQuestionType.SINGLE && (
-                  <Radio.Group
-                    value={answer.selectedOptionIds?.[0]}
-                    onChange={(event) => handleSingleChange(event.target.value)}
-                    style={{ display: "flex", flexDirection: "column", gap: 8 }}
-                  >
-                    {question.options?.map((option) => (
-                      <Radio key={option.id} value={option.id}>
-                        {option.text}
-                      </Radio>
-                    ))}
-                  </Radio.Group>
-                )}
-
-                {question.type === ExamQuestionType.MULTIPLE && (
-                  <Space direction="vertical" size={8} style={{ width: "100%" }}>
-                    {question.options?.map((option) => (
-                      <Checkbox
-                        key={option.id}
-                        checked={answer.selectedOptionIds?.includes(option.id) ?? false}
-                        onChange={() => handleMultiToggle(option.id)}
-                      >
-                        {option.text}
-                      </Checkbox>
-                    ))}
-                  </Space>
-                )}
-
-                {question.type === ExamQuestionType.FILL_IN && (
-                  <Input.TextArea
-                    rows={3}
-                    value={answer.textAnswer}
-                    onChange={(event) => handleFillChange(event.target.value)}
-                    placeholder="Nhập câu trả lời"
+                <Space
+                  style={{ width: "100%", justifyContent: "space-between", alignItems: "center", gap: 8, flexWrap: "wrap" }}
+                >
+                  <Title level={4} style={{ marginBottom: 0 }}>
+                    {exam.title}
+                  </Title>
+                  <Segmented
+                    size="middle"
+                    value={viewMode}
+                    onChange={(value) => setViewMode(value as "single" | "all")}
+                    options={[
+                      { label: "Từng câu", value: "single" },
+                      { label: "Tất cả", value: "all" },
+                    ]}
                   />
-                )}
-
-                {question.explanation && (
-                  <Alert type="info" message="Ghi chú" description={question.explanation} showIcon />
-                )}
-
-                <Space style={{ marginTop: 16 }}>
-                  <Button onClick={() => setCurrentIndex((prev) => Math.max(prev - 1, 0))} disabled={currentIndex === 0}>
-                    Câu trước
-                  </Button>
-                  <Button
-                    type="primary"
-                    onClick={() => setCurrentIndex((prev) => Math.min(prev + 1, exam.questions.length - 1))}
-                    disabled={currentIndex === exam.questions.length - 1}
-                  >
-                    Câu tiếp theo
-                  </Button>
-                  <Button danger onClick={() => handleSubmit(false)}>
-                    Nộp bài
-                  </Button>
                 </Space>
-                {saving && <Paragraph type="secondary">Đang lưu...</Paragraph>}
+
+                {viewMode === "single" ? renderSingleQuestion() : renderAllQuestions()}
               </Space>
             </Card>
           </Space>

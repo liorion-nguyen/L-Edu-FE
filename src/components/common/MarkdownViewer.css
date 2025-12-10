@@ -153,14 +153,14 @@
 
 /* Typography Classes - Notion Style */
 .aui-md-h1 {
-  margin-bottom: 4px;
+  margin-bottom: 8px;
   margin-top: 2em;
   scroll-margin-top: 80px;
   font-size: 2em;
   font-weight: 700;
   letter-spacing: -0.03em;
-  color: rgba(55, 53, 47, 0.9) !important;
-  line-height: 1.2;
+  color: var(--text-primary) !important;
+  line-height: 1.3;
 }
 
 .aui-md-h1:first-child {
@@ -172,14 +172,14 @@
 }
 
 .aui-md-h2 {
-  margin-bottom: 4px;
-  margin-top: 1.4em;
+  margin-bottom: 12px;
+  margin-top: 1.8em;
   scroll-margin-top: 80px;
   font-size: 1.5em;
   font-weight: 600;
-  letter-spacing: -0.03em;
-  color: rgba(55, 53, 47, 0.9) !important;
-  line-height: 1.3;
+  letter-spacing: -0.02em;
+  color: var(--text-primary) !important;
+  line-height: 1.4;
 }
 
 .aui-md-h2:first-child {
@@ -191,14 +191,14 @@
 }
 
 .aui-md-h3 {
-  margin-bottom: 4px;
-  margin-top: 1em;
+  margin-bottom: 10px;
+  margin-top: 1.4em;
   scroll-margin-top: 80px;
   font-size: 1.25em;
   font-weight: 600;
-  letter-spacing: -0.02em;
-  color: rgba(55, 53, 47, 0.85) !important;
-  line-height: 1.4;
+  letter-spacing: -0.01em;
+  color: var(--text-primary) !important;
+  line-height: 1.5;
 }
 
 .aui-md-h3:first-child {
@@ -209,14 +209,28 @@
   margin-bottom: 0;
 }
 
+/* Inline code in headings */
+.aui-md-h1 code,
+.aui-md-h2 code,
+.aui-md-h3 code,
+.aui-md-h4 code {
+  background: rgba(135, 131, 120, 0.15) !important;
+  color: var(--text-primary) !important;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 0.9em;
+  font-weight: 600;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+}
+
 .aui-md-h4 {
-  margin-bottom: 4px;
-  margin-top: 0.8em;
+  margin-bottom: 8px;
+  margin-top: 1.2em;
   scroll-margin-top: 80px;
   font-size: 1.1em;
   font-weight: 600;
   letter-spacing: -0.01em;
-  color: rgba(194, 189, 174, 0.8) !important;
+  color: var(--text-primary) !important;
   line-height: 1.5;
 }
 
@@ -261,10 +275,10 @@
 }
 
 .aui-md-p {
-  margin-bottom: 1px;
-  margin-top: 1px;
-  line-height: 1.6;
-  color: rgba(194, 189, 174, 0.8) !important;
+  margin-bottom: 8px;
+  margin-top: 8px;
+  line-height: 1.7;
+  color: var(--text-primary) !important;
   font-size: 16px;
 }
 
@@ -277,55 +291,85 @@
 }
 
 .aui-md-a {
-  color: #0B6BCB !important;
+  color: var(--accent-color) !important;
   font-weight: 400;
   text-decoration: none;
-  border-bottom: 1px solid rgba(11, 107, 203, 0.2);
+  border-bottom: 1px solid rgba(35, 131, 226, 0.2);
   transition: border-color 0.15s ease;
 }
 
 .aui-md-a:hover {
-  border-bottom-color: #0B6BCB;
-  background-color: rgba(11, 107, 203, 0.05);
+  border-bottom-color: var(--accent-color);
+  background-color: rgba(35, 131, 226, 0.05);
 }
 
 .aui-md-blockquote {
-  border-left: 3px solid #E9E9E7;
-  padding-left: 14px;
-  padding-right: 14px;
-  padding-top: 4px;
-  padding-bottom: 4px;
+  border-left: 3px solid var(--border-color);
+  padding-left: 16px;
+  padding-right: 16px;
+  padding-top: 8px;
+  padding-bottom: 8px;
   font-style: normal;
-  color: rgba(55, 53, 47, 0.7) !important;
-  background: rgba(55, 53, 47, 0.03);
-  border-radius: 3px;
-  margin: 4px 0;
+  color: var(--text-secondary) !important;
+  background: var(--bg-secondary);
+  border-radius: 4px;
+  margin: 12px 0;
 }
 
 .aui-md-ul {
-  margin: 2px 0;
+  margin: 12px 0;
   margin-left: 1.5em;
   padding-left: 0.5em;
   list-style-type: disc;
 }
 
 .aui-md-ul > li {
-  margin-top: 2px;
-  padding-left: 0.3em;
-  color: rgba(194, 189, 174, 0.8) !important;
+  margin-top: 6px;
+  margin-bottom: 6px;
+  padding-left: 0.5em;
+  color: var(--text-primary) !important;
+  line-height: 1.7;
+}
+
+.aui-md-ul > li::marker {
+  color: var(--text-secondary);
 }
 
 .aui-md-ol {
-  margin: 2px 0;
+  margin: 12px 0;
   margin-left: 1.5em;
   padding-left: 0.5em;
   list-style-type: decimal;
 }
 
 .aui-md-ol > li {
-  margin-top: 2px;
-  padding-left: 0.3em;
-  color: rgba(194, 189, 174, 0.8) !important;
+  margin-top: 6px;
+  margin-bottom: 6px;
+  padding-left: 0.5em;
+  color: var(--text-primary) !important;
+  line-height: 1.7;
+}
+
+.aui-md-ol > li::marker {
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+/* Nested lists */
+.aui-md-ul ul,
+.aui-md-ul ol,
+.aui-md-ol ul,
+.aui-md-ol ol {
+  margin-top: 6px;
+  margin-bottom: 6px;
+}
+
+/* List items with bold text at start (like **action**: description) */
+.aui-md-ul > li > strong:first-child,
+.aui-md-ol > li > strong:first-child {
+  color: var(--text-primary) !important;
+  font-weight: 600;
+  margin-right: 4px;
 }
 
 .aui-md-hr {
@@ -497,17 +541,18 @@
 
 .aui-md-pre {
   overflow-x: auto;
-  border-radius: 3px;
-  background: rgba(247, 246, 243, 1) !important;
-  color: rgba(55, 53, 47, 0.9) !important;
-  margin: 4px 0;
-  border: 1px solid rgba(55, 53, 47, 0.09);
-  padding: 16px;
+  border-radius: 6px;
+  background: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+  margin: 16px 0;
+  border: 1px solid var(--border-color);
+  padding: 20px;
   font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
   font-size: 14px;
-  line-height: 1.5;
+  line-height: 1.6;
   white-space: pre;
   word-wrap: break-word;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .aui-md-pre code {
@@ -519,14 +564,128 @@
   font-family: inherit;
 }
 
+/* Custom HTML Syntax Highlighting - Override highlight.js with maximum specificity */
+/* Base color for code blocks */
+.markdown-viewer .aui-md-pre code,
+.markdown-viewer pre code,
+.aui-md-pre code {
+  color: var(--text-primary) !important;
+}
+
+/* Tag names - Purple (#9055A2) - Maximum specificity */
+.markdown-viewer .aui-md-pre code.hljs .hljs-tag,
+.markdown-viewer .aui-md-pre code.hljs .hljs-name,
+.markdown-viewer .aui-md-pre code.language-html.hljs .hljs-tag,
+.markdown-viewer .aui-md-pre code.language-html.hljs .hljs-name,
+.markdown-viewer .aui-md-pre code.language-xml.hljs .hljs-tag,
+.markdown-viewer .aui-md-pre code.language-xml.hljs .hljs-name,
+.markdown-viewer .aui-md-pre code.language-htm.hljs .hljs-tag,
+.markdown-viewer .aui-md-pre code.language-htm.hljs .hljs-name,
+.aui-md-pre code.hljs .hljs-tag,
+.aui-md-pre code.hljs .hljs-name,
+.aui-md-pre code.language-html.hljs .hljs-tag,
+.aui-md-pre code.language-html.hljs .hljs-name,
+.aui-md-pre code.language-xml.hljs .hljs-tag,
+.aui-md-pre code.language-xml.hljs .hljs-name {
+  color: #9055A2 !important;
+  font-weight: 500;
+}
+
+/* Attributes - Green (#0F7B0F) */
+.markdown-viewer .aui-md-pre code.hljs .hljs-attr,
+.markdown-viewer .aui-md-pre code.language-html.hljs .hljs-attr,
+.markdown-viewer .aui-md-pre code.language-xml.hljs .hljs-attr,
+.markdown-viewer .aui-md-pre code.language-htm.hljs .hljs-attr,
+.aui-md-pre code.hljs .hljs-attr,
+.aui-md-pre code.language-html.hljs .hljs-attr,
+.aui-md-pre code.language-xml.hljs .hljs-attr,
+.aui-md-pre code.language-htm.hljs .hljs-attr {
+  color: #0F7B0F !important;
+  font-weight: 500;
+}
+
+/* Attribute values (strings in attributes) - Orange (#D97706) */
+.markdown-viewer .aui-md-pre code.hljs .hljs-string,
+.markdown-viewer .aui-md-pre code.language-html.hljs .hljs-string,
+.markdown-viewer .aui-md-pre code.language-xml.hljs .hljs-string,
+.markdown-viewer .aui-md-pre code.language-htm.hljs .hljs-string,
+.aui-md-pre code.hljs .hljs-string,
+.aui-md-pre code.language-html.hljs .hljs-string,
+.aui-md-pre code.language-xml.hljs .hljs-string,
+.aui-md-pre code.language-htm.hljs .hljs-string {
+  color: #D97706 !important;
+}
+
+/* Text content inside tags - should be black/dark */
+.markdown-viewer .aui-md-pre code.language-html.hljs .hljs-tag .hljs-string:not(.hljs-attr),
+.markdown-viewer .aui-md-pre code.language-xml.hljs .hljs-tag .hljs-string:not(.hljs-attr),
+.aui-md-pre code.language-html.hljs .hljs-tag .hljs-string:not(.hljs-attr),
+.aui-md-pre code.language-xml.hljs .hljs-tag .hljs-string:not(.hljs-attr) {
+  color: var(--text-primary) !important;
+}
+
+/* Ensure text nodes are visible */
+.markdown-viewer .aui-md-pre code.language-html.hljs,
+.markdown-viewer .aui-md-pre code.language-xml.hljs,
+.markdown-viewer .aui-md-pre code.language-htm.hljs,
+.aui-md-pre code.language-html.hljs,
+.aui-md-pre code.language-xml.hljs,
+.aui-md-pre code.language-htm.hljs {
+  color: var(--text-primary) !important;
+}
+
+/* Dark mode adjustments */
+[data-theme="dark"] .markdown-viewer .aui-md-pre code.hljs .hljs-tag,
+[data-theme="dark"] .markdown-viewer .aui-md-pre code.hljs .hljs-name,
+[data-theme="dark"] .markdown-viewer .aui-md-pre code.language-html.hljs .hljs-tag,
+[data-theme="dark"] .markdown-viewer .aui-md-pre code.language-html.hljs .hljs-name,
+[data-theme="dark"] .markdown-viewer .aui-md-pre code.language-xml.hljs .hljs-tag,
+[data-theme="dark"] .markdown-viewer .aui-md-pre code.language-xml.hljs .hljs-name,
+[data-theme="dark"] .aui-md-pre code.hljs .hljs-tag,
+[data-theme="dark"] .aui-md-pre code.hljs .hljs-name {
+  color: #B794C4 !important;
+}
+
+[data-theme="dark"] .markdown-viewer .aui-md-pre code.hljs .hljs-attr,
+[data-theme="dark"] .markdown-viewer .aui-md-pre code.language-html.hljs .hljs-attr,
+[data-theme="dark"] .markdown-viewer .aui-md-pre code.language-xml.hljs .hljs-attr,
+[data-theme="dark"] .aui-md-pre code.hljs .hljs-attr {
+  color: #4EC9B0 !important;
+}
+
+[data-theme="dark"] .markdown-viewer .aui-md-pre code.hljs .hljs-string,
+[data-theme="dark"] .markdown-viewer .aui-md-pre code.language-html.hljs .hljs-string,
+[data-theme="dark"] .markdown-viewer .aui-md-pre code.language-xml.hljs .hljs-string,
+[data-theme="dark"] .aui-md-pre code.hljs .hljs-string {
+  color: #F4A261 !important;
+}
+
+/* Additional overrides for all highlight.js classes */
+.markdown-viewer pre code.hljs.language-html .hljs-tag,
+.markdown-viewer pre code.hljs.language-html .hljs-name,
+.markdown-viewer pre code.hljs.language-xml .hljs-tag,
+.markdown-viewer pre code.hljs.language-xml .hljs-name {
+  color: #9055A2 !important;
+}
+
+.markdown-viewer pre code.hljs.language-html .hljs-attr,
+.markdown-viewer pre code.hljs.language-xml .hljs-attr {
+  color: #0F7B0F !important;
+}
+
+.markdown-viewer pre code.hljs.language-html .hljs-string,
+.markdown-viewer pre code.hljs.language-xml .hljs-string {
+  color: #D97706 !important;
+}
+
 .aui-md-inline-code {
-  background: rgba(135, 131, 120, 0.15) !important;
-  color: #EB5757 !important;
-  border-radius: 3px;
-  border: none;
-  padding: 0.2em 0.4em;
+  background: var(--bg-secondary) !important;
+  color: var(--accent-color) !important;
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+  padding: 2px 6px;
   font-size: 0.9em;
-  font-weight: 400;
+  font-weight: 500;
   font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
   white-space: pre-wrap;
   word-break: break-word;
@@ -534,12 +693,12 @@
 
 .aui-md-strong {
   font-weight: 600;
-  color: rgba(55, 53, 47, 0.9) !important;
+  color: var(--text-primary) !important;
 }
 
 .aui-md-em {
   font-style: italic;
-  color: rgba(55, 53, 47, 0.8) !important;
+  color: var(--text-primary) !important;
 }
 
 /* Code Header */
@@ -548,13 +707,13 @@
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  border-radius: 8px 8px 0 0;
-  background: #365D36;
-  padding: 12px 24px;
+  border-radius: 6px 6px 0 0;
+  background: var(--bg-tertiary);
+  padding: 10px 20px;
   font-size: 0.875rem;
   font-weight: 600;
-  color: #FFFFFF;
-  border: 1px solid rgba(54, 93, 54, 0.2);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
   border-bottom: none;
   margin: 0;
 }
@@ -652,4 +811,89 @@
   100% {
     background-position: -200% 0;
   }
+}
+
+/* ============================================
+   CUSTOM HTML SYNTAX HIGHLIGHTING - HIGHEST PRIORITY
+   These styles MUST override highlight.js theme
+   ============================================ */
+
+/* HTML/XML Tag names - Purple */
+.markdown-viewer pre code.hljs.language-html .hljs-tag,
+.markdown-viewer pre code.hljs.language-html .hljs-name,
+.markdown-viewer pre code.hljs.language-xml .hljs-tag,
+.markdown-viewer pre code.hljs.language-xml .hljs-name,
+.markdown-viewer pre code.hljs.language-htm .hljs-tag,
+.markdown-viewer pre code.hljs.language-htm .hljs-name,
+.aui-md-pre code.hljs.language-html .hljs-tag,
+.aui-md-pre code.hljs.language-html .hljs-name,
+.aui-md-pre code.hljs.language-xml .hljs-tag,
+.aui-md-pre code.hljs.language-xml .hljs-name,
+.aui-md-pre code.hljs.language-htm .hljs-tag,
+.aui-md-pre code.hljs.language-htm .hljs-name,
+pre code.hljs.language-html .hljs-tag,
+pre code.hljs.language-html .hljs-name,
+pre code.hljs.language-xml .hljs-tag,
+pre code.hljs.language-xml .hljs-name {
+  color: #9055A2 !important;
+  font-weight: 500 !important;
+}
+
+/* HTML/XML Attributes - Green */
+.markdown-viewer pre code.hljs.language-html .hljs-attr,
+.markdown-viewer pre code.hljs.language-xml .hljs-attr,
+.markdown-viewer pre code.hljs.language-htm .hljs-attr,
+.aui-md-pre code.hljs.language-html .hljs-attr,
+.aui-md-pre code.hljs.language-xml .hljs-attr,
+.aui-md-pre code.hljs.language-htm .hljs-attr,
+pre code.hljs.language-html .hljs-attr,
+pre code.hljs.language-xml .hljs-attr {
+  color: #0F7B0F !important;
+  font-weight: 500 !important;
+}
+
+/* HTML/XML Attribute values (strings) - Orange */
+.markdown-viewer pre code.hljs.language-html .hljs-string,
+.markdown-viewer pre code.hljs.language-xml .hljs-string,
+.markdown-viewer pre code.hljs.language-htm .hljs-string,
+.aui-md-pre code.hljs.language-html .hljs-string,
+.aui-md-pre code.hljs.language-xml .hljs-string,
+.aui-md-pre code.hljs.language-htm .hljs-string,
+pre code.hljs.language-html .hljs-string,
+pre code.hljs.language-xml .hljs-string {
+  color: #D97706 !important;
+}
+
+/* Text content inside tags - Black/Dark */
+.markdown-viewer pre code.hljs.language-html .hljs-tag .hljs-string:not(.hljs-attr),
+.markdown-viewer pre code.hljs.language-xml .hljs-tag .hljs-string:not(.hljs-attr),
+.aui-md-pre code.hljs.language-html .hljs-tag .hljs-string:not(.hljs-attr),
+.aui-md-pre code.hljs.language-xml .hljs-tag .hljs-string:not(.hljs-attr) {
+  color: var(--text-primary) !important;
+}
+
+/* Dark mode - HTML/XML */
+[data-theme="dark"] .markdown-viewer pre code.hljs.language-html .hljs-tag,
+[data-theme="dark"] .markdown-viewer pre code.hljs.language-html .hljs-name,
+[data-theme="dark"] .markdown-viewer pre code.hljs.language-xml .hljs-tag,
+[data-theme="dark"] .markdown-viewer pre code.hljs.language-xml .hljs-name,
+[data-theme="dark"] .aui-md-pre code.hljs.language-html .hljs-tag,
+[data-theme="dark"] .aui-md-pre code.hljs.language-html .hljs-name,
+[data-theme="dark"] .aui-md-pre code.hljs.language-xml .hljs-tag,
+[data-theme="dark"] .aui-md-pre code.hljs.language-xml .hljs-name {
+  color: #B794C4 !important;
+}
+
+[data-theme="dark"] .markdown-viewer pre code.hljs.language-html .hljs-attr,
+[data-theme="dark"] .markdown-viewer pre code.hljs.language-xml .hljs-attr,
+[data-theme="dark"] .aui-md-pre code.hljs.language-html .hljs-attr,
+[data-theme="dark"] .aui-md-pre code.hljs.language-xml .hljs-attr {
+  color: #4EC9B0 !important;
+}
+
+[data-theme="dark"] .markdown-viewer pre code.hljs.language-html .hljs-string,
+[data-theme="dark"] .markdown-viewer pre code.hljs.language-xml .hljs-string,
+[data-theme="dark"] .aui-md-pre code.hljs.language-html .hljs-string,
+[data-theme="dark"] .aui-md-pre code.hljs.language-xml .hljs-string {
+  color: #F4A261 !important;
 }

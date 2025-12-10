@@ -5,6 +5,7 @@ import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
 import { RADIUS, SPACING } from "../../constants/colors";
 import { useTheme } from "../../contexts/ThemeContext";
+import TableOfContents from "./TableOfContents";
 import './MarkdownViewer.css';
 
 // Function to load appropriate highlight.js theme based on current theme
@@ -12,9 +13,58 @@ const loadHighlightTheme = (isDark: boolean) => {
   const themeLink = document.getElementById('highlight-theme') as HTMLLinkElement;
   
   if (themeLink) {
+    // Use a minimal theme and override with custom colors
     themeLink.href = isDark 
       ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css'
       : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css';
+    
+    // Add custom style tag after theme loads to ensure our overrides work
+    setTimeout(() => {
+      const customStyle = document.getElementById('custom-highlight-override');
+      if (!customStyle) {
+        const style = document.createElement('style');
+        style.id = 'custom-highlight-override';
+        style.textContent = `
+          .markdown-viewer pre code.hljs.language-html .hljs-tag,
+          .markdown-viewer pre code.hljs.language-html .hljs-name,
+          .markdown-viewer pre code.hljs.language-xml .hljs-tag,
+          .markdown-viewer pre code.hljs.language-xml .hljs-name,
+          .aui-md-pre code.hljs.language-html .hljs-tag,
+          .aui-md-pre code.hljs.language-html .hljs-name,
+          .aui-md-pre code.hljs.language-xml .hljs-tag,
+          .aui-md-pre code.hljs.language-xml .hljs-name {
+            color: #9055A2 !important;
+          }
+          .markdown-viewer pre code.hljs.language-html .hljs-attr,
+          .markdown-viewer pre code.hljs.language-xml .hljs-attr,
+          .aui-md-pre code.hljs.language-html .hljs-attr,
+          .aui-md-pre code.hljs.language-xml .hljs-attr {
+            color: #0F7B0F !important;
+          }
+          .markdown-viewer pre code.hljs.language-html .hljs-string,
+          .markdown-viewer pre code.hljs.language-xml .hljs-string,
+          .aui-md-pre code.hljs.language-html .hljs-string,
+          .aui-md-pre code.hljs.language-xml .hljs-string {
+            color: #D97706 !important;
+          }
+          [data-theme="dark"] .markdown-viewer pre code.hljs.language-html .hljs-tag,
+          [data-theme="dark"] .markdown-viewer pre code.hljs.language-html .hljs-name,
+          [data-theme="dark"] .aui-md-pre code.hljs.language-html .hljs-tag,
+          [data-theme="dark"] .aui-md-pre code.hljs.language-html .hljs-name {
+            color: #B794C4 !important;
+          }
+          [data-theme="dark"] .markdown-viewer pre code.hljs.language-html .hljs-attr,
+          [data-theme="dark"] .aui-md-pre code.hljs.language-html .hljs-attr {
+            color: #4EC9B0 !important;
+          }
+          [data-theme="dark"] .markdown-viewer pre code.hljs.language-html .hljs-string,
+          [data-theme="dark"] .aui-md-pre code.hljs.language-html .hljs-string {
+            color: #F4A261 !important;
+          }
+        `;
+        document.head.appendChild(style);
+      }
+    }, 100);
   }
 };
 
@@ -38,6 +88,74 @@ const generateSlug = (text: string): string => {
     .replace(/-+$/, '');              // Remove trailing hyphens
 };
 
+// Custom HTML highlighting function - works with HTML entities
+const highlightHtml = (html: string): string => {
+  let result = html;
+  
+  // Function to process attributes in a tag
+  const processAttributes = (middle: string): string => {
+    let processed = middle;
+    
+    // First, highlight attributes with values: attr="value" or attr='value'
+    processed = processed.replace(/(\s+)([\w-]+)(\s*=\s*)(["'])([^"']*?)(\4)/g, 
+      (attrMatch: string, space: string, attrName: string, equals: string, quote: string, value: string) => {
+        if (attrMatch.includes('hljs-')) return attrMatch;
+        return `${space}<span class="hljs-attr">${attrName}</span>${equals}${quote}<span class="hljs-string">${value}</span>${quote}`;
+      }
+    );
+    
+    // Then, highlight standalone attributes (without values)
+    processed = processed.replace(/(\s+)([\w-]+)(?=\s|&gt;|\/&gt;)/g, 
+      (attrMatch: string, space: string, attrName: string) => {
+        if (attrMatch.includes('hljs-')) return attrMatch;
+        // Check if this is part of an attribute value
+        const pos = processed.indexOf(attrMatch);
+        const before = processed.substring(0, pos);
+        // If there's an unclosed quote before, this is likely part of a value
+        const singleQuotes = (before.match(/'/g) || []).length;
+        const doubleQuotes = (before.match(/"/g) || []).length;
+        if (singleQuotes % 2 !== 0 || doubleQuotes % 2 !== 0) return attrMatch;
+        return `${space}<span class="hljs-attr">${attrName}</span>`;
+      }
+    );
+    
+    return processed;
+  };
+  
+  // Step 1: Process closing tags: &lt;/tag&gt;
+  result = result.replace(/(&lt;\/)([\w-]+)(&gt;)/g, 
+    (match: string, open: string, tagName: string, close: string) => {
+      return `${open}<span class="hljs-name hljs-tag">${tagName}</span>${close}`;
+    }
+  );
+  
+  // Step 2: Process self-closing tags: &lt;tag /&gt;
+  result = result.replace(/(&lt;)([\w-]+)([\s\S]*?)(\/&gt;)/g, 
+    (match: string, open: string, tagName: string, middle: string, close: string) => {
+      if (match.includes('hljs-')) return match;
+      const processedMiddle = processAttributes(middle);
+      return `${open}<span class="hljs-name hljs-tag">${tagName}</span>${processedMiddle}${close}`;
+    }
+  );
+  
+  // Step 3: Process opening tags: &lt;tag ... &gt;
+  result = result.replace(/(&lt;)([\w-]+)([\s\S]*?)(&gt;)/g, 
+    (match: string, open: string, tagName: string, middle: string, close: string) => {
+      if (match.includes('hljs-')) return match;
+      const processedMiddle = processAttributes(middle);
+      return `${open}<span class="hljs-name hljs-tag">${tagName}</span>${processedMiddle}${close}`;
+    }
+  );
+  
+  return result;
+};
+
+interface Heading {
+  id: string;
+  text: string;
+  level: number;
+}
+
 const MarkdownViewer: React.FC<MarkdownViewerProps> = ({ 
   content, 
   className = "", 
@@ -46,6 +164,7 @@ const MarkdownViewer: React.FC<MarkdownViewerProps> = ({
 }) => {
   const { isDark } = useTheme();
   const containerRef = useRef<HTMLDivElement>(null);
+  const [headings, setHeadings] = useState<Heading[]>([]);
   
   // Initialize theme on component load
   useEffect(() => {
@@ -57,6 +176,32 @@ const MarkdownViewer: React.FC<MarkdownViewerProps> = ({
     }
     loadHighlightTheme(isDark);
   }, [isDark]);
+
+  // Extract headings from markdown content
+  useEffect(() => {
+    if (!content) {
+      setHeadings([]);
+      return;
+    }
+
+    const extractHeadings = (markdown: string): Heading[] => {
+      const headingRegex = /^(#{1,6})\s+(.+)$/gm;
+      const matches: Heading[] = [];
+      let match;
+
+      while ((match = headingRegex.exec(markdown)) !== null) {
+        const level = match[1].length;
+        const text = match[2].trim();
+        const id = generateSlug(text);
+        matches.push({ id, text, level });
+      }
+
+      return matches;
+    };
+
+    const extractedHeadings = extractHeadings(content);
+    setHeadings(extractedHeadings);
+  }, [content]);
 
   // Handle anchor link clicks for smooth scrolling
   useEffect(() => {
@@ -136,8 +281,9 @@ const MarkdownViewer: React.FC<MarkdownViewerProps> = ({
 
   try {
     return (
-      <div ref={containerRef} className={`markdown-viewer ${className}`} style={styles.container}>
-        <ReactMarkdown
+      <div style={styles.wrapper}>
+        <div ref={containerRef} className={`markdown-viewer ${className}`} style={styles.container}>
+          <ReactMarkdown
           rehypePlugins={[rehypeHighlight, rehypeRaw]}
           remarkPlugins={[remarkGfm]}
         components={{
@@ -226,6 +372,31 @@ const MarkdownViewer: React.FC<MarkdownViewerProps> = ({
             const codeContent = childrenToString(children).replace(/\n$/, '');
             
             if (match && codeContent.trim()) {
+              const language = match[1].toLowerCase();
+              const isHtml = ['html', 'xml', 'htm'].includes(language);
+              
+              // Custom HTML highlighting for HTML/XML code
+              if (isHtml) {
+                const highlighted = highlightHtml(codeContent);
+                return (
+                  <div className="my-5 w-full">
+                    <div className="aui-code-header-root">
+                      <div className="aui-code-header-language">
+                        <span>{match[1]}</span>
+                      </div>
+                    </div>
+                    <pre className="aui-md-pre">
+                      <code 
+                        className={`${className} hljs language-${language}`} 
+                        {...props}
+                        dangerouslySetInnerHTML={{ __html: highlighted }}
+                      />
+                    </pre>
+                  </div>
+                );
+              }
+              
+              // For other languages, use default highlighting
               return (
                 <div className="my-5 w-full">
                   <div className="aui-code-header-root">
@@ -234,7 +405,10 @@ const MarkdownViewer: React.FC<MarkdownViewerProps> = ({
                     </div>
                   </div>
                   <pre className="aui-md-pre">
-                    <code className={className} {...props}>
+                    <code 
+                      className={className} 
+                      {...props}
+                    >
                       {codeContent}
                     </code>
                   </pre>
@@ -356,7 +530,9 @@ const MarkdownViewer: React.FC<MarkdownViewerProps> = ({
       >
         {content}
       </ReactMarkdown>
-    </div>
+        </div>
+        <TableOfContents headings={headings} containerRef={containerRef} />
+      </div>
   );
   } catch (error) {
     return (
@@ -379,6 +555,10 @@ const MarkdownViewer: React.FC<MarkdownViewerProps> = ({
 };
 
 const styles = {
+  wrapper: {
+    position: 'relative' as const,
+    width: '100%' as const,
+  },
   container: {
     background: "var(--bg-primary)",
     color: "var(--text-primary)",
@@ -388,6 +568,9 @@ const styles = {
     fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
     border: "1px solid var(--border-color)",
     position: 'relative' as const,
+    width: '100%' as const,
+    maxWidth: '100%' as const,
+    marginRight: '220px' as const, // Space for TOC
   },
 };
 

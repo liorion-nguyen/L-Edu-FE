@@ -1,4 +1,5 @@
 import { Button } from "antd";
+import { CheckOutlined } from "@ant-design/icons";
 import { ExamQuestion } from "../../types/exam";
 
 interface QuestionNavigatorProps {
@@ -25,6 +26,7 @@ export const QuestionNavigator: React.FC<QuestionNavigatorProps> = ({
             type={isActive ? "primary" : answered ? "default" : "dashed"}
             onClick={() => onSelect(index)}
             style={{ padding: 0, width: "100%" }}
+            icon={answered ? <CheckOutlined style={{ color: "#52c41a" }} /> : undefined}
           >
             {index + 1}
           </Button>

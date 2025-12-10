@@ -1,0 +1,205 @@
+/* Table of Contents - Notion Style */
+.table-of-contents {
+  position: fixed;
+  right: 0;
+  top: 80px;
+  width: 200px;
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 12px 0;
+  background: transparent;
+  z-index: 100;
+  transition: all 0.2s ease;
+  opacity: 0.3;
+  pointer-events: auto;
+}
+
+/* Progress Indicator */
+.toc-progress-indicator {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.toc-progress-line {
+  position: absolute;
+  right: 0;
+  width: 1px;
+  height: 3px;
+  background: var(--text-tertiary);
+  opacity: 0.3;
+  transition: all 0.2s ease;
+  transform: translateY(-50%);
+}
+
+.toc-progress-line.toc-progress-active {
+  width: 3px;
+  height: 20px;
+  background: var(--text-primary);
+  opacity: 1;
+  border-radius: 2px;
+}
+
+.table-of-contents:hover,
+.table-of-contents.toc-hovered {
+  opacity: 1;
+  background: var(--bg-primary);
+  border-left: 1px solid var(--border-color);
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.05);
+}
+
+.toc-header {
+  padding: 8px 16px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid var(--border-color);
+  opacity: 0;
+  transform: translateX(10px);
+  transition: all 0.2s ease;
+}
+
+.table-of-contents.toc-hovered .toc-header {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.toc-title {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-tertiary);
+}
+
+.toc-nav {
+  padding: 0 8px;
+}
+
+.toc-item {
+  padding: 4px 8px;
+  margin: 2px 0;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.15s ease;
+  opacity: 0;
+  transform: translateX(10px);
+  position: relative;
+}
+
+.table-of-contents.toc-hovered .toc-item {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Stagger animation for items */
+.table-of-contents.toc-hovered .toc-item:nth-child(1) { transition-delay: 0.02s; }
+.table-of-contents.toc-hovered .toc-item:nth-child(2) { transition-delay: 0.04s; }
+.table-of-contents.toc-hovered .toc-item:nth-child(3) { transition-delay: 0.06s; }
+.table-of-contents.toc-hovered .toc-item:nth-child(4) { transition-delay: 0.08s; }
+.table-of-contents.toc-hovered .toc-item:nth-child(5) { transition-delay: 0.10s; }
+.table-of-contents.toc-hovered .toc-item:nth-child(n+6) { transition-delay: 0.12s; }
+
+.toc-item:hover {
+  background: var(--hover-bg);
+}
+
+.toc-item.toc-active {
+  background: var(--hover-bg);
+}
+
+.toc-item.toc-active .toc-item-text {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.toc-item-text {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  display: block;
+  transition: color 0.15s ease;
+  word-break: break-word;
+}
+
+.toc-item:hover .toc-item-text {
+  color: var(--text-primary);
+}
+
+/* Level-based styling */
+.toc-level-1 {
+  font-weight: 500;
+}
+
+.toc-level-2 {
+  font-weight: 400;
+}
+
+.toc-level-3 {
+  font-weight: 400;
+  font-size: 12px;
+}
+
+.toc-level-4,
+.toc-level-5,
+.toc-level-6 {
+  font-weight: 400;
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+/* Active indicator */
+.toc-item.toc-active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 2px;
+  height: 16px;
+  background: var(--accent-color);
+  border-radius: 0 2px 2px 0;
+}
+
+/* Scrollbar styling */
+.table-of-contents::-webkit-scrollbar {
+  width: 4px;
+}
+
+.table-of-contents::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.table-of-contents::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 2px;
+}
+
+.table-of-contents::-webkit-scrollbar-thumb:hover {
+  background: var(--text-tertiary);
+}
+
+/* Dark mode */
+[data-theme="dark"] .table-of-contents.toc-hovered {
+  background: var(--bg-secondary);
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .toc-item:hover {
+  background: var(--hover-bg);
+}
+
+[data-theme="dark"] .toc-item.toc-active {
+  background: var(--hover-bg);
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .table-of-contents {
+    display: none;
+  }
+}
+

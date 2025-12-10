@@ -5,6 +5,7 @@ import {
   EditOutlined,
   EyeOutlined,
   FileAddOutlined,
+  ImportOutlined,
   SendOutlined,
   InfoCircleOutlined,
 } from "@ant-design/icons";
@@ -45,6 +46,40 @@ import { sessionService, Session } from "../../services/sessionService";
 import { examService } from "../../services/examService";
 
 const { Title, Text } = Typography;
+
+const JSON_EXAMPLE = `[
+  {
+    "type": "SINGLE",
+    "content": "Câu hỏi trắc nghiệm 1?",
+    "explanation": "Giải thích đáp án đúng",
+    "options": [
+      { "text": "Đáp án A", "isCorrect": false },
+      { "text": "Đáp án B", "isCorrect": true }
+    ],
+    "points": 1,
+    "tags": ["chương-1"]
+  },
+  {
+    "type": "MULTIPLE",
+    "content": "Câu hỏi chọn nhiều đáp án?",
+    "explanation": "Có thể chọn nhiều hơn một đáp án",
+    "options": [
+      { "text": "Lựa chọn 1", "isCorrect": true },
+      { "text": "Lựa chọn 2", "isCorrect": true },
+      { "text": "Lựa chọn 3", "isCorrect": false }
+    ],
+    "points": 2,
+    "tags": ["chương-2"]
+  },
+  {
+    "type": "FILL_IN",
+    "content": "Nhập nội dung cần điền",
+    "explanation": "Chấp nhận nhiều câu trả lời tương đương",
+    "textAnswers": ["đáp án 1", "đáp án 2"],
+    "points": 1.5,
+    "tags": ["fill"]
+  }
+]`;
 
 const visibilityTagColor: Record<ExamVisibility, string> = {
   [ExamVisibility.DRAFT]: "default",
@@ -167,6 +202,8 @@ const ExamManagementPage: React.FC = () => {
   const [editingExamId, setEditingExamId] = useState<string | null>(null);
   const [isPrefilling, setIsPrefilling] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [jsonInput, setJsonInput] = useState<string>(JSON_EXAMPLE);
+  const [isApplyingJson, setIsApplyingJson] = useState(false);
   const [form] = Form.useForm();
   const selectedCourseId = Form.useWatch("courseId", form);
 
@@ -215,6 +252,7 @@ const ExamManagementPage: React.FC = () => {
     setModalMode("create");
     setEditingExamId(null);
     setIsPrefilling(false);
+    setJsonInput(JSON_EXAMPLE);
     setCreateModalVisible(true);
   };
 
@@ -285,6 +323,7 @@ const ExamManagementPage: React.FC = () => {
         passingScore: detail.config.passingScore ?? 0,
         questions: questionFields,
       });
+      setJsonInput(JSON.stringify(questionFields, null, 2));
     } catch (error) {
       message.error("Không thể tải dữ liệu bài kiểm tra để chỉnh sửa");
       setCreateModalVisible(false);
@@ -300,8 +339,69 @@ const ExamManagementPage: React.FC = () => {
     setModalMode("create");
     setEditingExamId(null);
     setIsPrefilling(false);
+    setJsonInput(JSON_EXAMPLE);
     form.resetFields();
   }, [form]);
+
+  const handleApplyJson = useCallback(async () => {
+    setIsApplyingJson(true);
+    try {
+      const parsed = JSON.parse(jsonInput);
+      const questionsInput: any[] = Array.isArray(parsed) ? parsed : parsed?.questions;
+
+      if (!Array.isArray(questionsInput)) {
+        throw new Error("Dữ liệu JSON phải là một mảng câu hỏi hoặc { questions: [] }");
+      }
+
+      const mapped = questionsInput.map((q, index) => {
+        const type: ExamQuestionType =
+          q.type && Object.values(ExamQuestionType).includes(q.type) ? q.type : ExamQuestionType.SINGLE;
+        const common = {
+          content: q.content ?? "",
+          explanation: q.explanation ?? "",
+          points: typeof q.points === "number" ? q.points : Number(q.points) || 1,
+          tags: q.tags ?? q.labels ?? [],
+          order: q.order ?? index,
+        };
+
+        if (type === ExamQuestionType.FILL_IN) {
+          const answers = q.textAnswers ?? q.answers ?? q.acceptableAnswers ?? [];
+          return {
+            type,
+            ...common,
+            textAnswers: answers.length > 0 ? answers : [""],
+          };
+        }
+
+        const optionsSource = q.options ?? [];
+        const options =
+          optionsSource.length > 0
+            ? optionsSource.map((opt: any, optIdx: number) => ({
+                id: opt.id ?? nanoid(),
+                text: opt.text ?? `Lựa chọn ${optIdx + 1}`,
+                isCorrect: Boolean(opt.isCorrect),
+              }))
+            : [
+                { id: nanoid(), text: "Đáp án A", isCorrect: true },
+                { id: nanoid(), text: "Đáp án B", isCorrect: false },
+              ];
+
+        return {
+          type,
+          ...common,
+          options,
+        };
+      });
+
+      form.setFieldsValue({ questions: mapped });
+      message.success("Đã nhập câu hỏi từ JSON");
+    } catch (error) {
+      console.error("Failed to apply questions from JSON", error);
+      message.error((error as Error).message || "JSON không hợp lệ, vui lòng kiểm tra lại");
+    } finally {
+      setIsApplyingJson(false);
+    }
+  }, [form, jsonInput]);
 
   const handleSubmitExam = useCallback(async () => {
     const values = await form.validateFields();
@@ -536,6 +636,47 @@ const ExamManagementPage: React.FC = () => {
           >
             <InputNumber min={0} max={100} style={{ width: "100%" }} />
           </Form.Item>
+
+          <Card size="small" style={{ marginBottom: 16 }} title="Nhập nhanh câu hỏi từ JSON">
+            <Text type="secondary">
+              Dán danh sách câu hỏi theo định dạng mẫu bên dưới. Có thể dùng mảng trực tiếp hoặc dạng {"{ questions: [] }"}.
+            </Text>
+            <div style={{ marginTop: 8 }}>
+              <Text strong>Giải thích mẫu:</Text>
+              <ul style={{ paddingLeft: 20, marginTop: 4, color: "var(--text-secondary)" }}>
+                <li>
+                  <code>type</code>: <code>SINGLE</code> (1 đáp án), <code>MULTIPLE</code> (nhiều đáp án),
+                  <code>FILL_IN</code> (điền).
+                </li>
+                <li>
+                  <code>options</code>: danh sách lựa chọn, đánh dấu <code>isCorrect: true</code> cho đáp án đúng (bỏ qua với
+                  <code>FILL_IN</code>).
+                </li>
+                <li>
+                  <code>textAnswers</code>: danh sách đáp án chấp nhận cho dạng <code>FILL_IN</code>.
+                </li>
+                <li>
+                  <code>explanation</code>: ghi chú/giải thích cho câu hỏi (tuỳ chọn), sẽ hiển thị ở phần “Giải thích” như bên dưới.
+                </li>
+                <li>
+                  <code>points</code>: điểm của câu; <code>tags</code>: nhãn tuỳ chọn; <code>content</code>: nội dung câu hỏi.
+                </li>
+              </ul>
+            </div>
+            <Input.TextArea
+              style={{ marginTop: 8 }}
+              autoSize={{ minRows: 8, maxRows: 14 }}
+              value={jsonInput}
+              onChange={(e) => setJsonInput(e.target.value)}
+              placeholder="Dán JSON câu hỏi ở đây"
+            />
+            <Space style={{ marginTop: 8 }}>
+              <Button onClick={() => setJsonInput(JSON_EXAMPLE)}>Khôi phục ví dụ</Button>
+              <Button type="primary" icon={<ImportOutlined />} onClick={handleApplyJson} loading={isApplyingJson}>
+                Áp dụng vào danh sách câu hỏi
+              </Button>
+            </Space>
+          </Card>
 
           <Form.List name="questions">
             {(fields, { add, remove }) => (
