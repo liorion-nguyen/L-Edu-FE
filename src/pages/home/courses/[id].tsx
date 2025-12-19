@@ -22,15 +22,19 @@ const useBreakpoint = Grid.useBreakpoint;
 
 const Session = ({ item, exams }: { item: any; exams?: ExamSummary[] }) => {
   const { t } = useTranslationWithRerender();
-  
-  const primaryExam = exams && exams.length > 0 ? exams[0] : undefined;
 
   const sections = [
     { type: "note", name: t('courseDetail.noteDocument'), icon: "/images/icons/course/doc.png", id: item._id, status: item.modeNoteMd === Mode.OPEN },
     { type: "video", name: t('courseDetail.videoDocument'), icon: "/images/icons/course/video.png", id: item._id, status: item.modeVideoUrl === Mode.OPEN },
     // { type: "quiz", name: t('courseDetail.quizDocument'), icon: "/images/icons/course/quiz.png", id: item._id, status: item.modeQuizId === Mode.OPEN },
-    ...(primaryExam
-      ? [{ type: "exam", name: t('courseDetail.quizDocument'), icon: "/images/icons/course/quiz.png", id: primaryExam._id, status: true }]
+    ...(exams && exams.length > 0
+      ? exams.map((exam) => ({
+          type: "exam" as const,
+          name: exam.title || t('courseDetail.quizDocument'),
+          icon: "/images/icons/course/quiz.png",
+          id: exam._id,
+          status: true,
+        }))
       : []),
   ];
   const screens = useBreakpoint();
