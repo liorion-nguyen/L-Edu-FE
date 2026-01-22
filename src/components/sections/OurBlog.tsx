@@ -3,7 +3,6 @@ import { Button, Col, Row, Space, Typography } from "antd";
 import Title from "antd/es/typography/Title";
 import { CSSProperties } from "react";
 import { useTranslationWithRerender } from "../../hooks/useLanguageChange";
-import { COLORS } from "../../constants/colors";
 import SectionLayout from "../../layouts/SectionLayout";
 
 const { Text } = Typography;

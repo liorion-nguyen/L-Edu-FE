@@ -1,4 +1,4 @@
-import { MenuOutlined, CodeOutlined, LockOutlined, SunOutlined, MoonOutlined } from "@ant-design/icons";
+import { MenuOutlined, LockOutlined, SunOutlined, MoonOutlined } from "@ant-design/icons";
 import { Button, Col, Drawer, Grid, Layout, Menu, Row, Typography } from "antd";
 import { CSSProperties, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -20,7 +20,7 @@ const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
-  const { theme, toggleTheme, isDark } = useTheme();
+  const { toggleTheme, isDark } = useTheme();
   const { t, language } = useTranslationWithRerender();
   const [menuItems, setMenuItems] = useState([
     { key: "/", label: t('navigation.home') },
@@ -115,6 +115,7 @@ const Header = () => {
         item.key !== "/change-password"
       ));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, user]);
 
   const handleMenuClick = ({ key }: { key: string }) => {

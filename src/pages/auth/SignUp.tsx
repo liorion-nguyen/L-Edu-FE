@@ -1,11 +1,11 @@
-import { Card, Checkbox, Divider, Typography } from "antd";
+import { Checkbox, Divider, Typography } from "antd";
 import { Field, Form, Formik } from "formik";
 import { Helmet } from "react-helmet-async";
 import { useNavigate } from "react-router-dom";
 import ButtonForm from "../../components/common/CustomButton";
 import InputForm from "../../components/common/CustomInput";
 import InputFormHide from "../../components/common/CustomInputHide";
-import { COLORS, RADIUS, SPACING } from "../../constants/colors";
+import { COLORS, SPACING } from "../../constants/colors";
 import { register } from "../../redux/slices/auth";
 import { useDispatch } from "../../redux/store";
 import { SignUpValidationSchema } from "../../validations/authValidation";

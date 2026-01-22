@@ -3,7 +3,7 @@ import Title from "antd/es/typography/Title";
 import { CSSProperties, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslationWithRerender } from "../../hooks/useLanguageChange";
-import { COLORS, RADIUS, SPACING } from "../../constants/colors";
+import { RADIUS, SPACING } from "../../constants/colors";
 import SectionLayout from "../../layouts/SectionLayout";
 import { categoryService, Category } from "../../services/categoryService";
 

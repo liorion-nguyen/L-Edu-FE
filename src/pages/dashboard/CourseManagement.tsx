@@ -84,6 +84,7 @@ const CourseManagement: React.FC = () => {
     fetchCategories();
     fetchInstructors();
     fetchStudents();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pagination.current, pagination.pageSize, searchTerm, categoryFilter]);
 
   const fetchCategories = async () => {

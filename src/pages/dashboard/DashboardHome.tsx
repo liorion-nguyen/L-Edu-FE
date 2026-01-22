@@ -1,4 +1,4 @@
-import { Card, Col, Row, Statistic, Typography, Table, Tag, Spin, Alert, Tabs } from "antd";
+import { Card, Col, Row, Statistic, Typography, Table, Tag, Spin, Alert } from "antd";
 import { 
   UserOutlined, 
   BookOutlined, 
@@ -211,9 +211,6 @@ const DashboardHome: React.FC = () => {
       },
     },
   ];
-
-  // Colors for charts
-  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#82CA9D'];
 
   if (loading) {
     return (

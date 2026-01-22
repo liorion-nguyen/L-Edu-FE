@@ -19,14 +19,13 @@ import {
   SunOutlined,
   MoonOutlined,
 } from "@ant-design/icons";
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useTranslationWithRerender } from "../hooks/useLanguageChange";
 import { useTheme } from "../contexts/ThemeContext";
 import { useSelector } from "../redux/store";
 import { RootState } from "../redux/store";
 import { Role } from "../enum/user.enum";
-import i18n from "../i18n";
 import LanguageSwitcher from "../components/common/LanguageSwitcher";
 import "../styles/layout.css";
 
@@ -42,7 +41,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslationWithRerender();
-  const { theme, toggleTheme, isDark } = useTheme();
+  const { toggleTheme, isDark } = useTheme();
   const { user } = useSelector((state: RootState) => state.auth);
 
 
@@ -143,6 +142,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
       label: t('dashboard.logout'),
       onClick: handleLogout,
     },
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   ], [t]);
 
   return (

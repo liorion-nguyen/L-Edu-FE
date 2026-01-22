@@ -501,7 +501,7 @@ const useChatbot = (): UseChatbotReturn => {
     });
     
     console.log('✅ Message sent via socket');
-  }, [currentConversationId, initializeConversation]);
+  }, [currentConversationId, initializeConversation, ensureSocketConnection]);
 
   const openChatbot = useCallback(() => {
     console.log('👋 Opening chatbot');

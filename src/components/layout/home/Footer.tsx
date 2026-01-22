@@ -1,7 +1,6 @@
 import { Col, Layout, Row, Space, Typography, Spin } from "antd";
 import { CSSProperties, useEffect, useState } from "react";
 import { useTranslationWithRerender } from "../../../hooks/useLanguageChange";
-import { COLORS } from "../../../constants/colors";
 import SectionLayout from "../../../layouts/SectionLayout";
 import { contactService, Contact } from "../../../services/contactService";
 import { footerService, Footer as FooterType } from "../../../services/footerService";
@@ -129,9 +128,7 @@ const Footer = () => {
                   <ul style={styles.list}>
                     {fallbackCompanyLinks.map((link, index) => (
                       <li key={index}>
-                        <a href="#" style={styles.link}>
-                          {link}
-                        </a>
+                        <span style={styles.link}>{link}</span>
                       </li>
                     ))}
                   </ul>
@@ -145,9 +142,7 @@ const Footer = () => {
                   <ul style={styles.list}>
                     {fallbackCourseLinks.map((link, index) => (
                       <li key={index}>
-                        <a href="#" style={styles.link}>
-                          {link}
-                        </a>
+                        <span style={styles.link}>{link}</span>
                       </li>
                     ))}
                   </ul>

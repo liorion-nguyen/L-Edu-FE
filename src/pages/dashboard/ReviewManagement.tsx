@@ -19,7 +19,6 @@ import {
   EditOutlined, 
   DeleteOutlined,
   MoreOutlined,
-  StarOutlined,
   UserOutlined,
   BookOutlined,
   EyeOutlined
@@ -37,9 +36,8 @@ const ReviewManagement: React.FC = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingReview, setEditingReview] = useState<Review | null>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
-  const [stats, setStats] = useState<ReviewStats | null>(null);
+  const [, setStats] = useState<ReviewStats | null>(null);
   const [loading, setLoading] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("");
   const [pagination, setPagination] = useState({
@@ -52,6 +50,7 @@ const ReviewManagement: React.FC = () => {
   useEffect(() => {
     fetchReviews();
     fetchStats();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pagination.current, searchTerm, statusFilter]);
 
   const fetchReviews = async () => {
@@ -173,25 +172,7 @@ const ReviewManagement: React.FC = () => {
     }
   };
 
-  // Mock data - sẽ được thay thế bằng API calls
-  const mockReviews = [
-    {
-      key: "1",
-      id: "1",
-      user: {
-        id: "1",
-        fullName: "Nguyễn Văn A",
-        avatar: "/images/landing/sections/fakeImages/avatarStudent.png",
-      },
-      course: {
-        id: "1",
-        title: "React Native từ A-Z",
-      },
-      rating: 5,
-      comment: "Khóa học rất hay và bổ ích, giảng viên nhiệt tình, nội dung chi tiết.",
-      status: "approved",
-      createdAt: "2024-01-15",
-    },
+  const _mockReviewsPlaceholder = [
     {
       key: "2",
       id: "2",

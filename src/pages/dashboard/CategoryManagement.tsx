@@ -5,7 +5,6 @@ import {
   Modal,
   Form,
   Input,
-  Select,
   Space,
   Popconfirm,
   message,
@@ -23,7 +22,6 @@ import {
   PlusOutlined,
   EditOutlined,
   DeleteOutlined,
-  SearchOutlined,
   UploadOutlined,
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
@@ -41,7 +39,7 @@ const CategoryManagement: React.FC = () => {
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [form] = Form.useForm();
   const [formValues, setFormValues] = useState<{ icon?: string }>({});
-  const [uploadingIcon, setUploadingIcon] = useState(false);
+  const [, setUploadingIcon] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [pagination, setPagination] = useState({
     current: 1,
@@ -58,6 +56,7 @@ const CategoryManagement: React.FC = () => {
   useEffect(() => {
     fetchCategories();
     fetchStats();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pagination.current, pagination.pageSize, searchText]);
 
   const fetchCategories = async () => {

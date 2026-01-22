@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Card, Tabs, Modal, Button } from 'antd';
-import { MessageOutlined, HistoryOutlined, SettingOutlined } from '@ant-design/icons';
+import { Card, Tabs, Modal } from 'antd';
+import { HistoryOutlined, SettingOutlined } from '@ant-design/icons';
 import ChatHistory from '../../components/chatbot/ChatHistory';
 import ChatPopup from '../../components/chatbot/ChatPopup';
 import ChatContentManagement from '../../components/admin/ChatContentManagement';
@@ -15,7 +15,6 @@ const ChatManagement: React.FC = () => {
     isLoading,
     sendMessage,
     clearMessages,
-    currentConversationId,
     loadConversationHistory
   } = useChatbot();
 

@@ -139,4 +139,5 @@ class CourseRegistrationService {
   }
 }
 
-export default new CourseRegistrationService();
+const courseRegistrationService = new CourseRegistrationService();
+export default courseRegistrationService;

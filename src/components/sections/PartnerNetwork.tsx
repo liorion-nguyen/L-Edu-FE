@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Row, Col, Card, Typography, Spin } from 'antd';
 import { useTranslationWithRerender } from '../../hooks/useLanguageChange';
 import SectionLayout from '../../layouts/SectionLayout';
-import { footerService, Footer, FooterLink } from '../../services/footerService';
+import { footerService, Footer } from '../../services/footerService';
 
 const { Title } = Typography;
 

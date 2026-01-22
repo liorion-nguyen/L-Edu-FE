@@ -2,7 +2,7 @@ import { Col, Row } from "antd";
 import Title from "antd/es/typography/Title";
 import { CSSProperties } from "react";
 import { useTranslationWithRerender } from "../../hooks/useLanguageChange";
-import { COLORS, RADIUS, SPACING } from "../../constants/colors";
+import { RADIUS, SPACING } from "../../constants/colors";
 import SectionLayout from "../../layouts/SectionLayout";
 
 const CourseOverview = () => {

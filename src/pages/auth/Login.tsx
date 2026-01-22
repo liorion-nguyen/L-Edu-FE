@@ -6,7 +6,7 @@ import { useTranslationWithRerender } from "../../hooks/useLanguageChange";
 import CustomButton from "../../components/common/CustomButton";
 import CustomInput from "../../components/common/CustomInput";
 import CustomInputHide from "../../components/common/CustomInputHide";
-import { COLORS, RADIUS, SPACING } from "../../constants/colors";
+import { SPACING } from "../../constants/colors";
 import { login } from "../../redux/slices/auth";
 import { useDispatch } from "../../redux/store";
 import { LoginValidationSchema } from "../../validations/authValidation";
@@ -30,7 +30,7 @@ const Login: React.FC = () => {
     try {
       const response = await dispatch(login(values));
       console.log(response);
-      if (response.payload == true) {
+      if (response.payload === true) {
         notification.success({
           message: t('auth.messages.loginSuccess'),
           description: t('auth.messages.loginWelcome'),
