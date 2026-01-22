@@ -6,7 +6,6 @@ import {
   ExamDetail,
   ExamFilters,
   ExamSummary,
-  ExamVisibility,
   CreateExamPayload,
   UpdateExamPayload,
 } from "../types/exam";
