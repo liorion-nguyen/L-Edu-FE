@@ -38,6 +38,7 @@ const ReviewManagement: React.FC = () => {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [, setStats] = useState<ReviewStats | null>(null);
   const [loading, setLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("");
   const [pagination, setPagination] = useState({
