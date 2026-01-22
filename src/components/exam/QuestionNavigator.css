@@ -1,0 +1,102 @@
+/* Question Navigator Grid */
+.question-navigator-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+  gap: 10px;
+  padding: 8px 0;
+}
+
+.question-nav-button {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px;
+}
+
+.question-nav-button:hover {
+  border-color: var(--accent-color);
+  background: var(--bg-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+}
+
+.question-nav-button.active {
+  border-color: var(--accent-color);
+  background: linear-gradient(135deg, var(--accent-color) 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4);
+  transform: scale(1.05);
+}
+
+.question-nav-button.answered {
+  border-color: #52c41a;
+  background: rgba(82, 196, 26, 0.1);
+}
+
+.question-nav-button.answered:hover {
+  border-color: #52c41a;
+  background: rgba(82, 196, 26, 0.2);
+  box-shadow: 0 4px 12px rgba(82, 196, 26, 0.3);
+}
+
+.question-nav-button.unanswered {
+  border-style: dashed;
+  opacity: 0.7;
+}
+
+.question-nav-button.unanswered:hover {
+  opacity: 1;
+  border-style: solid;
+}
+
+.nav-check-icon {
+  font-size: 14px;
+  color: #52c41a;
+  position: absolute;
+  top: 4px;
+  right: 4px;
+}
+
+.question-nav-button.active .nav-check-icon {
+  color: white;
+}
+
+.nav-question-number {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.question-nav-button.active .nav-question-number {
+  color: white;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .question-navigator-grid {
+    grid-template-columns: repeat(auto-fill, minmax(44px, 1fr));
+    gap: 8px;
+  }
+
+  .question-nav-button {
+    font-size: 13px;
+    padding: 6px;
+  }
+
+  .nav-question-number {
+    font-size: 14px;
+  }
+}

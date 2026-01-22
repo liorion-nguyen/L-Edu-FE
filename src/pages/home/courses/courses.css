@@ -1,0 +1,240 @@
+/* Modern Course Card Hover Effects */
+.modern-course-card {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.modern-course-card:hover {
+  transform: translateY(-8px) !important;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15) !important;
+  border-color: var(--accent-color) !important;
+}
+
+.modern-course-card:hover .ant-card-cover img {
+  transform: scale(1.1);
+}
+
+.modern-course-card:hover .ant-card-cover::after {
+  opacity: 0.5;
+}
+
+/* Create Button Hover Effect */
+.create-course-btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.create-course-btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.create-course-btn:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.create-course-btn:hover {
+  transform: translateY(-3px) !important;
+  box-shadow: 0 12px 32px rgba(102, 126, 234, 0.5) !important;
+}
+
+.create-course-btn:active {
+  transform: translateY(-1px) !important;
+}
+
+/* Card Image Overlay Animation */
+.modern-course-card .ant-card-cover {
+  position: relative;
+  overflow: hidden;
+}
+
+.modern-course-card .ant-card-cover::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(102, 126, 234, 0.1) 50%,
+    rgba(102, 126, 234, 0.2) 100%
+  );
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.modern-course-card:hover .ant-card-cover::after {
+  opacity: 1;
+}
+
+/* Button Hover Effects */
+.modern-course-card .ant-btn-primary:not(:disabled):hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4) !important;
+}
+
+.modern-course-card .ant-btn-default:not(:disabled):hover {
+  transform: translateY(-2px);
+  background: var(--accent-color) !important;
+  color: white !important;
+  border-color: var(--accent-color) !important;
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.3) !important;
+}
+
+/* Avatar Hover Effect */
+.modern-course-card:hover .ant-avatar {
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4) !important;
+}
+
+/* Search Input - Fix Border Overlap */
+.modern-search-input.ant-input-search {
+  border-radius: 16px !important;
+  overflow: hidden;
+  border: 2px solid var(--border-color) !important;
+  background: var(--bg-primary) !important;
+  transition: all 0.3s ease !important;
+}
+
+.modern-search-input.ant-input-search .ant-input {
+  border: none !important;
+  border-radius: 16px 0 0 16px !important;
+  background: transparent !important;
+  padding-left: 16px !important;
+}
+
+.modern-search-input.ant-input-search .ant-input:focus,
+.modern-search-input.ant-input-search .ant-input-focused {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.modern-search-input.ant-input-search .ant-input-group-addon {
+  border: none !important;
+  background: transparent !important;
+  padding: 0 !important;
+}
+
+.modern-search-button {
+  border: none !important;
+  border-radius: 0 16px 16px 0 !important;
+  background: var(--accent-color) !important;
+  height: 100% !important;
+  margin: 0 !important;
+  padding: 0 24px !important;
+  font-weight: 600 !important;
+  transition: all 0.3s ease !important;
+}
+
+.modern-search-button:hover {
+  background: var(--accent-color) !important;
+  opacity: 0.9 !important;
+  transform: none !important;
+}
+
+/* Search Input Focus Effect */
+.modern-search-input.ant-input-search:focus-within {
+  border-color: var(--accent-color) !important;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1) !important;
+}
+
+/* Filter Wrapper Hover */
+.filter-wrapper:hover {
+  border-color: var(--accent-color) !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .modern-course-card:hover {
+    transform: translateY(-4px) !important;
+  }
+  
+  .section-title {
+    font-size: 32px !important;
+  }
+  
+  .title-icon {
+    font-size: 36px !important;
+  }
+}
+
+/* Smooth Scroll Animation */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Loading Skeleton Animation */
+.ant-skeleton-active .ant-skeleton-content .ant-skeleton-title,
+.ant-skeleton-active .ant-skeleton-content .ant-skeleton-paragraph > li {
+  background: linear-gradient(
+    90deg,
+    var(--bg-secondary) 25%,
+    var(--bg-primary) 50%,
+    var(--bg-secondary) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Badge Ribbon Animation */
+.ant-ribbon {
+  transition: transform 0.3s ease;
+}
+
+.modern-course-card:hover .ant-ribbon {
+  transform: scale(1.05);
+}
+
+/* Empty State Animation */
+.empty-state {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+/* Card Grid Animation Stagger */
+.courses-grid .ant-col {
+  animation: fadeInUp 0.6s ease-out backwards;
+}
+
+/* Improved Select Dropdown */
+.ant-select-focused .ant-select-selector {
+  border-color: var(--accent-color) !important;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1) !important;
+}
+
+/* Rating Stars Hover */
+.ant-rate-star {
+  transition: transform 0.2s ease;
+}
+
+.ant-rate-star:hover {
+  transform: scale(1.2);
+}

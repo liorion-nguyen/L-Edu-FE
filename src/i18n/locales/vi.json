@@ -425,7 +425,8 @@
     "examConfirmDesc": "Thời gian sẽ bắt đầu ngay khi bạn tiếp tục. Hãy đảm bảo bạn đã chuẩn bị đầy đủ trước khi vào bài.",
     "startExam": "Vào làm bài",
     "expand": "Xem thêm",
-    "collapse": "Thu gọn"
+    "collapse": "Thu gọn",
+    "instructor": "Giảng viên"
   },
   "dashboard": {
     "overview": "Tổng quan",
@@ -564,6 +565,7 @@
       "studentAddedSuccess": "Thêm học sinh thành công",
       "studentRemovedSuccess": "Xóa học sinh thành công",
         "instructorUpdatedSuccess": "Cập nhật giảng viên thành công",
+      "instructorRemovedSuccess": "Xóa giảng viên thành công",
         "searchStudents": "Tìm kiếm học viên theo tên hoặc email...",
         "noStudentsFound": "Không tìm thấy học viên nào",
       "courses": "khóa học",

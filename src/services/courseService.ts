@@ -187,9 +187,19 @@ export const courseService = {
     return response.data;
   },
 
-  async updateCourseInstructor(courseId: string, instructorId: string): Promise<CourseResponse> {
+  async updateCourseInstructor(courseId: string, instructorId: string | null): Promise<CourseResponse> {
     const token = localStorage.getItem('accessToken');
-    const response = await axios.put(`${API_URL}/${courseId}/instructor`, { instructorId }, {
+    const response = await axios.put(`${API_URL}/${courseId}/instructor`, { instructorId: instructorId || null }, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  },
+
+  async removeCourseInstructor(courseId: string): Promise<CourseResponse> {
+    const token = localStorage.getItem('accessToken');
+    const response = await axios.delete(`${API_URL}/${courseId}/instructor`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

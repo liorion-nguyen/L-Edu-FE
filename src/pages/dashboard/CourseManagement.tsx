@@ -64,6 +64,7 @@ const CourseManagement: React.FC = () => {
   const [isStudentModalVisible, setIsStudentModalVisible] = useState(false);
   const [isInstructorModalVisible, setIsInstructorModalVisible] = useState(false);
   const [studentSearchTerm, setStudentSearchTerm] = useState('');
+  const [instructorSearchTerm, setInstructorSearchTerm] = useState('');
   const [categories, setCategories] = useState<Category[]>([]);
   const [categoryFilter, setCategoryFilter] = useState<string>('');
 
@@ -408,6 +409,9 @@ const CourseManagement: React.FC = () => {
     // Fetch current instructor for this course
     const currentInstructor = await fetchCourseInstructor(course._id);
     setSelectedCourse(prev => prev ? { ...prev, instructor: currentInstructor } : null);
+    // Fetch instructors list when opening modal
+    await fetchInstructors();
+    setInstructorSearchTerm(''); // Reset search term
     setIsInstructorModalVisible(true);
   };
 
@@ -443,14 +447,27 @@ const CourseManagement: React.FC = () => {
     if (!selectedCourse) return;
     try {
       await courseService.updateCourseInstructor(selectedCourse._id, instructorId);
-      message.success(t('dashboard.courses.instructorUpdatedSuccess'));
+      message.success(t('dashboard.courses.instructorUpdatedSuccess') || 'Instructor updated successfully');
       // Refresh current instructor
       const currentInstructor = await fetchCourseInstructor(selectedCourse._id);
       setSelectedCourse(prev => prev ? { ...prev, instructor: currentInstructor } : null);
       fetchCourses();
-      setIsInstructorModalVisible(false);
     } catch (error: any) {
       message.error(error.response?.data?.message || 'Failed to update instructor');
+    }
+  };
+
+  const handleRemoveInstructor = async () => {
+    if (!selectedCourse) return;
+    try {
+      await courseService.removeCourseInstructor(selectedCourse._id);
+      message.success(t('dashboard.courses.instructorRemovedSuccess') || 'Instructor removed successfully');
+      // Refresh current instructor
+      const currentInstructor = await fetchCourseInstructor(selectedCourse._id);
+      setSelectedCourse(prev => prev ? { ...prev, instructor: currentInstructor || undefined, instructorId: undefined } : null);
+      fetchCourses();
+    } catch (error: any) {
+      message.error(error.response?.data?.message || 'Failed to remove instructor');
     }
   };
 
@@ -887,59 +904,131 @@ const CourseManagement: React.FC = () => {
           },
         }}
       >
-        <div style={{ marginBottom: 16 }}>
-          <Typography.Text strong>
+        <div style={{ marginBottom: 24 }}>
+          <Typography.Text strong style={{ display: 'block', marginBottom: 12 }}>
             {t('dashboard.courses.currentInstructor')}:
           </Typography.Text>
           {selectedCourse?.instructor ? (
-            <div style={{ marginTop: 8, padding: 12, background: 'var(--bg-secondary)', borderRadius: 8 }}>
-              <Space>
-                <Avatar src={selectedCourse.instructor.avatar} icon={<UserOutlined />} />
-                <div>
-                  <div>{selectedCourse.instructor.fullName}</div>
-                  <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
-                    {selectedCourse.instructor.email}
+            <Card 
+              style={{ 
+                background: 'var(--bg-secondary)', 
+                border: '1px solid var(--border-color)',
+                marginBottom: 8
+              }}
+            >
+              <Space style={{ width: '100%', justifyContent: 'space-between' }}>
+                <Space>
+                  <Avatar src={selectedCourse.instructor.avatar} icon={<UserOutlined />} size="large" />
+                  <div>
+                    <div style={{ fontWeight: 500, fontSize: 16 }}>
+                      {selectedCourse.instructor.fullName}
+                    </div>
+                    <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
+                      {selectedCourse.instructor.email}
+                    </div>
                   </div>
-                </div>
+                </Space>
+                <Popconfirm
+                  title="Xóa giảng viên?"
+                  description="Bạn có chắc muốn xóa giảng viên khỏi khóa học này?"
+                  onConfirm={handleRemoveInstructor}
+                  okText="Xóa"
+                  cancelText="Hủy"
+                  okButtonProps={{ danger: true }}
+                >
+                  <Button 
+                    danger 
+                    icon={<UserDeleteOutlined />}
+                    type="default"
+                  >
+                    Xóa giảng viên
+                  </Button>
+                </Popconfirm>
               </Space>
-            </div>
+            </Card>
           ) : (
-            <div style={{ marginTop: 8, color: 'var(--text-secondary)' }}>
-              {t('dashboard.courses.noInstructor')}
-            </div>
+            <Card style={{ 
+              background: 'var(--bg-secondary)', 
+              border: '1px dashed var(--border-color)',
+              textAlign: 'center',
+              padding: 24
+            }}>
+              <Typography.Text type="secondary">
+                {t('dashboard.courses.noInstructor')}
+              </Typography.Text>
+            </Card>
           )}
         </div>
 
         <div>
-          <Typography.Text strong>
+          <Typography.Text strong style={{ display: 'block', marginBottom: 12 }}>
             {t('dashboard.courses.selectNewInstructor')}:
           </Typography.Text>
-          <List
-            style={{ marginTop: 8 }}
-            dataSource={instructors}
-            renderItem={(instructor) => (
-              <List.Item
-                actions={[
-                  <Button 
-                    type="primary"
-                    onClick={() => handleUpdateInstructor(instructor._id)}
-                    disabled={selectedCourse?.instructorId === instructor._id}
-                  >
-                    {selectedCourse?.instructorId === instructor._id 
-                      ? t('dashboard.courses.current') 
-                      : t('dashboard.courses.select')
-                    }
-                  </Button>
-                ]}
-              >
-                <List.Item.Meta
-                  avatar={<Avatar src={instructor.avatar} icon={<UserOutlined />} />}
-                  title={instructor.fullName}
-                  description={instructor.email}
-                />
-              </List.Item>
-            )}
+          <Input
+            placeholder="Tìm kiếm giảng viên..."
+            prefix={<SearchOutlined />}
+            value={instructorSearchTerm}
+            onChange={(e) => setInstructorSearchTerm(e.target.value)}
+            style={{ marginBottom: 16 }}
+            allowClear
           />
+          {instructors.length === 0 ? (
+            <div style={{ 
+              textAlign: 'center', 
+              padding: '40px 20px',
+              color: 'var(--text-secondary)'
+            }}>
+              <UserOutlined style={{ fontSize: 48, marginBottom: 16, opacity: 0.5 }} />
+              <div>Không có giảng viên nào</div>
+            </div>
+          ) : (
+            <List
+              style={{ marginTop: 8, maxHeight: 400, overflowY: 'auto' }}
+              dataSource={instructors.filter(instructor => 
+                !instructorSearchTerm || 
+                instructor.fullName?.toLowerCase().includes(instructorSearchTerm.toLowerCase()) ||
+                instructor.email?.toLowerCase().includes(instructorSearchTerm.toLowerCase())
+              )}
+              locale={{ emptyText: 'Không tìm thấy giảng viên nào' }}
+              renderItem={(instructor) => (
+                <List.Item
+                  style={{ 
+                    padding: '12px',
+                    border: selectedCourse?.instructorId === instructor._id ? '2px solid #1890ff' : '1px solid var(--border-color)',
+                    borderRadius: 8,
+                    marginBottom: 8,
+                    background: selectedCourse?.instructorId === instructor._id ? 'rgba(24, 144, 255, 0.1)' : 'var(--bg-secondary)'
+                  }}
+                  actions={[
+                    <Button 
+                      type={selectedCourse?.instructorId === instructor._id ? "default" : "primary"}
+                      icon={selectedCourse?.instructorId === instructor._id ? undefined : <UserAddOutlined />}
+                      onClick={() => handleUpdateInstructor(instructor._id)}
+                      disabled={selectedCourse?.instructorId === instructor._id}
+                    >
+                      {selectedCourse?.instructorId === instructor._id 
+                        ? 'Đang là giảng viên' 
+                        : 'Chọn làm giảng viên'
+                      }
+                    </Button>
+                  ]}
+                >
+                  <List.Item.Meta
+                    avatar={<Avatar src={instructor.avatar} icon={<UserOutlined />} size="large" />}
+                    title={
+                      <div>
+                        <span style={{ fontWeight: 500 }}>{instructor.fullName}</span>
+                        {selectedCourse?.instructorId === instructor._id && (
+                          <Tag color="blue" style={{ marginLeft: 8 }}>Hiện tại</Tag>
+                        )}
+                      </div>
+                    }
+                    description={instructor.email}
+                  />
+                </List.Item>
+              )}
+            />
+          )}
         </div>
       </Modal>
     </div>

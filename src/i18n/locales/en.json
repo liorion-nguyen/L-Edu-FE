@@ -425,7 +425,8 @@
     "examConfirmDesc": "The timer will start as soon as you continue. Make sure you are fully prepared before beginning.",
     "startExam": "Start exam",
     "expand": "Show more",
-    "collapse": "Show less"
+    "collapse": "Show less",
+    "instructor": "Instructor"
   },
   "dashboard": {
     "overview": "Overview",
@@ -564,6 +565,7 @@
       "studentAddedSuccess": "Student added successfully",
       "studentRemovedSuccess": "Student removed successfully",
         "instructorUpdatedSuccess": "Instructor updated successfully",
+      "instructorRemovedSuccess": "Instructor removed successfully",
         "searchStudents": "Search students by name or email...",
         "noStudentsFound": "No students found",
       "courses": "courses",

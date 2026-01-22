@@ -1,6 +1,6 @@
-import { Button } from "antd";
 import { CheckOutlined } from "@ant-design/icons";
 import { ExamQuestion } from "../../types/exam";
+import "./QuestionNavigator.css";
 
 interface QuestionNavigatorProps {
   questions: ExamQuestion[];
@@ -16,20 +16,19 @@ export const QuestionNavigator: React.FC<QuestionNavigatorProps> = ({
   answeredQuestionIds,
 }) => {
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(48px, 1fr))", gap: 8 }}>
+    <div className="question-navigator-grid">
       {questions.map((question, index) => {
         const isActive = index === currentIndex;
         const answered = answeredQuestionIds?.has(question._id);
         return (
-          <Button
+          <button
             key={question._id}
-            type={isActive ? "primary" : answered ? "default" : "dashed"}
+            className={`question-nav-button ${isActive ? 'active' : ''} ${answered ? 'answered' : 'unanswered'}`}
             onClick={() => onSelect(index)}
-            style={{ padding: 0, width: "100%" }}
-            icon={answered ? <CheckOutlined style={{ color: "#52c41a" }} /> : undefined}
           >
-            {index + 1}
-          </Button>
+            {answered && <CheckOutlined className="nav-check-icon" />}
+            <span className="nav-question-number">{index + 1}</span>
+          </button>
         );
       })}
     </div>

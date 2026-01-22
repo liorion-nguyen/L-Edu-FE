@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Card, Input, Empty, Button, Popconfirm, Upload, Image, message as antMessage } from 'antd';
-import { SendOutlined, CloseOutlined, RobotOutlined, DeleteOutlined, PictureOutlined, CloseCircleOutlined } from '@ant-design/icons';
+import { SendOutlined, CloseOutlined, RobotOutlined, DeleteOutlined, PictureOutlined, CloseCircleOutlined, MessageOutlined } from '@ant-design/icons';
 import type { UploadFile } from 'antd';
 import MarkdownViewer from '../common/MarkdownViewer';
 import './chatbot.css';
@@ -41,7 +41,7 @@ const ChatPopup: React.FC<ChatPopupProps> = ({
 
   const scrollToBottom = (smooth = true) => {
     setTimeout(() => {
-      messagesEndRef.current?.scrollIntoView({ 
+      messagesEndRef.current?.scrollIntoView({
         behavior: smooth ? 'smooth' : 'auto',
         block: 'end'
       });
@@ -100,11 +100,11 @@ const ChatPopup: React.FC<ChatPopupProps> = ({
   const handleImageUpload = async (file: File) => {
     try {
       antMessage.loading({ content: 'Đang upload ảnh...', key: 'upload' });
-      
+
       // Upload to Cloudinary via backend
       const formData = new FormData();
       formData.append('file', file);
-      
+
       const token = localStorage.getItem('jwt-access-token');
       const response = await fetch(
         `${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/chat/upload-image`,
@@ -120,7 +120,7 @@ const ChatPopup: React.FC<ChatPopupProps> = ({
       if (response.ok) {
         const data = await response.json();
         const imageUrl = data.data.url;
-        
+
         setUploadedImages(prev => [...prev, imageUrl]);
         antMessage.success({ content: 'Đã thêm ảnh', key: 'upload' });
       } else {
@@ -130,7 +130,7 @@ const ChatPopup: React.FC<ChatPopupProps> = ({
       console.error('Error uploading image:', error);
       antMessage.error({ content: 'Lỗi khi upload ảnh', key: 'upload' });
     }
-    
+
     return false; // Prevent auto upload
   };
 
@@ -150,13 +150,13 @@ const ChatPopup: React.FC<ChatPopupProps> = ({
     }
   };
 
-  const handleInputFocus = () => {
-    setIsExpanded(true);
-  };
 
   const handleClickOutside = (e: React.MouseEvent) => {
     const target = e.target as HTMLElement;
-    if (!target.closest('.chat-input') && !target.closest('.chat-card')) {
+    // Không đóng nếu click vào icon button, chat input, hoặc chat card
+    if (!target.closest('.chatbot-icon-button') &&
+      !target.closest('.chat-input') &&
+      !target.closest('.chat-card')) {
       setIsExpanded(false);
     }
   };
@@ -185,9 +185,9 @@ const ChatPopup: React.FC<ChatPopupProps> = ({
                 okText="Xóa"
                 cancelText="Hủy"
               >
-                <Button 
-                  type="text" 
-                  icon={<DeleteOutlined />} 
+                <Button
+                  type="text"
+                  icon={<DeleteOutlined />}
                   danger
                   title="Xóa cuộc trò chuyện"
                 />
@@ -201,119 +201,170 @@ const ChatPopup: React.FC<ChatPopupProps> = ({
         >
           <div className="chat-messages">
             {messages.length === 0 ? (
-              <Empty
-                description="Chưa có tin nhắn nào"
-                style={{ margin: '20px 0' }}
-              />
+              <div className="empty-chat-state">
+                <div className="empty-chat-icon">
+                  <RobotOutlined style={{ fontSize: '64px', color: '#d9d9d9' }} />
+                </div>
+                <div className="empty-chat-text">
+                  <h3>Chào bạn! 👋</h3>
+                  <p>Tôi là AI Assistant, sẵn sàng trợ giúp bạn. Hãy bắt đầu cuộc trò chuyện!</p>
+                </div>
+              </div>
             ) : (
               messages.map((msg) => (
                 <div
                   key={msg.id}
-                  className={`message ${msg.role === 'user' ? 'user' : 'bot'} ${msg.isComplete ? 'complete' : 'streaming'}`}
+                  className={`message-wrapper ${msg.role === 'user' ? 'user-wrapper' : 'bot-wrapper'}`}
                 >
-                  {msg.role === 'assistant' ? (
-                    <div className="markdown-content">
-                      <MarkdownViewer 
-                        content={msg.content} 
-                        className="chatbot-markdown"
-                      />
-                      {!msg.isComplete && (
-                        <span className="typing-indicator">đang nhập</span>
-                      )}
+                  {msg.role === 'assistant' && (
+                    <div className="message-avatar bot-avatar">
+                      <RobotOutlined />
                     </div>
-                  ) : (
-                    <div>
-                      {msg.imageUrls && msg.imageUrls.length > 0 && (
-                        <div className="message-images">
-                          {msg.imageUrls.map((url, idx) => (
-                            <Image
-                              key={idx}
-                              src={url}
-                              alt={`Image ${idx + 1}`}
-                              style={{ maxWidth: '200px', borderRadius: '8px', marginBottom: '8px' }}
-                              preview={{
-                                mask: '🔍 Xem lớn'
-                              }}
-                            />
-                          ))}
-                        </div>
-                      )}
-                      
-                      <span>{msg.content}</span>
+                  )}
+                  <div
+                    className={`message ${msg.role === 'user' ? 'user' : 'bot'} ${msg.isComplete ? 'complete' : 'streaming'}`}
+                  >
+                    {msg.role === 'assistant' ? (
+                      <div className="markdown-content">
+                        <MarkdownViewer
+                          content={msg.content}
+                          className="chatbot-markdown"
+                        />
+                        {!msg.isComplete && (
+                          <span className="typing-indicator">đang nhập</span>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="message-content">
+                        {msg.imageUrls && msg.imageUrls.length > 0 && (
+                          <div className="message-images">
+                            {msg.imageUrls.map((url, idx) => (
+                              <Image
+                                key={idx}
+                                src={url}
+                                alt={`Image ${idx + 1}`}
+                                style={{ maxWidth: '200px', borderRadius: '8px', marginBottom: '8px' }}
+                                preview={{
+                                  mask: '🔍 Xem lớn'
+                                }}
+                              />
+                            ))}
+                          </div>
+                        )}
+                        <span className="message-text">{msg.content}</span>
+                      </div>
+                    )}
+                    <div className="message-time">
+                      {new Date(msg.timestamp).toLocaleTimeString('vi-VN', {
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      })}
+                    </div>
+                  </div>
+                  {msg.role === 'user' && (
+                    <div className="message-avatar user-avatar">
+                      <span>Bạn</span>
                     </div>
                   )}
                 </div>
               ))
             )}
             {isLoading && (
-              <div className="message bot">
-                <span className="typing-indicator">AI đang trả lời...</span>
+              <div className="message-wrapper bot-wrapper">
+                <div className="message-avatar bot-avatar">
+                  <MessageOutlined />
+                </div>
+                <div className="message bot">
+                  <div className="typing-dots">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                  </div>
+                </div>
               </div>
             )}
             <div ref={messagesEndRef} />
           </div>
         </Card>
       )}
-      
-      <div className={`chat-input ${isExpanded ? 'expanded' : ''}`}>
-        {/* Preview uploaded images */}
-        {uploadedImages.length > 0 && (
-          <div className="attachments-preview-container">
-            {uploadedImages.map((url, index) => (
-              <div key={`img-${index}`} className="image-preview">
-                <img 
-                  src={url} 
-                  alt={`Preview ${index + 1}`}
-                  style={{ width: '60px', height: '60px', objectFit: 'cover', borderRadius: '4px' }}
-                />
-                <CloseCircleOutlined 
-                  className="remove-attachment-btn"
-                  onClick={() => removeImage(index)}
-                />
-              </div>
-            ))}
-          </div>
-        )}
-        
-        <div className="input-wrapper">
-          <div style={{ display: isExpanded ? 'flex' : 'none', gap: '4px' }}>
-            <Upload
-              beforeUpload={handleImageUpload}
-              showUploadList={false}
-              accept="image/*"
-              disabled={isLoading}
-            >
-              <Button 
-                type="text" 
-                icon={<PictureOutlined />}
+
+      {!isExpanded ? (
+        <Button
+          type="primary"
+          shape="circle"
+          icon={<MessageOutlined style={{ fontSize: '24px', color: '#B0E0E6' }} />}
+          size="large"
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsExpanded(true);
+          }}
+          className="chatbot-icon-button"
+          style={{
+            width: '56px',
+            height: '56px',
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+          }}
+        />
+      ) : (
+        <div className={`chat-input expanded`}>
+          {/* Preview uploaded images */}
+          {uploadedImages.length > 0 && (
+            <div className="attachments-preview-container">
+              {uploadedImages.map((url, index) => (
+                <div key={`img-${index}`} className="image-preview">
+                  <img
+                    src={url}
+                    alt={`Preview ${index + 1}`}
+                    style={{ width: '60px', height: '60px', objectFit: 'cover', borderRadius: '4px' }}
+                  />
+                  <CloseCircleOutlined
+                    className="remove-attachment-btn"
+                    onClick={() => removeImage(index)}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div className="input-wrapper">
+            <div style={{ display: 'flex', gap: '4px' }}>
+              <Upload
+                beforeUpload={handleImageUpload}
+                showUploadList={false}
+                accept="image/*"
                 disabled={isLoading}
-                style={{ color: '#1890ff' }}
-                title="Thêm ảnh"
-              />
-            </Upload>
+              >
+                <Button
+                  type="text"
+                  icon={<PictureOutlined />}
+                  disabled={isLoading}
+                  style={{ color: '#1890ff' }}
+                  title="Thêm ảnh"
+                />
+              </Upload>
+            </div>
+
+            <Input.TextArea
+              ref={inputRef}
+              placeholder="Nhập tin nhắn... (Shift+Enter để xuống dòng)"
+              value={inputText}
+              onChange={(e) => setInputText(e.target.value)}
+              onKeyPress={handleKeyPress}
+              autoSize={{ minRows: 1, maxRows: 4 }}
+              disabled={isLoading}
+            />
+            <SendOutlined
+              onClick={handleSend}
+              className="send-icon"
+              style={{
+                cursor: isLoading ? 'not-allowed' : 'pointer',
+                color: isLoading ? '#ccc' : '#1890ff',
+                fontSize: 16
+              }}
+            />
           </div>
-          
-          <Input.TextArea
-            ref={inputRef}
-            placeholder={isExpanded ? "Nhập tin nhắn... (Shift+Enter để xuống dòng)" : "Chat với AI Assistant"}
-            value={inputText}
-            onChange={(e) => setInputText(e.target.value)}
-            onKeyPress={handleKeyPress}
-            onFocus={handleInputFocus}
-            autoSize={{ minRows: 1, maxRows: 4 }}
-            disabled={isLoading}
-          />
-          <SendOutlined
-            onClick={handleSend}
-            className="send-icon"
-            style={{ 
-              cursor: isLoading ? 'not-allowed' : 'pointer', 
-              color: isLoading ? '#ccc' : '#1890ff',
-              fontSize: isExpanded ? 16 : 14
-            }}
-          />
         </div>
-      </div>
+      )}
     </div>
   );
 };

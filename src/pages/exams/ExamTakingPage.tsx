@@ -1,4 +1,5 @@
-import { Alert, Button, Card, Checkbox, Col, Input, Radio, Row, Segmented, Space, Spin, Typography } from "antd";
+import { Alert, Button, Card, Checkbox, Col, Input, Radio, Row, Segmented, Space, Spin, Typography, Badge, Divider } from "antd";
+import { QuestionCircleOutlined, CheckCircleOutlined, ClockCircleOutlined, FileTextOutlined } from "@ant-design/icons";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { ExamTimer } from "../../components/exam/ExamTimer";
@@ -10,6 +11,8 @@ import { examService } from "../../services/examService";
 import { AttemptAnswerPayload, ExamAttempt, ExamDetail, ExamQuestionType } from "../../types/exam";
 import { RootState } from "../../redux/store";
 import { Role } from "../../enum/user.enum";
+import MarkdownViewer from "../../components/common/MarkdownViewer";
+import "./ExamTakingPage.css";
 
 const { Title, Paragraph } = Typography;
 
@@ -403,50 +406,73 @@ const ExamTakingPage: React.FC = () => {
   const renderQuestionBody = (question: ExamDetail["questions"][number], answer?: AttemptAnswerPayload) => {
     const questionId = question?._id ?? "";
     return (
-      <>
-        <Paragraph>{question.content}</Paragraph>
+      <div className="question-body">
+        <div className="question-content">
+          <div className="question-text">
+            <MarkdownViewer content={question.content || ""} className="exam-markdown-content" />
+          </div>
+        </div>
 
-        {question.type === ExamQuestionType.SINGLE && (
-          <Radio.Group
-            value={answer?.selectedOptionIds?.[0]}
-            onChange={(event) => handleSingleChange(questionId, event.target.value)}
-            style={{ display: "flex", flexDirection: "column", gap: 8 }}
-          >
-            {question.options?.map((option) => (
-              <Radio key={option.id} value={option.id}>
-                {option.text}
-              </Radio>
-            ))}
-          </Radio.Group>
-        )}
+        <div className="question-options">
+          {question.type === ExamQuestionType.SINGLE && (
+            <Radio.Group
+              value={answer?.selectedOptionIds?.[0]}
+              onChange={(event) => handleSingleChange(questionId, event.target.value)}
+              className="exam-radio-group"
+            >
+              {question.options?.map((option, idx) => (
+                <div key={option.id} className="option-item">
+                  <Radio value={option.id} className="exam-radio">
+                    <span className="option-label">{String.fromCharCode(65 + idx)}.</span>
+                    <span className="option-text">{option.text}</span>
+                  </Radio>
+                </div>
+              ))}
+            </Radio.Group>
+          )}
 
-        {question.type === ExamQuestionType.MULTIPLE && (
-          <Space direction="vertical" size={8} style={{ width: "100%" }}>
-            {question.options?.map((option) => (
-              <Checkbox
-                key={option.id}
-                checked={answer?.selectedOptionIds?.includes(option.id) ?? false}
-                onChange={() => handleMultiToggle(questionId, option.id, answer)}
-              >
-                {option.text}
-              </Checkbox>
-            ))}
-          </Space>
-        )}
+          {question.type === ExamQuestionType.MULTIPLE && (
+            <Space direction="vertical" size={12} style={{ width: "100%" }}>
+              {question.options?.map((option, idx) => (
+                <div key={option.id} className="option-item">
+                  <Checkbox
+                    checked={answer?.selectedOptionIds?.includes(option.id) ?? false}
+                    onChange={() => handleMultiToggle(questionId, option.id, answer)}
+                    className="exam-checkbox"
+                  >
+                    <span className="option-label">{String.fromCharCode(65 + idx)}.</span>
+                    <span className="option-text">{option.text}</span>
+                  </Checkbox>
+                </div>
+              ))}
+            </Space>
+          )}
 
-        {question.type === ExamQuestionType.FILL_IN && (
-          <Input.TextArea
-            rows={3}
-            value={answer?.textAnswer}
-            onChange={(event) => handleFillChange(questionId, event.target.value)}
-            placeholder="Nhập câu trả lời"
-          />
-        )}
+          {question.type === ExamQuestionType.FILL_IN && (
+            <Input.TextArea
+              rows={5}
+              value={answer?.textAnswer}
+              onChange={(event) => handleFillChange(questionId, event.target.value)}
+              placeholder="Nhập câu trả lời của bạn..."
+              className="exam-textarea"
+            />
+          )}
+        </div>
 
         {question.explanation && isAdmin && (
-          <Alert type="info" message="Ghi chú" description={question.explanation} showIcon />
+          <Alert 
+            type="info" 
+            message={<span className="explanation-title">📝 Ghi chú</span>} 
+            description={
+              <div className="explanation-text">
+                <MarkdownViewer content={question.explanation || ""} className="exam-markdown-explanation" />
+              </div>
+            } 
+            showIcon={false}
+            className="question-explanation"
+          />
         )}
-      </>
+      </div>
     );
   };
 
@@ -454,110 +480,188 @@ const ExamTakingPage: React.FC = () => {
     const question = exam.questions[currentIndex];
     const questionId = question?._id ?? "";
     const answer = questionId ? answersMap[questionId] || { questionId } : { questionId: "" };
+    const isAnswered = answeredQuestionIds.has(questionId);
 
     return (
-      <Space direction="vertical" style={{ width: "100%" }}>
-        <Paragraph type="secondary" style={{ marginBottom: 0 }}>
-          Câu {currentIndex + 1} / {exam.questions.length}
-        </Paragraph>
+      <div className="single-question-view">
+        <div className="question-header">
+          <div className="question-number-badge">
+            <FileTextOutlined className="question-icon" />
+            <span className="question-number-text">
+              Câu {currentIndex + 1} / {exam.questions.length}
+            </span>
+            {isAnswered && (
+              <div className="answered-indicator">
+                <CheckCircleOutlined className="answered-check-icon" />
+                <span className="answered-label">Đã trả lời</span>
+              </div>
+            )}
+          </div>
+        </div>
 
-        {renderQuestionBody(question, answer)}
+        <Card className="question-card">
+          {renderQuestionBody(question, answer)}
+        </Card>
 
-        <Space style={{ marginTop: 16 }}>
-          <Button onClick={() => setCurrentIndex((prev) => Math.max(prev - 1, 0))} disabled={currentIndex === 0}>
-            Câu trước
+        <div className="question-navigation">
+          <Button 
+            onClick={() => setCurrentIndex((prev) => Math.max(prev - 1, 0))} 
+            disabled={currentIndex === 0}
+            className="nav-button prev-button"
+            size="large"
+          >
+            ← Câu trước
           </Button>
           <Button
             type="primary"
             onClick={() => setCurrentIndex((prev) => Math.min(prev + 1, exam.questions.length - 1))}
             disabled={currentIndex === exam.questions.length - 1}
+            className="nav-button next-button"
+            size="large"
           >
-            Câu tiếp theo
+            Câu tiếp theo →
           </Button>
-          <Button danger onClick={() => handleSubmit(false)}>
+          <Button 
+            danger 
+            onClick={() => handleSubmit(false)}
+            className="nav-button submit-button"
+            size="large"
+          >
             Nộp bài
           </Button>
-        </Space>
-        {saving && <Paragraph type="secondary">Đang lưu...</Paragraph>}
-      </Space>
+        </div>
+        {saving && (
+          <div className="saving-indicator">
+            <Spin size="small" />
+            <span>Đang lưu...</span>
+          </div>
+        )}
+      </div>
     );
   };
 
   const renderAllQuestions = () => (
-    <Space direction="vertical" size={16} style={{ width: "100%" }}>
-      <Paragraph type="secondary" style={{ marginBottom: 0 }}>
-        Hiển thị tất cả {exam.questions.length} câu hỏi
-      </Paragraph>
+    <div className="all-questions-view">
+      <div className="all-questions-header">
+        <Title level={4} className="all-questions-title">
+          <QuestionCircleOutlined /> Tất cả {exam.questions.length} câu hỏi
+        </Title>
+      </div>
 
-      {exam.questions.map((item, index) => {
-        const qId = item?._id ?? "";
-        const answer = qId ? answersMap[qId] || { questionId: qId } : { questionId: "" };
-        return (
-          <Card key={qId || index} type="inner">
-            <Space direction="vertical" size={12} style={{ width: "100%" }}>
-              <Title level={5} style={{ marginBottom: 0 }}>
-                Câu {index + 1}
-              </Title>
+      <div className="questions-list">
+        {exam.questions.map((item, index) => {
+          const qId = item?._id ?? "";
+          const answer = qId ? answersMap[qId] || { questionId: qId } : { questionId: "" };
+          const isAnswered = answeredQuestionIds.has(qId);
+          return (
+            <Card 
+              key={qId || index} 
+              className={`question-item-card ${isAnswered ? 'answered' : ''}`}
+            >
+              <div className="question-item-header">
+                <Badge 
+                  count={index + 1} 
+                  className="question-item-number"
+                  style={{ backgroundColor: isAnswered ? "#52c41a" : "var(--accent-color)" }}
+                />
+                {isAnswered && (
+                  <CheckCircleOutlined className="answered-icon" />
+                )}
+              </div>
               {renderQuestionBody(item, answer)}
-            </Space>
-          </Card>
-        );
-      })}
+            </Card>
+          );
+        })}
+      </div>
 
-      {saving && <Paragraph type="secondary">Đang lưu...</Paragraph>}
-      <Space>
-        <Button danger onClick={() => handleSubmit(false)}>
+      {saving && (
+        <div className="saving-indicator">
+          <Spin size="small" />
+          <span>Đang lưu...</span>
+        </div>
+      )}
+      <div className="submit-section">
+        <Button 
+          danger 
+          onClick={() => handleSubmit(false)}
+          size="large"
+          className="submit-all-button"
+        >
           Nộp bài
         </Button>
-      </Space>
-    </Space>
+      </div>
+    </div>
   );
 
   return (
-    <div style={{ padding: 24 }}>
-      <Row gutter={24}>
-        <Col xs={24} md={16}>
-          <Space direction="vertical" size={16} style={{ width: "100%" }}>
-            <Card>
-              <Space direction="vertical" style={{ width: "100%" }}>
-                <Space
-                  style={{ width: "100%", justifyContent: "space-between", alignItems: "center", gap: 8, flexWrap: "wrap" }}
-                >
-                  <Title level={4} style={{ marginBottom: 0 }}>
-                    {exam.title}
-                  </Title>
-                  <Segmented
-                    size="middle"
-                    value={viewMode}
-                    onChange={(value) => setViewMode(value as "single" | "all")}
-                    options={[
-                      { label: "Từng câu", value: "single" },
-                      { label: "Tất cả", value: "all" },
-                    ]}
-                  />
-                </Space>
-
-                {viewMode === "single" ? renderSingleQuestion() : renderAllQuestions()}
-              </Space>
-            </Card>
-          </Space>
-        </Col>
-        <Col xs={24} md={8}>
-          <Space direction="vertical" size={16} style={{ width: "100%" }}>
-            <Card>
-              <ExamTimer durationSeconds={durationSeconds} onExpire={() => handleSubmit(true)} running />
-            </Card>
-            <Card title="Danh sách câu hỏi">
-              <QuestionNavigator
-                questions={exam.questions}
-                currentIndex={currentIndex}
-                onSelect={setCurrentIndex}
-                answeredQuestionIds={answeredQuestionIds}
+    <div className="exam-taking-page">
+      <div className="exam-container">
+        {/* Main Content Area */}
+        <div className="exam-main-content">
+          <Card className="exam-header-card">
+            <div className="exam-header">
+              <div className="exam-title-section">
+                <Title level={2} className="exam-title">
+                  {exam.title}
+                </Title>
+                <div className="exam-stats">
+                  <div className="stat-item">
+                    <span className="stat-label">Tổng số câu</span>
+                    <div className="stat-badge total">
+                      {exam.questions.length}
+                    </div>
+                  </div>
+                  <div className="stat-item">
+                    <span className="stat-label">Đã trả lời</span>
+                    <div className="stat-badge answered">
+                      {answeredQuestionIds.size}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <Segmented
+                size="large"
+                value={viewMode}
+                onChange={(value) => setViewMode(value as "single" | "all")}
+                options={[
+                  { label: "📄 Từng câu", value: "single" },
+                  { label: "📋 Tất cả", value: "all" },
+                ]}
+                className="view-mode-toggle"
               />
-            </Card>
-          </Space>
-        </Col>
-      </Row>
+            </div>
+          </Card>
+
+          <Card className="exam-content-card">
+            {viewMode === "single" ? renderSingleQuestion() : renderAllQuestions()}
+          </Card>
+        </div>
+
+        {/* Sidebar */}
+        <div className="exam-sidebar">
+          <Card className="timer-card">
+            <div className="timer-header">
+              <ClockCircleOutlined className="timer-icon" />
+              <span className="timer-label">Thời gian còn lại</span>
+            </div>
+            <ExamTimer durationSeconds={durationSeconds} onExpire={() => handleSubmit(true)} running />
+          </Card>
+
+          <Card className="navigator-card" title={
+            <div className="navigator-title">
+              <QuestionCircleOutlined />
+              <span>Danh sách câu hỏi</span>
+            </div>
+          }>
+            <QuestionNavigator
+              questions={exam.questions}
+              currentIndex={currentIndex}
+              onSelect={setCurrentIndex}
+              answeredQuestionIds={answeredQuestionIds}
+            />
+          </Card>
+        </div>
+      </div>
     </div>
   );
 };

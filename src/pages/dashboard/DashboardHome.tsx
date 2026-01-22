@@ -132,11 +132,11 @@ const DashboardHome: React.FC = () => {
 
   // Fallback data for charts if no real data
   const chartUserGrowthData = userGrowthData.length > 0 ? userGrowthData : [
-    { date: '2024-01-01', count: 5 },
-    { date: '2024-01-02', count: 8 },
-    { date: '2024-01-03', count: 12 },
-    { date: '2024-01-04', count: 15 },
-    { date: '2024-01-05', count: 18 }
+    { date: '01-01', count: 5 },
+    { date: '01-02', count: 8 },
+    { date: '01-03', count: 12 },
+    { date: '01-04', count: 15 },
+    { date: '01-05', count: 18 }
   ];
 
   const chartCourseEnrollmentData = courseEnrollmentData.length > 0 ? courseEnrollmentData : [
@@ -147,19 +147,19 @@ const DashboardHome: React.FC = () => {
   ];
 
   const chartChatActivityData = chatActivityData.length > 0 ? chatActivityData : [
-    { date: '2024-01-01', messages: 12, conversations: 8 },
-    { date: '2024-01-02', messages: 18, conversations: 12 },
-    { date: '2024-01-03', messages: 25, conversations: 15 },
-    { date: '2024-01-04', messages: 22, conversations: 14 },
-    { date: '2024-01-05', messages: 30, conversations: 18 }
+    { date: '01-01', messages: 12, conversations: 8 },
+    { date: '01-02', messages: 18, conversations: 12 },
+    { date: '01-03', messages: 25, conversations: 15 },
+    { date: '01-04', messages: 22, conversations: 14 },
+    { date: '01-05', messages: 30, conversations: 18 }
   ];
 
   const chartReviewTrendsData = reviewTrendsData.length > 0 ? reviewTrendsData : [
-    { date: '2024-01-01', reviews: 8, averageRating: 4.2 },
-    { date: '2024-01-02', reviews: 12, averageRating: 4.5 },
-    { date: '2024-01-03', reviews: 15, averageRating: 4.3 },
-    { date: '2024-01-04', reviews: 10, averageRating: 4.6 },
-    { date: '2024-01-05', reviews: 18, averageRating: 4.4 }
+    { date: '01-01', reviews: 8, averageRating: 4.2 },
+    { date: '01-02', reviews: 12, averageRating: 4.5 },
+    { date: '01-03', reviews: 15, averageRating: 4.3 },
+    { date: '01-04', reviews: 10, averageRating: 4.6 },
+    { date: '01-05', reviews: 18, averageRating: 4.4 }
   ];
 
 
@@ -286,22 +286,43 @@ const DashboardHome: React.FC = () => {
               className="chart-card"
             >
               <div className="chart-container">
-                <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={chartUserGrowthData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="date" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Line 
-                    type="monotone" 
-                    dataKey="count" 
-                    stroke="#1890ff" 
-                    strokeWidth={2}
-                    name="Người dùng mới"
-                  />
-                </LineChart>
-                </ResponsiveContainer>
+                {chartUserGrowthData && chartUserGrowthData.length > 0 ? (
+                  <ResponsiveContainer width="100%" height={300}>
+                    <LineChart data={chartUserGrowthData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                      <XAxis 
+                        dataKey="date" 
+                        stroke="#6b7280"
+                        style={{ fontSize: '12px' }}
+                      />
+                      <YAxis 
+                        stroke="#6b7280"
+                        style={{ fontSize: '12px' }}
+                      />
+                      <Tooltip 
+                        contentStyle={{ 
+                          backgroundColor: 'white', 
+                          border: '1px solid #e5e7eb',
+                          borderRadius: '8px'
+                        }}
+                      />
+                      <Legend />
+                      <Line 
+                        type="monotone" 
+                        dataKey="count" 
+                        stroke="#1890ff" 
+                        strokeWidth={2}
+                        name="Người dùng mới"
+                        dot={{ fill: '#1890ff', r: 4 }}
+                        activeDot={{ r: 6 }}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#6b7280' }}>
+                    Không có dữ liệu
+                  </div>
+                )}
               </div>
             </Card>
           </Col>
@@ -313,15 +334,37 @@ const DashboardHome: React.FC = () => {
               className="chart-card"
             >
               <div className="chart-container">
-                <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={chartCourseEnrollmentData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="course" angle={-45} textAnchor="end" height={100} />
-                  <YAxis />
-                  <Tooltip />
-                  <Bar dataKey="enrollments" fill="#52c41a" name="Lượt đăng ký" />
-                </BarChart>
-                </ResponsiveContainer>
+                {chartCourseEnrollmentData && chartCourseEnrollmentData.length > 0 ? (
+                  <ResponsiveContainer width="100%" height={300}>
+                    <BarChart data={chartCourseEnrollmentData} margin={{ top: 5, right: 30, left: 20, bottom: 80 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                      <XAxis 
+                        dataKey="course" 
+                        angle={-45} 
+                        textAnchor="end" 
+                        height={100}
+                        stroke="#6b7280"
+                        style={{ fontSize: '12px' }}
+                      />
+                      <YAxis 
+                        stroke="#6b7280"
+                        style={{ fontSize: '12px' }}
+                      />
+                      <Tooltip 
+                        contentStyle={{ 
+                          backgroundColor: 'white', 
+                          border: '1px solid #e5e7eb',
+                          borderRadius: '8px'
+                        }}
+                      />
+                      <Bar dataKey="enrollments" fill="#52c41a" name="Lượt đăng ký" radius={[8, 8, 0, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#6b7280' }}>
+                    Không có dữ liệu
+                  </div>
+                )}
               </div>
             </Card>
           </Col>
@@ -335,29 +378,52 @@ const DashboardHome: React.FC = () => {
               className="chart-card"
             >
               <div className="chart-container">
-                <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={chartChatActivityData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="date" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Line 
-                    type="monotone" 
-                    dataKey="messages" 
-                    stroke="#13c2c2" 
-                    strokeWidth={2}
-                    name="Tin nhắn"
-                  />
-                  <Line 
-                    type="monotone" 
-                    dataKey="conversations" 
-                    stroke="#eb2f96" 
-                    strokeWidth={2}
-                    name="Cuộc trò chuyện"
-                  />
-                </LineChart>
-                </ResponsiveContainer>
+                {chartChatActivityData && chartChatActivityData.length > 0 ? (
+                  <ResponsiveContainer width="100%" height={300}>
+                    <LineChart data={chartChatActivityData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                      <XAxis 
+                        dataKey="date" 
+                        stroke="#6b7280"
+                        style={{ fontSize: '12px' }}
+                      />
+                      <YAxis 
+                        stroke="#6b7280"
+                        style={{ fontSize: '12px' }}
+                      />
+                      <Tooltip 
+                        contentStyle={{ 
+                          backgroundColor: 'white', 
+                          border: '1px solid #e5e7eb',
+                          borderRadius: '8px'
+                        }}
+                      />
+                      <Legend />
+                      <Line 
+                        type="monotone" 
+                        dataKey="messages" 
+                        stroke="#13c2c2" 
+                        strokeWidth={2}
+                        name="Tin nhắn"
+                        dot={{ fill: '#13c2c2', r: 4 }}
+                        activeDot={{ r: 6 }}
+                      />
+                      <Line 
+                        type="monotone" 
+                        dataKey="conversations" 
+                        stroke="#eb2f96" 
+                        strokeWidth={2}
+                        name="Cuộc trò chuyện"
+                        dot={{ fill: '#eb2f96', r: 4 }}
+                        activeDot={{ r: 6 }}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#6b7280' }}>
+                    Không có dữ liệu
+                  </div>
+                )}
               </div>
             </Card>
           </Col>
@@ -369,25 +435,52 @@ const DashboardHome: React.FC = () => {
               className="chart-card"
             >
               <div className="chart-container">
-                <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={chartReviewTrendsData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="date" />
-                  <YAxis yAxisId="left" />
-                  <YAxis yAxisId="right" orientation="right" />
-                  <Tooltip />
-                  <Legend />
-                  <Bar yAxisId="left" dataKey="reviews" fill="#722ed1" name="Số đánh giá" />
-                  <Line 
-                    yAxisId="right"
-                    type="monotone" 
-                    dataKey="averageRating" 
-                    stroke="#faad14" 
-                    strokeWidth={2}
-                    name="Điểm TB"
-                  />
-                </LineChart>
-                </ResponsiveContainer>
+                {chartReviewTrendsData && chartReviewTrendsData.length > 0 ? (
+                  <ResponsiveContainer width="100%" height={300}>
+                    <BarChart data={chartReviewTrendsData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                      <XAxis 
+                        dataKey="date" 
+                        stroke="#6b7280"
+                        style={{ fontSize: '12px' }}
+                      />
+                      <YAxis 
+                        yAxisId="left" 
+                        stroke="#6b7280"
+                        style={{ fontSize: '12px' }}
+                      />
+                      <YAxis 
+                        yAxisId="right" 
+                        orientation="right" 
+                        stroke="#6b7280"
+                        style={{ fontSize: '12px' }}
+                      />
+                      <Tooltip 
+                        contentStyle={{ 
+                          backgroundColor: 'white', 
+                          border: '1px solid #e5e7eb',
+                          borderRadius: '8px'
+                        }}
+                      />
+                      <Legend />
+                      <Bar yAxisId="left" dataKey="reviews" fill="#722ed1" name="Số đánh giá" radius={[8, 8, 0, 0]} />
+                      <Line 
+                        yAxisId="right"
+                        type="monotone" 
+                        dataKey="averageRating" 
+                        stroke="#faad14" 
+                        strokeWidth={2}
+                        name="Điểm TB"
+                        dot={{ fill: '#faad14', r: 4 }}
+                        activeDot={{ r: 6 }}
+                      />
+                    </BarChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#6b7280' }}>
+                    Không có dữ liệu
+                  </div>
+                )}
               </div>
             </Card>
           </Col>

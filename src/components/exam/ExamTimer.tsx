@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Progress } from "antd";
+import "./ExamTimer.css";
 
 interface ExamTimerProps {
   durationSeconds: number;
@@ -63,17 +64,31 @@ export const ExamTimer: React.FC<ExamTimerProps> = ({ durationSeconds, onExpire,
     return (remaining / durationSeconds) * 100;
   }, [remaining, durationSeconds]);
 
+  const isUrgent = percent < 20;
+  const isWarning = percent < 40 && percent >= 20;
+
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-      <Progress
-        type="circle"
-        percent={Number(percent.toFixed(1))}
-        size={64}
-        strokeColor={percent < 20 ? "#ff4d4f" : "#5A67D8"}
-        format={() => formatTime(remaining)}
-      />
-      <div>
-        <div style={{ fontWeight: 600, fontSize: 16 }}>Thời gian còn lại</div>
+    <div className="exam-timer-container">
+      <div className={`timer-circle-wrapper ${isUrgent ? 'urgent' : isWarning ? 'warning' : ''}`}>
+        <Progress
+          type="circle"
+          percent={Number(percent.toFixed(1))}
+          size={100}
+          strokeWidth={8}
+          strokeColor={isUrgent ? "#ff4d4f" : isWarning ? "#faad14" : "#52c41a"}
+          format={() => (
+            <div className="timer-display">
+              <div className="timer-time">{formatTime(remaining)}</div>
+            </div>
+          )}
+          className="exam-timer-progress"
+        />
+      </div>
+      <div className="timer-info">
+        <div className="timer-label">Thời gian còn lại</div>
+        <div className="timer-status">
+          {isUrgent ? "⚠️ Sắp hết giờ!" : isWarning ? "⏰ Còn ít thời gian" : "✅ Đang làm bài"}
+        </div>
       </div>
     </div>
   );

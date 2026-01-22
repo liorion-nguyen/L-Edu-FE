@@ -1,0 +1,99 @@
+/* Exam Timer Styles */
+.exam-timer-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+}
+
+.timer-circle-wrapper {
+  position: relative;
+  padding: 8px;
+  border-radius: 50%;
+  background: var(--bg-secondary);
+  transition: all 0.3s ease;
+}
+
+.timer-circle-wrapper.warning {
+  background: rgba(250, 173, 20, 0.1);
+  animation: pulse-warning 2s ease-in-out infinite;
+}
+
+.timer-circle-wrapper.urgent {
+  background: rgba(255, 77, 79, 0.1);
+  animation: pulse-urgent 1s ease-in-out infinite;
+}
+
+@keyframes pulse-warning {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(250, 173, 20, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(250, 173, 20, 0);
+  }
+}
+
+@keyframes pulse-urgent {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(255, 77, 79, 0.6);
+  }
+  50% {
+    box-shadow: 0 0 0 15px rgba(255, 77, 79, 0);
+  }
+}
+
+.exam-timer-progress .ant-progress-circle-path {
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.3s ease;
+}
+
+.timer-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.timer-time {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-family: 'Courier New', monospace;
+  letter-spacing: 1px;
+}
+
+.timer-info {
+  text-align: center;
+}
+
+.timer-label {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+}
+
+.timer-status {
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.timer-circle-wrapper.urgent .timer-time {
+  color: #ff4d4f;
+  animation: blink 1s ease-in-out infinite;
+}
+
+.timer-circle-wrapper.warning .timer-time {
+  color: #faad14;
+}
+
+@keyframes blink {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}

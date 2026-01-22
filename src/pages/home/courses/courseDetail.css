@@ -1,0 +1,390 @@
+/* Modern Session Card Styles */
+.modern-session-card {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.modern-session-card:hover {
+  transform: translateY(-4px) !important;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12) !important;
+  border-color: var(--accent-color) !important;
+}
+
+/* Section Item Hover Effects */
+.section-item {
+  position: relative;
+  overflow: hidden;
+}
+
+.section-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(102, 126, 234, 0.1),
+    transparent
+  );
+  transition: left 0.5s ease;
+}
+
+.section-item:hover::before {
+  left: 100%;
+}
+
+.section-item:hover {
+  border-color: var(--accent-color) !important;
+  background: var(--bg-primary) !important;
+  transform: translateX(4px);
+}
+
+.section-item.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.section-item.disabled:hover {
+  transform: none;
+  border-color: var(--border-color) !important;
+}
+
+/* Section Icon Animation */
+.section-item:hover .section-icon-wrapper {
+  transform: scale(1.1) rotate(5deg);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+/* Section Button Hover */
+.section-action-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3) !important;
+}
+
+/* Description Card */
+.description-card {
+  transition: all 0.3s ease;
+}
+
+.description-card:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+}
+
+.expand-description-btn:hover {
+  background: var(--bg-secondary) !important;
+  color: var(--accent-color) !important;
+}
+
+/* Add Session Button */
+.add-session-btn:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.5) !important;
+}
+
+.add-session-btn:active {
+  transform: translateY(0) !important;
+}
+
+/* Update Session Button */
+.update-session-btn:hover {
+  background: var(--accent-color) !important;
+  color: white !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3) !important;
+}
+
+/* Hero Section Responsive */
+@media (max-width: 768px) {
+  .hero-content {
+    padding: 24px !important;
+  }
+
+  .course-title {
+    font-size: 32px !important;
+  }
+
+  .modern-session-card {
+    padding: 20px !important;
+  }
+
+  .session-title {
+    font-size: 20px !important;
+  }
+
+  .section-item {
+    flex-direction: column;
+    align-items: stretch !important;
+    gap: 12px !important;
+  }
+
+  .section-button {
+    width: 100% !important;
+  }
+}
+
+/* Hero Image Overlay Animation */
+.hero-image-wrapper::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.2) 0%,
+    rgba(0, 0, 0, 0.6) 100%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.hero-section:hover .hero-image-wrapper::after {
+  opacity: 1;
+}
+
+/* Badge Ribbon Animation */
+.ant-ribbon {
+  transition: transform 0.3s ease;
+}
+
+.modern-session-card:hover .ant-ribbon {
+  transform: scale(1.05);
+}
+
+/* Smooth Scroll Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Loading State */
+.modern-session-card.loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* Locked State Animation */
+.locked-container {
+  position: relative;
+}
+
+.locked-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 10px,
+    rgba(0, 0, 0, 0.05) 10px,
+    rgba(0, 0, 0, 0.05) 20px
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Instructor Avatar Hover */
+.instructor-avatar {
+  transition: transform 0.3s ease;
+}
+
+.instructor-info:hover .instructor-avatar {
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4) !important;
+}
+
+/* Sessions Title Icon Animation */
+.sessions-title-icon {
+  transition: transform 0.3s ease;
+}
+
+.sessions-section:hover .sessions-title-icon {
+  transform: rotate(15deg) scale(1.1);
+}
+
+/* Section Item Icon Colors */
+.section-item .anticon-file-text {
+  color: #52c41a;
+}
+
+.section-item .anticon-play-circle {
+  color: #1890ff;
+}
+
+.section-item .anticon-file-pdf {
+  color: #ff4d4f;
+}
+
+/* Improved Focus States */
+.section-item:focus-within {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 2px;
+}
+
+/* Return Button Styles */
+.return-page-btn {
+  transition: all 0.3s ease !important;
+}
+
+.return-page-btn:hover {
+  background: white !important;
+  color: var(--accent-color) !important;
+  transform: translateX(-4px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2) !important;
+}
+
+.return-page-btn:active {
+  transform: translateX(-2px);
+}
+
+/* Responsive Return Button */
+@media (max-width: 768px) {
+  .return-button-wrapper {
+    top: 12px !important;
+    left: 12px !important;
+  }
+
+  .return-page-btn {
+    height: 36px !important;
+    padding: 0 16px !important;
+    font-size: 13px !important;
+  }
+}
+
+/* Description Anchor Links */
+.description-card a[href^="#"] {
+  color: var(--accent-color) !important;
+  text-decoration: underline;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.description-card a[href^="#"]:hover {
+  color: var(--accent-color) !important;
+  opacity: 0.8;
+  text-decoration: underline;
+}
+
+.description-card a[href^="#"]:active {
+  opacity: 0.6;
+}
+
+/* Ensure description container can scroll */
+.description-card .description {
+  scroll-behavior: smooth;
+}
+
+/* Exam Confirmation Modal Styles */
+.exam-confirmation-modal .ant-modal-content {
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.exam-confirmation-modal .ant-modal-header {
+  background: var(--bg-primary);
+  border-bottom: 2px solid var(--border-color);
+  padding: 24px 24px 0 24px;
+}
+
+.exam-confirmation-modal .ant-modal-body {
+  background: var(--bg-primary);
+}
+
+.exam-confirmation-modal .ant-modal-footer {
+  background: var(--bg-primary);
+  border-top: 1px solid var(--border-color);
+  padding: 16px 24px;
+}
+
+.exam-info-card {
+  transition: all 0.3s ease;
+}
+
+.exam-info-card:hover {
+  border-color: var(--accent-color) !important;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+}
+
+.exam-settings-card {
+  transition: all 0.3s ease;
+}
+
+.exam-settings-card:hover {
+  border-color: var(--accent-color) !important;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+}
+
+.exam-warning-alert {
+  transition: all 0.3s ease;
+}
+
+.exam-warning-alert:hover {
+  border-color: #ffc53d !important;
+  background: rgba(250, 173, 20, 0.15) !important;
+}
+
+.start-exam-confirm-btn {
+  transition: all 0.3s ease !important;
+}
+
+.start-exam-confirm-btn:hover:not(:disabled) {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5) !important;
+}
+
+.start-exam-confirm-btn:active:not(:disabled) {
+  transform: translateY(0) !important;
+}
+
+/* Improve tag visibility */
+.exam-confirmation-modal .ant-tag {
+  border: none;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 16px;
+}
+
+.exam-confirmation-modal .ant-descriptions-item-label {
+  font-weight: 600 !important;
+  color: var(--text-primary) !important;
+}
+
+.exam-confirmation-modal .ant-descriptions-item-content {
+  color: var(--text-primary) !important;
+}
+
+/* Responsive Modal */
+@media (max-width: 768px) {
+  .exam-confirmation-modal {
+    width: 95% !important;
+    max-width: 95% !important;
+  }
+
+  .modal-title-text {
+    font-size: 18px !important;
+  }
+
+  .exam-title {
+    font-size: 20px !important;
+  }
+}
+
+/* Smooth Transitions */
+* {
+  transition: border-color 0.3s ease, background-color 0.3s ease;
+}

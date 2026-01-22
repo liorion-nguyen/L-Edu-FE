@@ -1,5 +1,5 @@
-import { CheckCircleTwoTone, CloseCircleTwoTone } from "@ant-design/icons";
-import { Alert, Button, Card, Col, Result, Row, Space, Spin, Table, Tag, Typography } from "antd";
+import { CheckCircleTwoTone, CloseCircleTwoTone, CheckCircleOutlined, CloseCircleOutlined, FileTextOutlined } from "@ant-design/icons";
+import { Alert, Button, Card, Checkbox, Col, Input, Radio, Result, Row, Space, Spin, Table, Tag, Typography } from "antd";
 import dayjs from "dayjs";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -10,6 +10,9 @@ import { ExamAttempt, ExamDetail, ExamQuestionType } from "../../types/exam";
 import { useSelector } from "../../redux/store";
 import type { RootState } from "../../redux/store";
 import { Role } from "../../enum/user.enum";
+import MarkdownViewer from "../../components/common/MarkdownViewer";
+import ScrollAnimation from "../../components/common/ScrollAnimation";
+import "./ExamResultPage.css";
 
 const { Title, Paragraph, Text } = Typography;
 
@@ -131,7 +134,8 @@ const ExamResultPage: React.FC = () => {
     });
   }, [attemptHistory, attemptId, exam?.totalPoints]);
 
-  const tableData = useMemo(() => {
+  // Map questions with answers for review
+  const questionsWithAnswers = useMemo(() => {
     if (!attempt || !exam) return [];
     const questionLookup = new Map<string, (typeof exam.questions)[number]>();
     exam.questions.forEach((question) => {
@@ -146,42 +150,139 @@ const ExamResultPage: React.FC = () => {
         }
       });
     });
-    return attempt.answers.map((answer, index) => {
-      const normalizedQuestionId = normalizeId(answer.questionId);
-      const question = questionLookup.get(normalizedQuestionId);
+
+    // Build answer map with multiple possible keys for matching
+    const answerMap = new Map<string, typeof attempt.answers[number]>();
+    attempt.answers.forEach((answer) => {
+      const possibleKeys = [
+        normalizeId(answer.questionId),
+        answer.questionId, // Original ID
+        normalizeId((answer as any)?._id), // In case questionId is stored as _id
+      ].filter(Boolean);
+      possibleKeys.forEach((key) => {
+        if (key) {
+          answerMap.set(key, answer);
+        }
+      });
+    });
+
+    return exam.questions.map((question, index) => {
+      // Try multiple ways to find the matching answer
+      const possibleQuestionIds = [
+        normalizeId(question._id),
+        question._id,
+        normalizeId(question.id),
+        question.id,
+        normalizeId((question as any)?.originalId),
+        (question as any)?.originalId,
+      ].filter(Boolean);
+      
+      let answer: typeof attempt.answers[number] | undefined;
+      for (const qId of possibleQuestionIds) {
+        if (qId && answerMap.has(qId)) {
+          answer = answerMap.get(qId);
+          break;
+        }
+      }
+      
+      // Build sets of option IDs for comparison (both normalized and original)
+      const selectedOptionIds = new Set<string>();
+      (answer?.selectedOptionIds ?? []).forEach((id) => {
+        selectedOptionIds.add(id); // Original ID
+        selectedOptionIds.add(normalizeId(id)); // Normalized ID
+      });
+
+      // Build set of correct option IDs
+      const correctOptionIds = new Set<string>();
+      (question.correctAnswers ?? []).forEach((id) => {
+        correctOptionIds.add(id); // Original ID
+        correctOptionIds.add(normalizeId(id)); // Normalized ID
+      });
+
+      // Use answer.isCorrect if available, otherwise calculate from selected vs correct
+      let isCorrect = answer?.isCorrect;
+      if (isCorrect === undefined || isCorrect === null) {
+        // Fallback: calculate isCorrect by comparing selectedOptionIds with correctOptionIds
+        if (question.type === ExamQuestionType.FILL_IN) {
+          // For FILL_IN, check if textAnswer matches any correct textAnswers
+          const userAnswer = (answer?.textAnswer || "").trim().toLowerCase();
+          const correctAnswers = (question.textAnswers || []).map(a => a.trim().toLowerCase());
+          isCorrect = correctAnswers.includes(userAnswer);
+        } else {
+          // For SINGLE/MULTIPLE, check if selectedOptionIds match correctOptionIds
+          const selectedArray = Array.from(selectedOptionIds);
+          const correctArray = Array.from(correctOptionIds);
+          if (selectedArray.length === 0 && correctArray.length === 0) {
+            isCorrect = false; // No answer provided
+          } else if (selectedArray.length !== correctArray.length) {
+            isCorrect = false; // Different number of selections
+          } else {
+            // Check if all selected are correct and all correct are selected
+            const allSelectedAreCorrect = selectedArray.every(id => correctOptionIds.has(id));
+            const allCorrectAreSelected = correctArray.every(id => selectedOptionIds.has(id));
+            isCorrect = allSelectedAreCorrect && allCorrectAreSelected;
+          }
+        }
+      }
+      
+      // Use answer.scoreEarned if available, otherwise calculate from isCorrect
+      let scoreEarned = answer?.scoreEarned;
+      if (scoreEarned === undefined || scoreEarned === null) {
+        // Fallback: calculate score based on isCorrect
+        scoreEarned = isCorrect ? (question.points ?? 0) : 0;
+      }
+      
+      const questionPoints = question.points ?? 0;
+
+      return {
+        question,
+        answer,
+        index: index + 1,
+        isCorrect: isCorrect ?? false,
+        score: `${scoreEarned}/${questionPoints}`,
+        selectedOptionIds,
+        correctOptionIds,
+      };
+    });
+  }, [attempt, exam]);
+
+  const tableData = useMemo(() => {
+    if (!attempt || !exam) return [];
+    return questionsWithAnswers.map((item) => {
+      const { question, answer } = item;
       const optionLookup = new Map<string, string>();
-      question?.options?.forEach((option) => {
+      question.options?.forEach((option) => {
         optionLookup.set(normalizeId(option.id), option.text);
       });
 
       const selectedOptions =
-        question?.type === ExamQuestionType.FILL_IN
-          ? answer.textAnswer
-          : (answer.selectedOptionIds ?? [])
-              .map((optionId) => optionLookup.get(normalizeId(optionId)) ?? normalizeId(optionId))
+        question.type === ExamQuestionType.FILL_IN
+          ? answer?.textAnswer
+          : Array.from(item.selectedOptionIds)
+              .map((optionId) => optionLookup.get(optionId) ?? optionId)
               .filter(Boolean)
               .join(", ");
       const correctOptions =
-        question?.type === ExamQuestionType.FILL_IN
-          ? (question?.textAnswers ?? []).join(", ")
-          : (question?.correctAnswers ?? [])
-              .map((optionId) => optionLookup.get(normalizeId(optionId)) ?? normalizeId(optionId))
+        question.type === ExamQuestionType.FILL_IN
+          ? (question.textAnswers ?? []).join(", ")
+          : Array.from(item.correctOptionIds)
+              .map((optionId) => optionLookup.get(optionId) ?? optionId)
               .filter(Boolean)
               .join(", ");
 
       return {
-        key: answer.questionId,
-        index: index + 1,
-        content: question?.content,
-        type: question?.type,
-        score: `${answer.scoreEarned ?? 0}/${question?.points ?? 0}`,
-        status: answer.isCorrect,
-        selectedAnswer: selectedOptions || (question?.type === ExamQuestionType.FILL_IN ? answer.textAnswer ?? "" : "—"),
+        key: question._id,
+        index: item.index,
+        content: question.content,
+        type: question.type,
+        score: item.score,
+        status: item.isCorrect,
+        selectedAnswer: selectedOptions || (question.type === ExamQuestionType.FILL_IN ? answer?.textAnswer ?? "" : "—"),
         correctAnswer: correctOptions || "—",
-        explanation: question?.explanation,
+        explanation: question.explanation,
       };
     });
-  }, [attempt, exam]);
+  }, [questionsWithAnswers]);
 
   if (loading) {
     return (
@@ -261,73 +362,203 @@ const ExamResultPage: React.FC = () => {
 
       <Row gutter={24} style={{ marginTop: 24 }}>
         <Col span={24}>
-          <Card title="Chi tiết câu hỏi">
-            <Table
-              pagination={false}
-              dataSource={tableData}
-              columns={[
-                { title: "#", dataIndex: "index", width: 60 },
-                {
-                  title: "Nội dung",
-                  dataIndex: "content",
-                  render: (_: any, record) => (
-                    <Space direction="vertical" size={4} style={{ width: "100%" }}>
-                      <Paragraph style={{ marginBottom: 0 }}>{record.content ?? "—"}</Paragraph>
-                      <Space direction="vertical" size={2} style={{ width: "100%" }}>
-                        <Text strong>Đáp án của bạn:</Text>
-                        <Paragraph style={{ marginBottom: 0 }} type="secondary">
-                          {record.selectedAnswer || "Chưa trả lời"}
-                        </Paragraph>
-                      </Space>
-                      <Space direction="vertical" size={2} style={{ width: "100%" }}>
-                        <Text strong>Đáp án đúng:</Text>
-                        <Paragraph style={{ marginBottom: 0 }} type="secondary">
-                          {record.correctAnswer || "—"}
-                        </Paragraph>
-                      </Space>
-                      {record.explanation && (
-                        <Paragraph style={{ marginBottom: 0 }} italic type="secondary">
-                          Ghi chú: {record.explanation}
-                        </Paragraph>
-                      )}
-                    </Space>
-                  ),
-                },
-                {
-                  title: "Loại",
-                  dataIndex: "type",
-                  width: 160,
-                  render: (type: ExamQuestionType) => {
-                    switch (type) {
-                      case ExamQuestionType.SINGLE:
-                        return <Tag color="blue">Một đáp án</Tag>;
-                      case ExamQuestionType.MULTIPLE:
-                        return <Tag color="purple">Nhiều đáp án</Tag>;
-                      case ExamQuestionType.FILL_IN:
-                        return <Tag color="cyan">Điền nội dung</Tag>;
-                      default:
-                        return type;
-                    }
-                  },
-                },
-                { title: "Điểm", dataIndex: "score", width: 120 },
-                {
-                  title: "Trạng thái",
-                  dataIndex: "status",
-                  width: 120,
-                  render: (status: boolean) =>
-                    status ? (
-                      <Tag icon={<CheckCircleTwoTone twoToneColor="#52c41a" />} color="success">
-                        Đúng
-                      </Tag>
-                    ) : (
-                      <Tag icon={<CloseCircleTwoTone twoToneColor="#ff4d4f" />} color="error">
-                        Sai
-                      </Tag>
-                    ),
-                },
-              ]}
-            />
+          <Card className="exam-review-card">
+            <div className="review-header">
+              <Title level={3} className="review-title">
+                <FileTextOutlined /> Chi tiết câu hỏi
+              </Title>
+            </div>
+            <div className="review-questions-list">
+              {questionsWithAnswers.map((item, idx) => {
+                const { question, answer, isCorrect, score } = item;
+                return (
+                  <ScrollAnimation key={question._id} animationType="slideUp" delay={idx * 0.05}>
+                    <Card className={`review-question-card ${isCorrect ? 'correct' : 'incorrect'}`}>
+                      <div className="review-question-header">
+                        <div className="review-question-number">
+                          <FileTextOutlined className="review-question-icon" />
+                          <span>Câu {item.index} / {questionsWithAnswers.length}</span>
+                        </div>
+                        <div className="review-question-status">
+                          {isCorrect ? (
+                            <Tag icon={<CheckCircleOutlined />} color="success" className="status-tag">
+                              Đúng
+                            </Tag>
+                          ) : (
+                            <Tag icon={<CloseCircleOutlined />} color="error" className="status-tag">
+                              Sai
+                            </Tag>
+                          )}
+                          <Tag color="blue" className="score-tag">{score}</Tag>
+                        </div>
+                      </div>
+
+                      <div className="review-question-body">
+                        <div className="review-question-content">
+                          <div className="review-question-text">
+                            <MarkdownViewer content={question.content || ""} className="exam-markdown-content" />
+                          </div>
+                        </div>
+
+                        <div className="review-question-options">
+                          {question.type === ExamQuestionType.SINGLE && (
+                            <Radio.Group
+                              value={answer?.selectedOptionIds?.[0]}
+                              disabled
+                              className="exam-radio-group review-radio-group"
+                            >
+                              {question.options?.map((option, optIdx) => {
+                                // Check if this option is selected - compare both original and normalized IDs
+                                const isSelected = item.selectedOptionIds.has(option.id) || 
+                                                  item.selectedOptionIds.has(normalizeId(option.id));
+                                
+                                // Check if this option is correct - compare both original and normalized IDs
+                                const isCorrectOption = item.correctOptionIds.has(option.id) ||
+                                                        item.correctOptionIds.has(normalizeId(option.id));
+                                
+                                // Use answer.isCorrect to determine highlighting logic
+                                const questionIsCorrect = item.isCorrect;
+                                
+                                // Only highlight: 1) correct answer (green), 2) selected wrong answer (red) if question is wrong
+                                let optionClass = '';
+                                let optionLabel = '';
+                                
+                                if (isCorrectOption) {
+                                  // Đáp án đúng - luôn highlight xanh
+                                  optionClass = isSelected ? 'correct-option selected-correct' : 'correct-option not-selected';
+                                  optionLabel = isSelected ? '✓ Đáp án đúng (bạn đã chọn)' : '✓ Đáp án đúng';
+                                } else if (isSelected && !questionIsCorrect) {
+                                  // Đáp án sai nhưng đã chọn - chỉ highlight đỏ nếu câu hỏi sai
+                                  optionClass = 'incorrect-selected';
+                                  optionLabel = '✗ Đáp án sai (bạn đã chọn)';
+                                }
+                                // else: không highlight (option bình thường)
+                                
+                                return (
+                                  <div key={option.id} className={`option-item review-option ${optionClass}`}>
+                                    <Radio value={option.id} className="exam-radio">
+                                      <span className="option-label">{String.fromCharCode(65 + optIdx)}.</span>
+                                      <span className="option-text">{option.text}</span>
+                                    </Radio>
+                                    {optionLabel && (
+                                      <span className={`option-status-label ${isCorrectOption ? 'correct-label' : 'incorrect-label'}`}>
+                                        {optionLabel}
+                                      </span>
+                                    )}
+                                    {isCorrectOption && (
+                                      <CheckCircleOutlined className="correct-indicator" />
+                                    )}
+                                    {isSelected && !isCorrectOption && (
+                                      <CloseCircleOutlined className="incorrect-indicator" />
+                                    )}
+                                  </div>
+                                );
+                              })}
+                            </Radio.Group>
+                          )}
+
+                          {question.type === ExamQuestionType.MULTIPLE && (
+                            <Space direction="vertical" size={12} style={{ width: "100%" }}>
+                              {question.options?.map((option, optIdx) => {
+                                // Check if this option is selected - compare both original and normalized IDs
+                                const isSelected = item.selectedOptionIds.has(option.id) || 
+                                                  item.selectedOptionIds.has(normalizeId(option.id));
+                                
+                                // Check if this option is correct - compare both original and normalized IDs
+                                const isCorrectOption = item.correctOptionIds.has(option.id) ||
+                                                        item.correctOptionIds.has(normalizeId(option.id));
+                                
+                                // Use answer.isCorrect to determine highlighting logic
+                                const questionIsCorrect = item.isCorrect;
+                                
+                                // Only highlight: 1) correct answer (green), 2) selected wrong answer (red) if question is wrong
+                                let optionClass = '';
+                                let optionLabel = '';
+                                
+                                if (isCorrectOption) {
+                                  // Đáp án đúng - luôn highlight xanh
+                                  optionClass = isSelected ? 'correct-option selected-correct' : 'correct-option not-selected';
+                                  optionLabel = isSelected ? '✓ Đáp án đúng (bạn đã chọn)' : '✓ Đáp án đúng';
+                                } else if (isSelected && !questionIsCorrect) {
+                                  // Đáp án sai nhưng đã chọn - chỉ highlight đỏ nếu câu hỏi sai
+                                  optionClass = 'incorrect-selected';
+                                  optionLabel = '✗ Đáp án sai (bạn đã chọn)';
+                                }
+                                // else: không highlight (option bình thường)
+                                
+                                return (
+                                  <div key={option.id} className={`option-item review-option ${optionClass}`}>
+                                    <Checkbox
+                                      checked={isSelected}
+                                      disabled
+                                      className="exam-checkbox"
+                                    >
+                                      <span className="option-label">{String.fromCharCode(65 + optIdx)}.</span>
+                                      <span className="option-text">{option.text}</span>
+                                    </Checkbox>
+                                    {optionLabel && (
+                                      <span className={`option-status-label ${isCorrectOption ? 'correct-label' : 'incorrect-label'}`}>
+                                        {optionLabel}
+                                      </span>
+                                    )}
+                                    {isCorrectOption && (
+                                      <CheckCircleOutlined className="correct-indicator" />
+                                    )}
+                                    {isSelected && !isCorrectOption && (
+                                      <CloseCircleOutlined className="incorrect-indicator" />
+                                    )}
+                                  </div>
+                                );
+                              })}
+                            </Space>
+                          )}
+
+                          {question.type === ExamQuestionType.FILL_IN && (
+                            <div className="review-fill-in">
+                              <div className="review-answer-section">
+                                <Text strong className="review-answer-label">Đáp án của bạn:</Text>
+                                <Input.TextArea
+                                  value={answer?.textAnswer || ""}
+                                  disabled
+                                  rows={3}
+                                  className="review-textarea"
+                                />
+                              </div>
+                              {question.textAnswers && question.textAnswers.length > 0 && (
+                                <div className="review-answer-section">
+                                  <Text strong className="review-answer-label correct">Đáp án đúng:</Text>
+                                  <div className="review-correct-answers">
+                                    {question.textAnswers.map((text, idx) => (
+                                      <Tag key={idx} color="success" className="correct-answer-tag">
+                                        {text}
+                                      </Tag>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
+
+                        {question.explanation && (
+                          <Alert 
+                            type="info" 
+                            message={<span className="explanation-title">📝 Ghi chú</span>} 
+                            description={
+                              <div className="explanation-text">
+                                <MarkdownViewer content={question.explanation || ""} className="exam-markdown-explanation" />
+                              </div>
+                            } 
+                            showIcon={false}
+                            className="question-explanation review-explanation"
+                          />
+                        )}
+                      </div>
+                    </Card>
+                  </ScrollAnimation>
+                );
+              })}
+            </div>
           </Card>
         </Col>
       </Row>

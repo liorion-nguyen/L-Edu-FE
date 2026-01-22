@@ -1,0 +1,125 @@
+.scroll-animation {
+  opacity: 0;
+}
+
+/* Fade In Animation */
+.scroll-animation-fadeIn {
+  opacity: 0;
+}
+
+.scroll-animation-fadeIn.scroll-animation-visible {
+  animation: fadeIn 0.8s ease-out forwards;
+}
+
+/* Slide Up Animation */
+.scroll-animation-slideUp {
+  opacity: 0;
+  transform: translateY(50px);
+}
+
+.scroll-animation-slideUp.scroll-animation-visible {
+  animation: slideUp 0.8s ease-out forwards;
+}
+
+/* Slide Left Animation */
+.scroll-animation-slideLeft {
+  opacity: 0;
+  transform: translateX(50px);
+}
+
+.scroll-animation-slideLeft.scroll-animation-visible {
+  animation: slideLeft 0.8s ease-out forwards;
+}
+
+/* Slide Right Animation */
+.scroll-animation-slideRight {
+  opacity: 0;
+  transform: translateX(-50px);
+}
+
+.scroll-animation-slideRight.scroll-animation-visible {
+  animation: slideRight 0.8s ease-out forwards;
+}
+
+/* Zoom In Animation */
+.scroll-animation-zoomIn {
+  opacity: 0;
+  transform: scale(0.9);
+}
+
+.scroll-animation-zoomIn.scroll-animation-visible {
+  animation: zoomIn 0.8s ease-out forwards;
+}
+
+/* Keyframe Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideLeft {
+  from {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideRight {
+  from {
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes zoomIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Stagger effect for child elements */
+.scroll-animation.scroll-animation-visible > * {
+  animation-delay: inherit;
+}
+
+/* Smooth scrolling behavior */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Performance optimization */
+.scroll-animation {
+  will-change: opacity, transform;
+}
+
+.scroll-animation.scroll-animation-visible {
+  will-change: auto;
+}

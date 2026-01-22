@@ -70,6 +70,16 @@
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   margin-bottom: 24px;
+  overflow: visible;
+}
+
+.chart-card .ant-card-head {
+  border-bottom: 1px solid var(--border-color, #e5e7eb);
+}
+
+.chart-card .ant-card-body {
+  padding: 24px;
+  overflow: visible;
 }
 
 .chart-title {
@@ -80,7 +90,29 @@
 }
 
 .chart-container {
+  width: 100%;
   height: 300px;
+  min-height: 300px;
+  position: relative;
+  display: block;
+  overflow: visible;
+  background: transparent;
+}
+
+.chart-container .recharts-wrapper {
+  width: 100% !important;
+  height: 100% !important;
+  position: relative !important;
+}
+
+.chart-container svg {
+  overflow: visible !important;
+  display: block !important;
+}
+
+.chart-container .recharts-surface {
+  display: block !important;
+  overflow: visible !important;
 }
 
 /* Responsive Design */
@@ -180,16 +212,40 @@
 /* Chart Customizations */
 .recharts-wrapper {
   font-family: inherit;
+  width: 100% !important;
+  height: 100% !important;
+  position: relative !important;
+}
+
+.recharts-surface {
+  width: 100% !important;
+  height: 100% !important;
+  overflow: visible !important;
 }
 
 .recharts-cartesian-axis-tick-value {
-  fill: var(--text-secondary, #6b7280);
+  fill: var(--text-secondary, #6b7280) !important;
   font-size: 12px;
 }
 
 .recharts-legend-item-text {
-  color: var(--text-primary, #1f2937);
+  color: var(--text-primary, #1f2937) !important;
   font-size: 12px;
+}
+
+/* Dark theme chart colors */
+[data-theme="dark"] .recharts-cartesian-axis-tick-value {
+  fill: #9ca3af !important;
+}
+
+[data-theme="dark"] .recharts-legend-item-text {
+  color: #f9fafb !important;
+}
+
+[data-theme="dark"] .recharts-cartesian-grid-horizontal line,
+[data-theme="dark"] .recharts-cartesian-grid-vertical line {
+  stroke: #374151 !important;
+  opacity: 0.3;
 }
 
 .recharts-tooltip-wrapper {
@@ -213,6 +269,15 @@
 .recharts-cartesian-grid-vertical line {
   stroke: var(--border-color, #e5e7eb);
   opacity: 0.3;
+}
+
+/* Ensure charts are visible */
+.chart-card .ant-card-body {
+  padding: 24px;
+}
+
+.chart-card .chart-container {
+  margin-top: 16px;
 }
 
 /* Home Button Styling */
