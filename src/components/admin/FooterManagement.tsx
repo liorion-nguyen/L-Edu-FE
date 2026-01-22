@@ -22,7 +22,7 @@ import {
   DeleteOutlined,
   EyeOutlined,
 } from '@ant-design/icons';
-import { footerService, Footer, CreateFooterData, UpdateFooterData } from '../../services/footerService';
+import { footerService, Footer, CreateFooterData, UpdateFooterData, FooterLink } from '../../services/footerService';
 import ImageUploader from '../common/ImageUploader';
 
 const { Title, Text } = Typography;
