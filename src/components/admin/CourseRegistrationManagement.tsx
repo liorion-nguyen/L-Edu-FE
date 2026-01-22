@@ -31,7 +31,6 @@ import courseRegistrationService, { CourseRegistration } from '../../services/co
 
 const { TextArea } = Input;
 const { Option } = Select;
-const { Text } = Typography;
 
 const CourseRegistrationManagement: React.FC = () => {
   const [registrations, setRegistrations] = useState<CourseRegistration[]>([]);
@@ -79,6 +78,7 @@ const CourseRegistrationManagement: React.FC = () => {
   useEffect(() => {
     fetchRegistrations();
     fetchStats();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedStatus]);
 
   const handleViewDetails = (registration: CourseRegistration) => {

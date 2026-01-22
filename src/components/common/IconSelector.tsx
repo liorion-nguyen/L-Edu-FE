@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Select, Row, Col, Card, Typography, Space, Input } from 'antd';
-import { ALL_ICONS, getIconByType, IconOption } from '../../constants/icons';
+import { Select, Row, Col, Card, Typography, Input } from 'antd';
+import { ALL_ICONS, getIconByType } from '../../constants/icons';
 
 const { Text } = Typography;
 const { Search } = Input;

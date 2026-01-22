@@ -29,7 +29,6 @@ import {
   MessageOutlined,
   UserOutlined,
   RobotOutlined,
-  CalendarOutlined,
   BarChartOutlined,
   ReloadOutlined
 } from '@ant-design/icons';
@@ -42,7 +41,7 @@ const { Title, Text } = Typography;
 const { Search } = Input;
 
 const ChatContentManagement: React.FC = () => {
-  const { t } = useTranslationWithRerender();
+  useTranslationWithRerender();
   const [conversations, setConversations] = useState<ChatConversation[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -62,17 +61,15 @@ const ChatContentManagement: React.FC = () => {
   useEffect(() => {
     fetchConversations();
     fetchStats();
-    
-    // Cleanup function
+
     return () => {
-      // Clear any pending timeouts or intervals
       setDetailModalVisible(false);
       setSelectedConversation(null);
       setConversationMessages([]);
       setLoadingMessages(false);
-      // Ensure no modal blocking
       preventModalBlocking();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Prevent modal blocking on component mount/unmount

@@ -83,7 +83,7 @@ const generateSlug = (text: string): string => {
     .trim()
     .replace(/\s+/g, '-')           // Replace spaces with hyphens
     .replace(/[^\w\-àáảãạăắằẳẵặâấầẩẫậèéẻẽẹêếềểễệìíỉĩịòóỏõọôốồổỗộơớờởỡợùúủũụưứừửữựỳýỷỹỵđ]+/g, '') // Remove special chars but keep Vietnamese
-    .replace(/\-\-+/g, '-')         // Replace multiple hyphens with single hyphen
+    .replace(/--+/g, '-')           // Replace multiple hyphens with single hyphen
     .replace(/^-+/, '')             // Remove leading hyphens
     .replace(/-+$/, '');              // Remove trailing hyphens
 };
@@ -239,20 +239,6 @@ const MarkdownViewer: React.FC<MarkdownViewerProps> = ({
       }
     };
   }, [content]);
-
-  // Function to highlight selected text
-  const highlightText = (text: string) => {
-    if (!selectedText || typeof text !== 'string') return text;
-    
-    if (text.includes(selectedText)) {
-      return (
-        <span className="bg-yellow-200 text-black px-1 rounded">
-          {text}
-        </span>
-      );
-    }
-    return text;
-  };
 
   if (isPending) {
     return (

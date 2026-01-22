@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Button, Tag, Space, Modal, message, Spin, Empty, Avatar } from 'antd';
-import { EyeOutlined, DeleteOutlined, ReloadOutlined, UserOutlined } from '@ant-design/icons';
+import { DeleteOutlined, ReloadOutlined, UserOutlined } from '@ant-design/icons';
 import { chatHistoryService, ChatHistoryItem } from '../../services/chatHistoryService';
 import { chatManagementService, User } from '../../services/chatManagementService';
 import { preventModalBlocking } from '../../utils/modalUtils';
@@ -9,11 +9,9 @@ interface ChatHistoryProps {
   onViewConversation?: (conversationId: string) => void;
 }
 
-const ChatHistory: React.FC<ChatHistoryProps> = ({ onViewConversation }) => {
+const ChatHistory: React.FC<ChatHistoryProps> = () => {
   const [conversations, setConversations] = useState<ChatHistoryItem[]>([]);
   const [loading, setLoading] = useState(false);
-  const [selectedConversation, setSelectedConversation] = useState<ChatHistoryItem | null>(null);
-  const [modalVisible, setModalVisible] = useState(false);
   const [users, setUsers] = useState<Map<string, User>>(new Map());
 
   const fetchConversations = async () => {
@@ -47,11 +45,8 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({ onViewConversation }) => {
 
   useEffect(() => {
     fetchConversations();
-    
-    // Cleanup function
-    return () => {
-      preventModalBlocking();
-    };
+    return () => { preventModalBlocking(); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Prevent modal blocking on clicks
@@ -71,12 +66,6 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({ onViewConversation }) => {
       document.removeEventListener('click', handleClick, true);
     };
   }, []);
-
-  const handleViewConversation = (conversationId: string) => {
-    if (onViewConversation) {
-      onViewConversation(conversationId);
-    }
-  };
 
   const handleDeleteConversation = async (conversationId: string) => {
     Modal.confirm({

@@ -15,22 +15,18 @@ import {
   Card,
   Row,
   Col,
-  List,
 } from 'antd';
 import {
   PlusOutlined,
   EditOutlined,
   DeleteOutlined,
   EyeOutlined,
-  LinkOutlined,
 } from '@ant-design/icons';
-import { footerService, Footer, CreateFooterData, UpdateFooterData, FooterLink } from '../../services/footerService';
-import IconSelector from '../common/IconSelector';
+import { footerService, Footer, CreateFooterData, UpdateFooterData } from '../../services/footerService';
 import ImageUploader from '../common/ImageUploader';
 
 const { Title, Text } = Typography;
 const { Option } = Select;
-const { TextArea } = Input;
 
 const FooterManagement: React.FC = () => {
   const [footers, setFooters] = useState<Footer[]>([]);

@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Card, Input, Empty, Button, Popconfirm, Upload, Image, message as antMessage } from 'antd';
+import { Card, Input, Button, Popconfirm, Upload, Image, message as antMessage } from 'antd';
 import { SendOutlined, CloseOutlined, RobotOutlined, DeleteOutlined, PictureOutlined, CloseCircleOutlined, MessageOutlined } from '@ant-design/icons';
-import type { UploadFile } from 'antd';
 import MarkdownViewer from '../common/MarkdownViewer';
 import './chatbot.css';
 
@@ -48,28 +47,21 @@ const ChatPopup: React.FC<ChatPopupProps> = ({
     }, 100);
   };
 
-  // Auto-scroll khi có messages mới
   useEffect(() => {
-    if (messages.length > 0) {
-      scrollToBottom(true);
-    }
-  }, [messages]);
+    if (messages.length > 0) scrollToBottom(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [messages, messages.length]);
 
-  // Scroll khi mở chat box
   useEffect(() => {
-    if (isExpanded && messages.length > 0) {
-      scrollToBottom(false); // Scroll ngay lập tức khi mở
-    }
-  }, [isExpanded]);
+    if (isExpanded && messages.length > 0) scrollToBottom(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isExpanded, messages.length]);
 
-  // Scroll khi AI đang streaming
   useEffect(() => {
-    if (isLoading && messages.length > 0) {
-      scrollToBottom(true);
-    }
-  }, [isLoading]);
+    if (isLoading && messages.length > 0) scrollToBottom(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoading, messages.length]);
 
-  // Handle window resize
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth <= 768) {

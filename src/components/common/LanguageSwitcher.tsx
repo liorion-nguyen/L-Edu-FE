@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Dropdown, Menu, Spin } from 'antd';
+import { Button, Dropdown, Spin } from 'antd';
 import { GlobalOutlined } from '@ant-design/icons';
 import { useTranslationWithRerender } from '../../hooks/useLanguageChange';
 import { CSSProperties } from 'react';

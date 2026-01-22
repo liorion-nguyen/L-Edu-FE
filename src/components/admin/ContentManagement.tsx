@@ -20,9 +20,8 @@ import {
   PlusOutlined,
   EditOutlined,
   DeleteOutlined,
-  EyeOutlined,
 } from '@ant-design/icons';
-import { contentService, Content, CreateContentData, UpdateContentData } from '../../services/contentService';
+import { contentService, Content } from '../../services/contentService';
 import ImageUploader from '../common/ImageUploader';
 
 const { Title, Text } = Typography;

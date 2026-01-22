@@ -6,13 +6,11 @@ import useChatbot from '../../hooks/useChatbot';
 const GlobalChatbot: React.FC = () => {
   const location = useLocation();
   const { 
-    isOpen, 
     messages, 
     isLoading,
     closeChatbot, 
     sendMessage,
     clearMessages,
-    toggleChatbot,
     createNewConversation 
   } = useChatbot();
   

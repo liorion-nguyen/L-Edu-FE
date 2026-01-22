@@ -9,14 +9,12 @@ import {
   Row, 
   Col, 
   Space, 
-  Divider, 
   Modal, 
   Form, 
   message, 
   Pagination, 
   Spin,
   Empty,
-  Tag
 } from 'antd';
 import { 
   StarOutlined, 
@@ -58,6 +56,7 @@ const CourseReviews: React.FC<CourseReviewsProps> = ({ courseId }) => {
   useEffect(() => {
     fetchReviews();
     fetchStats();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [courseId, pagination.current]);
 
   const fetchReviews = async () => {

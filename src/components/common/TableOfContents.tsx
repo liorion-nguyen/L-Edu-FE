@@ -105,7 +105,6 @@ const TableOfContents: React.FC<TableOfContentsProps> = ({ headings, containerRe
     const containerRect = container.getBoundingClientRect();
     const containerTop = containerRect.top + window.scrollY;
     const containerHeight = containerRect.height;
-    const documentHeight = document.documentElement.scrollHeight;
     const viewportHeight = window.innerHeight;
     
     // Calculate the visible range of the container
