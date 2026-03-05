@@ -353,8 +353,12 @@ const ExamAttemptHistory: React.FC = () => {
               </div>
             ) : (
               <Table
-                pagination={{ pageSize: 10 }}
+                rowKey="key"
                 dataSource={tableData}
+                size="middle"
+                locale={{ emptyText: "Chưa có lượt làm bài" }}
+                pagination={{ pageSize: 10, showSizeChanger: true, showTotal: (total, range) => `${range[0]}-${range[1]} / ${total}` }}
+                scroll={{ y: 480 }}
                 columns={[
                   { title: "#", dataIndex: "order", width: 60 },
                   { title: "Học viên", dataIndex: "studentName", width: 220 },

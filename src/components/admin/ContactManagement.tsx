@@ -41,6 +41,22 @@ const ContactManagement: React.FC = () => {
     fetchContacts();
   }, []);
 
+  useEffect(() => {
+    if (!modalVisible) return;
+    if (editingContact) {
+      form.setFieldsValue({
+        type: editingContact.type,
+        label: editingContact.label,
+        value: editingContact.value,
+        icon: editingContact.icon,
+        isActive: editingContact.isActive,
+        order: editingContact.order,
+      });
+    } else {
+      form.resetFields();
+    }
+  }, [modalVisible, editingContact, form]);
+
   const fetchContacts = async () => {
     try {
       setLoading(true);
@@ -63,14 +79,6 @@ const ContactManagement: React.FC = () => {
 
   const handleEdit = (contact: Contact) => {
     setEditingContact(contact);
-    form.setFieldsValue({
-      type: contact.type,
-      label: contact.label,
-      value: contact.value,
-      icon: contact.icon,
-      isActive: contact.isActive,
-      order: contact.order,
-    });
     setModalVisible(true);
   };
 
@@ -86,10 +94,18 @@ const ContactManagement: React.FC = () => {
         message.success('Contact created successfully');
       }
       setModalVisible(false);
+      setEditingContact(null);
+      form.resetFields();
       fetchContacts();
     } catch (error: any) {
       message.error(error.response?.data?.message || 'Failed to save contact');
     }
+  };
+
+  const handleModalCancel = () => {
+    setModalVisible(false);
+    setEditingContact(null);
+    form.resetFields();
   };
 
   const handleDelete = async (id: string) => {
@@ -210,28 +226,34 @@ const ContactManagement: React.FC = () => {
         </Row>
 
         <Table
+          rowKey="_id"
           columns={columns}
           dataSource={contacts}
           loading={loading}
-          rowKey="_id"
+          size="middle"
+          locale={{ emptyText: 'No contacts' }}
           pagination={{
             pageSize: 10,
             showSizeChanger: true,
             showQuickJumper: true,
             showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} contacts`,
           }}
+          scroll={{ y: 480 }}
         />
 
         <Modal
           title={editingContact ? 'Edit Contact' : 'Add Contact'}
           open={modalVisible}
-          onCancel={() => setModalVisible(false)}
+          onCancel={handleModalCancel}
           footer={null}
           width={600}
+          destroyOnClose
+          maskClosable={false}
         >
           <Form
             form={form}
             layout="vertical"
+            key={editingContact?._id ?? 'add'}
             onFinish={handleSubmit}
           >
             <Form.Item
@@ -239,7 +261,7 @@ const ContactManagement: React.FC = () => {
               label="Type"
               rules={[{ required: true, message: 'Please select a type' }]}
             >
-              <Select placeholder="Select contact type">
+              <Select placeholder="Select contact type" optionFilterProp="children">
                 <Option value="email">Email</Option>
                 <Option value="phone">Phone</Option>
                 <Option value="address">Address</Option>
@@ -302,7 +324,7 @@ const ContactManagement: React.FC = () => {
 
             <Form.Item style={{ marginBottom: 0, textAlign: 'right' }}>
               <Space>
-                <Button onClick={() => setModalVisible(false)}>
+                <Button onClick={handleModalCancel}>
                   Cancel
                 </Button>
                 <Button type="primary" htmlType="submit">

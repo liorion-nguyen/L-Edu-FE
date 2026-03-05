@@ -1,39 +1,26 @@
 import { Col, Row, Spin } from "antd";
 import Title from "antd/es/typography/Title";
-import { CSSProperties, useEffect, useState } from "react";
+import { CSSProperties, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslationWithRerender } from "../../hooks/useLanguageChange";
 import { RADIUS, SPACING } from "../../constants/colors";
 import SectionLayout from "../../layouts/SectionLayout";
-import { categoryService, Category } from "../../services/categoryService";
+import { fetchCategories } from "../../redux/slices/categories";
+import { useDispatch, useSelector } from "../../redux/store";
+import { RootState } from "../../redux/store";
 
 const ExploreCategories = () => {
   const { t } = useTranslationWithRerender();
   const navigate = useNavigate();
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
+  const categories = useSelector((state: RootState) => state.categories.list);
+  const loading = useSelector((state: RootState) => state.categories.loading);
 
   useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        setLoading(true);
-        // Now student can access the original endpoint with authentication
-        const response = await categoryService.getCategories({ 
-          limit: 1000,
-          isActive: true 
-        });
-        setCategories(response.data);
-      } catch (error) {
-        console.error('Failed to fetch categories:', error);
-        // Fallback to empty array if API fails
-        setCategories([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchCategories();
-  }, []);
+    if (categories.length === 0) {
+      dispatch(fetchCategories({ limit: 1000, isActive: true }));
+    }
+  }, [dispatch, categories.length]);
 
   const handleCategoryClick = (categoryId: string) => {
     // Navigate to courses page with category filter

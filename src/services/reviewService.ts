@@ -1,7 +1,6 @@
-import axios from 'axios';
-import { envConfig } from '../config';
+import apiClient from './api';
 
-const API_URL = `${envConfig.serverURL}/reviews`;
+const API_URL = '/reviews';
 
 export interface Review {
   _id: string;
@@ -95,76 +94,50 @@ export interface ReviewStatsResponse {
 }
 
 class ReviewService {
-  private getAuthHeaders() {
-    const token = localStorage.getItem('accessToken');
-    return {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    };
-  }
-
   async createReview(data: CreateReviewData): Promise<ReviewResponse> {
-    const response = await axios.post(API_URL, data, {
-      headers: this.getAuthHeaders(),
-    });
+    const response = await apiClient.post(API_URL, data);
     return response.data;
   }
 
   async getReviews(params?: ReviewQueryParams): Promise<ReviewListResponse> {
-    const response = await axios.get(API_URL, {
-      headers: this.getAuthHeaders(),
-      params,
-    });
+    const response = await apiClient.get(API_URL, { params });
     return response.data;
   }
 
   async getCourseReviews(courseId: string, params?: ReviewQueryParams): Promise<ReviewListResponse> {
-    const response = await axios.get(`${API_URL}/course/${courseId}`, {
-      params,
-    });
+    const response = await apiClient.get(`${API_URL}/course/${courseId}`, { params });
     return response.data;
   }
 
   async getMyReviews(params?: ReviewQueryParams): Promise<ReviewListResponse> {
-    const response = await axios.get(`${API_URL}/my-reviews`, {
-      headers: this.getAuthHeaders(),
-      params,
-    });
+    const response = await apiClient.get(`${API_URL}/my-reviews`, { params });
     return response.data;
   }
 
   async getReviewStats(courseId?: string): Promise<ReviewStatsResponse> {
-    const response = await axios.get(`${API_URL}/stats`, {
+    const response = await apiClient.get(`${API_URL}/stats`, {
       params: courseId ? { courseId } : {},
     });
     return response.data;
   }
 
   async getReviewById(id: string): Promise<ReviewResponse> {
-    const response = await axios.get(`${API_URL}/${id}`, {
-      headers: this.getAuthHeaders(),
-    });
+    const response = await apiClient.get(`${API_URL}/${id}`);
     return response.data;
   }
 
   async updateReview(id: string, data: UpdateReviewData): Promise<ReviewResponse> {
-    const response = await axios.patch(`${API_URL}/${id}`, data, {
-      headers: this.getAuthHeaders(),
-    });
+    const response = await apiClient.patch(`${API_URL}/${id}`, data);
     return response.data;
   }
 
   async updateReviewStatus(id: string, status: string): Promise<ReviewResponse> {
-    const response = await axios.patch(`${API_URL}/${id}/status`, { status }, {
-      headers: this.getAuthHeaders(),
-    });
+    const response = await apiClient.patch(`${API_URL}/${id}/status`, { status });
     return response.data;
   }
 
   async deleteReview(id: string): Promise<{ success: boolean; message: string }> {
-    const response = await axios.delete(`${API_URL}/${id}`, {
-      headers: this.getAuthHeaders(),
-    });
+    const response = await apiClient.delete(`${API_URL}/${id}`);
     return response.data;
   }
 }

@@ -1,7 +1,4 @@
-import axios from 'axios';
-import { envConfig } from '../config';
-
-const API_BASE_URL = envConfig.serverURL || 'http://localhost:5000';
+import apiClient from './api';
 
 export interface ChatHistoryItem {
   _id: string;
@@ -28,27 +25,14 @@ export interface ChatHistoryResponse {
 }
 
 class ChatHistoryService {
-  private getAuthHeaders() {
-    const token = localStorage.getItem('accessToken');
-    return {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    };
-  }
-
   async getConversationsHistory(): Promise<ChatHistoryResponse> {
     try {
-      const response = await axios.get(
-        `${API_BASE_URL}/chat/conversations-history`,
-        {
-          headers: this.getAuthHeaders(),
-        }
-      );
+      const response = await apiClient.get('/chat/conversations-history');
       return response.data;
     } catch (error: any) {
       console.error('Error fetching chat history:', error);
       throw new Error(
-        error.response?.data?.message || 
+        error.response?.data?.message ||
         'Không thể tải lịch sử cuộc trò chuyện'
       );
     }
@@ -56,17 +40,12 @@ class ChatHistoryService {
 
   async getConversationMessages(conversationId: string) {
     try {
-      const response = await axios.get(
-        `${API_BASE_URL}/chat/conversations/${conversationId}/messages`,
-        {
-          headers: this.getAuthHeaders(),
-        }
-      );
+      const response = await apiClient.get(`/chat/conversations/${conversationId}/messages`);
       return response.data;
     } catch (error: any) {
       console.error('Error fetching conversation messages:', error);
       throw new Error(
-        error.response?.data?.message || 
+        error.response?.data?.message ||
         'Không thể tải tin nhắn cuộc trò chuyện'
       );
     }
@@ -74,17 +53,12 @@ class ChatHistoryService {
 
   async deleteConversation(conversationId: string) {
     try {
-      const response = await axios.delete(
-        `${API_BASE_URL}/chat/conversations/${conversationId}/messages`,
-        {
-          headers: this.getAuthHeaders(),
-        }
-      );
+      const response = await apiClient.delete(`/chat/conversations/${conversationId}/messages`);
       return response.data;
     } catch (error: any) {
       console.error('Error deleting conversation:', error);
       throw new Error(
-        error.response?.data?.message || 
+        error.response?.data?.message ||
         'Không thể xóa cuộc trò chuyện'
       );
     }

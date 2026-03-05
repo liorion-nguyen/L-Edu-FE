@@ -457,10 +457,12 @@ const ChatContentManagement: React.FC = () => {
         </div>
 
         <Table
+          rowKey="_id"
           columns={columns}
           dataSource={filteredConversations}
           loading={loading}
-          rowKey="_id"
+          size="middle"
+          locale={{ emptyText: 'Chưa có cuộc trò chuyện' }}
           pagination={{
             showSizeChanger: true,
             showQuickJumper: true,
@@ -469,9 +471,8 @@ const ChatContentManagement: React.FC = () => {
             pageSize: 10,
             defaultPageSize: 10,
           }}
-          scroll={{ x: 1200 }}
+          scroll={{ x: 1200, y: 480 }}
           style={{ background: 'transparent' }}
-          size="middle"
           bordered={false}
         />
       </Card>

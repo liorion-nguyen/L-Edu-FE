@@ -34,7 +34,9 @@ import {
 import React, { useState, useEffect } from "react";
 import { useTranslationWithRerender } from "../../hooks/useLanguageChange";
 import { courseService, Course, CreateCourseData, UpdateCourseData, CourseQueryParams } from "../../services/courseService";
-import { categoryService, Category } from "../../services/categoryService";
+import type { Category } from "../../services/categoryService";
+import { fetchCategories } from "../../redux/slices/categories";
+import { RootState, useDispatch, useSelector } from "../../redux/store";
 import { RcFile } from "antd/lib/upload";
 import axios from "axios";
 
@@ -65,8 +67,9 @@ const CourseManagement: React.FC = () => {
   const [isInstructorModalVisible, setIsInstructorModalVisible] = useState(false);
   const [studentSearchTerm, setStudentSearchTerm] = useState('');
   const [instructorSearchTerm, setInstructorSearchTerm] = useState('');
-  const [categories, setCategories] = useState<Category[]>([]);
   const [categoryFilter, setCategoryFilter] = useState<string>('');
+  const dispatch = useDispatch();
+  const categories = useSelector((state: RootState) => state.categories.list);
 
   // Format price to VNĐ format
   const formatPrice = (price: number) => {
@@ -78,23 +81,37 @@ const CourseManagement: React.FC = () => {
     }).format(price);
   };
 
-  // Fetch courses on component mount
+  useEffect(() => {
+    if (categories.length === 0) {
+      dispatch(fetchCategories({ limit: 1000 }));
+    }
+  }, [dispatch, categories.length]);
+
   useEffect(() => {
     fetchCourses();
-    fetchCategories();
     fetchInstructors();
     fetchStudents();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pagination.current, pagination.pageSize, searchTerm, categoryFilter]);
 
-  const fetchCategories = async () => {
-    try {
-      const response = await categoryService.getCategories({ limit: 1000 });
-      setCategories(response.data);
-    } catch (error) {
-      console.error('Failed to fetch categories:', error);
+  useEffect(() => {
+    if (!isModalVisible) return;
+    if (editingCourse) {
+      const categoryId = editingCourse.categoryId ?? (editingCourse as any).category;
+      const id = typeof categoryId === 'string' ? categoryId : undefined;
+      form.setFieldsValue({
+        ...editingCourse,
+        categoryId: id,
+        cover: editingCourse.cover,
+        icon: editingCourse.icon,
+      });
+      setFormValues({ cover: editingCourse.cover, icon: editingCourse.icon });
+    } else {
+      form.resetFields();
+      setFormValues({});
+      form.setFieldsValue({ status: 'ACTIVE' });
     }
-  };
+  }, [isModalVisible, editingCourse, form]);
 
   const fetchInstructors = async () => {
     try {
@@ -221,7 +238,6 @@ const CourseManagement: React.FC = () => {
       key: "categoryId",
       width: 120,
       render: (categoryId: string, record: Course) => {
-        console.log(categoryId, record, categories);
         const category = categories.find(cat => cat._id === categoryId);
         return (
           <Tag color="blue">{category?.name || record.category || 'N/A'}</Tag>
@@ -321,16 +337,6 @@ const CourseManagement: React.FC = () => {
 
   const handleEdit = (course: Course) => {
     setEditingCourse(course);
-    form.setFieldsValue({
-      ...course,
-      cover: course.cover,
-      icon: course.icon,
-      categoryId: course.categoryId || course.category, // Use categoryId if available, fallback to category
-    });
-    setFormValues({
-      cover: course.cover,
-      icon: course.icon,
-    });
     setIsModalVisible(true);
   };
 
@@ -392,6 +398,7 @@ const CourseManagement: React.FC = () => {
 
   const handleModalCancel = () => {
     setIsModalVisible(false);
+    setEditingCourse(null);
     form.resetFields();
     setFormValues({});
   };
@@ -573,11 +580,11 @@ const CourseManagement: React.FC = () => {
         border: "1px solid var(--border-color)",
         borderRadius: "8px"
       }}>
-        <div style={{ marginBottom: "16px", display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+        <Space size="middle" wrap style={{ marginBottom: 16 }}>
           <Search
             placeholder={t('dashboard.courses.searchPlaceholder')}
             allowClear
-            style={{ width: 300, minWidth: 200 }}
+            style={{ width: 320, minWidth: 200 }}
             prefix={<SearchOutlined />}
             onSearch={handleSearch}
             onChange={(e: any) => {
@@ -589,9 +596,14 @@ const CourseManagement: React.FC = () => {
           <Select
             placeholder={t('dashboard.courses.filterByCategory')}
             allowClear
-            style={{ width: 200, minWidth: 150 }}
-            value={categoryFilter}
+            style={{ width: 220, minWidth: 150 }}
+            value={categoryFilter || undefined}
             onChange={handleCategoryFilter}
+            showSearch
+            optionFilterProp="children"
+            filterOption={(input, option) =>
+              String(option?.children ?? '').toLowerCase().includes(input.toLowerCase())
+            }
           >
             {categories.map(category => (
               <Select.Option key={category._id} value={category._id}>
@@ -599,12 +611,15 @@ const CourseManagement: React.FC = () => {
               </Select.Option>
             ))}
           </Select>
-        </div>
+        </Space>
 
         <Table
+          rowKey={(record) => record._id}
           columns={columns}
-          dataSource={courses.map(course => ({ ...course, key: course._id }))}
+          dataSource={courses}
           loading={loading}
+          size="middle"
+          locale={{ emptyText: t('dashboard.courses.noCourses') || 'No courses' }}
           pagination={{
             current: pagination.current,
             pageSize: pagination.pageSize,
@@ -615,7 +630,7 @@ const CourseManagement: React.FC = () => {
               `${range[0]}-${range[1]} ${t('dashboard.courses.of')} ${total} ${t('dashboard.courses.courses')}`,
           }}
           onChange={handleTableChange}
-          scroll={{ x: 1000 }}
+          scroll={{ x: 1000, y: 480 }}
           style={{ background: "transparent" }}
         />
       </Card>
@@ -626,6 +641,8 @@ const CourseManagement: React.FC = () => {
         onOk={handleModalOk}
         onCancel={handleModalCancel}
         width={800}
+        destroyOnClose
+        maskClosable={false}
         style={{
           background: "var(--bg-primary)",
           color: "var(--text-primary)"
@@ -649,6 +666,7 @@ const CourseManagement: React.FC = () => {
         <Form
           form={form}
           layout="vertical"
+          key={editingCourse?._id ?? 'add'}
           initialValues={{ status: "ACTIVE" }}
         >
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
@@ -688,7 +706,14 @@ const CourseManagement: React.FC = () => {
               name="categoryId"
               label={t('dashboard.courses.category')}
             >
-              <Select placeholder={t('dashboard.courses.selectCategory')}>
+              <Select
+                placeholder={t('dashboard.courses.selectCategory')}
+                showSearch
+                optionFilterProp="children"
+                filterOption={(input, option) =>
+                  String(option?.children ?? '').toLowerCase().includes(input.toLowerCase())
+                }
+              >
                 {categories.map(category => (
                   <Select.Option key={category._id} value={category._id}>
                     {category.name}
@@ -774,7 +799,7 @@ const CourseManagement: React.FC = () => {
             label={t('dashboard.courses.status')}
             rules={[{ required: true, message: t('dashboard.courses.statusRequired') }]}
           >
-            <Select>
+            <Select placeholder={t('dashboard.courses.status')} optionFilterProp="children">
               <Select.Option value="ACTIVE">{t('dashboard.courses.statusActive')}</Select.Option>
               <Select.Option value="INACTIVE">{t('dashboard.courses.statusInactive')}</Select.Option>
             </Select>

@@ -1,31 +1,39 @@
 import { EditOutlined, LockOutlined, LoginOutlined, SearchOutlined, PlusOutlined, FilterOutlined, StarOutlined, UserAddOutlined, ClockCircleOutlined, BookOutlined } from "@ant-design/icons";
 import { Avatar, Button, Card, Col, Input, Row, Skeleton, Space, Tooltip, Typography, Select, Rate, Badge } from "antd";
-import { CSSProperties, useEffect, useState } from "react";
+import { CSSProperties, useEffect, useState, useMemo } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslationWithRerender } from "../../../hooks/useLanguageChange";
 import { COLORS } from "../../../constants/colors";
 import { Mode } from "../../../enum/course.enum";
 import SectionLayout from "../../../layouts/SectionLayout";
 import { getCourses } from "../../../redux/slices/courses";
+import { fetchCategories } from "../../../redux/slices/categories";
 import { RootState, useDispatch, useSelector } from "../../../redux/store";
 import { CourseType } from "../../../types/course";
 import { useIsAdmin } from "../../../utils/auth";
-import { categoryService, Category } from "../../../services/categoryService";
+import type { Category } from "../../../services/categoryService";
 import CourseRegistrationModal from "../../../components/course/CourseRegistrationModal";
-import courseRegistrationService from "../../../services/courseRegistrationService";
+import courseRegistrationService, { CourseRegistration } from "../../../services/courseRegistrationService";
 import ScrollAnimation from "../../../components/common/ScrollAnimation";
 import "./courses.css";
 
 const { Title, Text } = Typography;
 
-const CourseCard = ({ course }: { course: CourseType }) => {
+const CourseCard = ({ course, myRegistrations = [] }: { course: CourseType; myRegistrations?: CourseRegistration[] }) => {
   const navigate = useNavigate();
   const isAdmin = useIsAdmin();
   const { t } = useTranslationWithRerender();
   const [registrationModalVisible, setRegistrationModalVisible] = useState(false);
-  const [registrationStatus, setRegistrationStatus] = useState<'none' | 'pending' | 'approved' | 'rejected'>('none');
-  const [loadingRegistration, setLoadingRegistration] = useState(false);
+  const [localPendingAfterSubmit, setLocalPendingAfterSubmit] = useState(false);
   const { user } = useSelector((state: RootState) => state.auth);
+
+  const registrationStatusFromData = useMemo(() => {
+    if (!myRegistrations.length) return 'none' as const;
+    const reg = myRegistrations.find((r) => r.courseId === course._id);
+    return reg ? (reg.status.toLowerCase() as 'pending' | 'approved' | 'rejected') : 'none';
+  }, [myRegistrations, course._id]);
+
+  const registrationStatus = localPendingAfterSubmit ? 'pending' : registrationStatusFromData;
 
   const handleJoinCourse = () => {
     navigate(`/course/${course._id}`);
@@ -37,64 +45,9 @@ const CourseCard = ({ course }: { course: CourseType }) => {
 
   const handleRegistrationSuccess = () => {
     setRegistrationModalVisible(false);
-    setRegistrationStatus('pending'); // Cập nhật trạng thái sau khi đăng ký thành công
+    setLocalPendingAfterSubmit(true);
   };
 
-  // Kiểm tra trạng thái đăng ký của user cho khóa học này
-  const checkRegistrationStatus = async () => {
-    if (!user) {
-      console.log('No user found, skipping registration check');
-      return;
-    }
-
-    setLoadingRegistration(true);
-    try {
-      console.log('Checking registration status for course:', course._id, 'user:', user._id);
-
-      // Kiểm tra token
-      const token = localStorage.getItem('accessToken');
-      if (!token) {
-        console.log('No access token found');
-        setRegistrationStatus('none');
-        return;
-      }
-
-      const myRegistrations = await courseRegistrationService.getMyRegistrations();
-      console.log('My registrations:', myRegistrations);
-
-      const courseRegistration = myRegistrations.find(reg => reg.courseId === course._id);
-      console.log('Found registration for this course:', courseRegistration);
-
-      if (courseRegistration) {
-        const status = courseRegistration.status.toLowerCase() as 'pending' | 'approved' | 'rejected';
-        console.log('Setting registration status to:', status);
-        setRegistrationStatus(status);
-      } else {
-        console.log('No registration found, setting status to none');
-        setRegistrationStatus('none');
-      }
-    } catch (error: any) {
-      console.error('Error checking registration status:', error);
-      console.error('Error response:', error.response?.data);
-      console.error('Error status:', error.response?.status);
-
-      // Nếu lỗi 401 hoặc 403, có thể là vấn đề authentication
-      if (error.response?.status === 401 || error.response?.status === 403) {
-        console.log('Authentication error, setting status to none');
-      }
-
-      setRegistrationStatus('none');
-    } finally {
-      setLoadingRegistration(false);
-    }
-  };
-
-  // Kiểm tra trạng thái đăng ký khi component mount
-  useEffect(() => {
-    checkRegistrationStatus();
-  }, [user, course._id]);
-
-  // Kiểm tra user đã tham gia khóa học chưa
   const isUserEnrolled = user && course.students && course.students.includes(user._id);
 
   // Hiển thị nút đăng ký nếu:
@@ -204,7 +157,6 @@ const CourseCard = ({ course }: { course: CourseType }) => {
                 icon={<UserAddOutlined />}
                 size="large"
                 onClick={() => setRegistrationModalVisible(true)}
-                loading={loadingRegistration}
                 style={course.mode === Mode.CLOSE ? styles.lockedRegistrationButton : styles.registrationButton}
                 block
               >
@@ -254,7 +206,7 @@ const CourseCard = ({ course }: { course: CourseType }) => {
 const Course = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined);
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [myRegistrations, setMyRegistrations] = useState<CourseRegistration[]>([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const categoryId = searchParams.get('category');
   const dispatch = useDispatch();
@@ -262,33 +214,16 @@ const Course = () => {
   const isAdmin = useIsAdmin();
   const { t } = useTranslationWithRerender();
   const { courses, totalCourse, loading } = useSelector((state: RootState) => state.courses);
+  const { user } = useSelector((state: RootState) => state.auth);
+  const categories = useSelector((state: RootState) => state.categories.list);
 
   useEffect(() => {
-    console.log('Course component mounted/rendered');
-    return () => {
-      console.log('Course component unmounted');
-    };
-  }, []);
+    if (categories.length === 0) {
+      dispatch(fetchCategories({ limit: 1000, isActive: true }));
+    }
+  }, [dispatch, categories.length]);
 
   useEffect(() => {
-    // Fetch categories for filter
-    const fetchCategories = async () => {
-      try {
-        const response = await categoryService.getCategories({
-          limit: 1000,
-          isActive: true
-        });
-        setCategories(response.data);
-      } catch (error) {
-        console.error('Failed to fetch categories:', error);
-      }
-    };
-
-    fetchCategories();
-  }, []);
-
-  useEffect(() => {
-    // Set selected category from URL params
     if (categoryId) {
       setSelectedCategory(categoryId);
     } else {
@@ -297,19 +232,24 @@ const Course = () => {
   }, [categoryId]);
 
   useEffect(() => {
-    if (totalCourse === 0) {
-      dispatch(getCourses({}));
-    }
-  }, [totalCourse, dispatch]);
+    dispatch(getCourses({ categoryId: categoryId || selectedCategory || undefined }));
+  }, [categoryId, selectedCategory, dispatch]);
 
   useEffect(() => {
-    // Fetch courses with category filter when categoryId changes
-    if (categoryId) {
-      dispatch(getCourses({ categoryId: categoryId }));
-    } else if (selectedCategory) {
-      dispatch(getCourses({ categoryId: selectedCategory }));
+    if (!user) {
+      setMyRegistrations([]);
+      return;
     }
-  }, [categoryId, selectedCategory, dispatch]);
+    const fetchMyRegistrations = async () => {
+      try {
+        const list = await courseRegistrationService.getMyRegistrations();
+        setMyRegistrations(Array.isArray(list) ? list : []);
+      } catch {
+        setMyRegistrations([]);
+      }
+    };
+    fetchMyRegistrations();
+  }, [user?._id]);
 
   const handleSearch = () => {
     dispatch(getCourses({ page: 0, limit: 20, name: searchQuery, categoryId: selectedCategory }));
@@ -415,7 +355,7 @@ const Course = () => {
                     animationType="slideUp"
                     delay={0.1 + (index % 6) * 0.05}
                   >
-                    <CourseCard course={course} />
+                    <CourseCard course={course} myRegistrations={myRegistrations} />
                   </ScrollAnimation>
                 </Col>
               ))}

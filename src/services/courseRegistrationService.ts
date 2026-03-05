@@ -1,7 +1,6 @@
-import axios from 'axios';
-import { envConfig } from '../config';
+import apiClient from './api';
 
-const API_URL = `${envConfig.serverURL}/dashboard/course-registrations`;
+const API_URL = '/dashboard/course-registrations';
 
 export interface CourseRegistration {
   _id: string;
@@ -46,16 +45,9 @@ export interface RegistrationStats {
 }
 
 class CourseRegistrationService {
-  private getAuthHeaders() {
-    const token = localStorage.getItem('jwt-access-token');
-    return token ? { Authorization: `Bearer ${token}` } : {};
-  }
-
   async createRegistration(data: CreateRegistrationData): Promise<CourseRegistration> {
     try {
-      const response = await axios.post(API_URL, data, {
-        headers: this.getAuthHeaders(),
-      });
+      const response = await apiClient.post(API_URL, data);
       return response.data;
     } catch (error) {
       console.error('Error creating course registration:', error);
@@ -65,10 +57,7 @@ class CourseRegistrationService {
 
   async getAllRegistrations(): Promise<CourseRegistration[]> {
     try {
-      const response = await axios.get(API_URL, {
-        headers: this.getAuthHeaders(),
-      });
-      console.log('getAllRegistrations response:', response.data);
+      const response = await apiClient.get(API_URL);
       return response.data;
     } catch (error) {
       console.error('Error fetching all registrations:', error);
@@ -78,9 +67,7 @@ class CourseRegistrationService {
 
   async getMyRegistrations(): Promise<CourseRegistration[]> {
     try {
-      const response = await axios.get(`${API_URL}/my-registrations`, {
-        headers: this.getAuthHeaders(),
-      });
+      const response = await apiClient.get(`${API_URL}/my-registrations`);
       return response.data;
     } catch (error) {
       console.error('Error fetching my registrations:', error);
@@ -90,9 +77,7 @@ class CourseRegistrationService {
 
   async getRegistrationsByStatus(status: string): Promise<CourseRegistration[]> {
     try {
-      const response = await axios.get(`${API_URL}/by-status/${status}`, {
-        headers: this.getAuthHeaders(),
-      });
+      const response = await apiClient.get(`${API_URL}/by-status/${status}`);
       return response.data;
     } catch (error) {
       console.error('Error fetching registrations by status:', error);
@@ -101,13 +86,11 @@ class CourseRegistrationService {
   }
 
   async updateRegistrationStatus(
-    registrationId: string, 
+    registrationId: string,
     data: UpdateRegistrationData
   ): Promise<CourseRegistration> {
     try {
-      const response = await axios.put(`${API_URL}/${registrationId}/status`, data, {
-        headers: this.getAuthHeaders(),
-      });
+      const response = await apiClient.put(`${API_URL}/${registrationId}/status`, data);
       return response.data;
     } catch (error) {
       console.error('Error updating registration status:', error);
@@ -117,9 +100,7 @@ class CourseRegistrationService {
 
   async deleteRegistration(registrationId: string): Promise<void> {
     try {
-      await axios.delete(`${API_URL}/${registrationId}`, {
-        headers: this.getAuthHeaders(),
-      });
+      await apiClient.delete(`${API_URL}/${registrationId}`);
     } catch (error) {
       console.error('Error deleting registration:', error);
       throw error;
@@ -128,9 +109,7 @@ class CourseRegistrationService {
 
   async getRegistrationStats(): Promise<RegistrationStats> {
     try {
-      const response = await axios.get(`${API_URL}/stats`, {
-        headers: this.getAuthHeaders(),
-      });
+      const response = await apiClient.get(`${API_URL}/stats`);
       return response.data;
     } catch (error) {
       console.error('Error fetching registration stats:', error);

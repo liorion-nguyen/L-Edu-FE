@@ -1,7 +1,6 @@
-import axios from 'axios';
-import { envConfig } from '../config';
+import apiClient from './api';
 
-const API_URL = `${envConfig.serverURL}/dashboard/sessions`;
+const API_URL = '/dashboard/sessions';
 
 export interface Session {
   _id: string;
@@ -105,27 +104,9 @@ export interface UploadResponse {
 }
 
 class SessionService {
-  private getAuthHeaders() {
-    const token = localStorage.getItem('accessToken');
-    return {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    };
-  }
-
-  private getFormDataHeaders() {
-    const token = localStorage.getItem('accessToken');
-    return {
-      'Authorization': `Bearer ${token}`,
-    };
-  }
-
   async getSessions(params: SessionQueryParams = {}): Promise<SessionListResponse> {
     try {
-      const response = await axios.get(API_URL, {
-        headers: this.getAuthHeaders(),
-        params,
-      });
+      const response = await apiClient.get(API_URL, { params });
       return response.data;
     } catch (error) {
       console.error('Error fetching sessions:', error);
@@ -135,9 +116,7 @@ class SessionService {
 
   async getSession(id: string): Promise<SessionResponse> {
     try {
-      const response = await axios.get(`${API_URL}/${id}`, {
-        headers: this.getAuthHeaders(),
-      });
+      const response = await apiClient.get(`${API_URL}/${id}`);
       return response.data;
     } catch (error) {
       console.error('Error fetching session:', error);
@@ -147,15 +126,8 @@ class SessionService {
 
   async createSession(data: CreateSessionData): Promise<SessionResponse> {
     try {
-      // Add required fields - let backend handle sessionNumber conversion
-      const payload = {
-        ...data,
-        description: data.description || "", // Add required description field
-      };
-      
-      const response = await axios.post(API_URL, payload, {
-        headers: this.getAuthHeaders(),
-      });
+      const payload = { ...data, description: data.description || "" };
+      const response = await apiClient.post(API_URL, payload);
       return response.data;
     } catch (error) {
       console.error('Error creating session:', error);
@@ -165,15 +137,8 @@ class SessionService {
 
   async updateSession(id: string, data: UpdateSessionData): Promise<SessionResponse> {
     try {
-      // Let backend handle sessionNumber conversion if provided
-      const payload = {
-        ...data,
-        description: data.description || "", // Add required description field
-      };
-      
-      const response = await axios.put(`${API_URL}/${id}`, payload, {
-        headers: this.getAuthHeaders(),
-      });
+      const payload = { ...data, description: data.description || "" };
+      const response = await apiClient.put(`${API_URL}/${id}`, payload);
       return response.data;
     } catch (error) {
       console.error('Error updating session:', error);
@@ -183,9 +148,7 @@ class SessionService {
 
   async deleteSession(id: string): Promise<void> {
     try {
-      await axios.delete(`${API_URL}/${id}`, {
-        headers: this.getAuthHeaders(),
-      });
+      await apiClient.delete(`${API_URL}/${id}`);
     } catch (error) {
       console.error('Error deleting session:', error);
       throw error;
@@ -194,9 +157,7 @@ class SessionService {
 
   async getSessionStats(): Promise<SessionStatsResponse> {
     try {
-      const response = await axios.get(`${API_URL}/stats`, {
-        headers: this.getAuthHeaders(),
-      });
+      const response = await apiClient.get(`${API_URL}/stats`);
       return response.data;
     } catch (error) {
       console.error('Error fetching session stats:', error);
@@ -208,9 +169,8 @@ class SessionService {
     try {
       const formData = new FormData();
       formData.append('file', file);
-
-      const response = await axios.post(`${API_URL}/upload/thumbnail`, formData, {
-        headers: this.getFormDataHeaders(),
+      const response = await apiClient.post(`${API_URL}/upload/thumbnail`, formData, {
+        headers: { 'Content-Type': undefined as any },
       });
       return response.data;
     } catch (error) {
@@ -221,21 +181,16 @@ class SessionService {
 
   async deleteThumbnail(url: string): Promise<void> {
     try {
-      await axios.delete(`${API_URL}/delete/thumbnail`, {
-        headers: this.getAuthHeaders(),
-        data: { url },
-      });
+      await apiClient.delete(`${API_URL}/delete/thumbnail`, { data: { url } });
     } catch (error) {
       console.error('Error deleting thumbnail:', error);
       throw error;
     }
   }
 
-  async getCourses(): Promise<{courses: Array<{_id: string, title: string}>}> {
+  async getCourses(): Promise<{ courses: Array<{ _id: string; title: string }> }> {
     try {
-      const response = await axios.get(`${API_URL}/courses`, {
-        headers: this.getAuthHeaders(),
-      });
+      const response = await apiClient.get(`${API_URL}/courses`);
       return response.data;
     } catch (error) {
       console.error('Error fetching courses:', error);

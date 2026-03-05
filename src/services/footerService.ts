@@ -1,7 +1,6 @@
-import axios from 'axios';
-import { envConfig } from '../config';
+import apiClient from './api';
 
-const API_URL = `${envConfig.serverURL}/footer`;
+const API_URL = '/footer';
 
 export interface FooterLink {
   label: string;
@@ -51,54 +50,38 @@ export interface FooterListResponse {
 }
 
 class FooterService {
-  private getAuthHeaders() {
-    const token = localStorage.getItem('accessToken');
-    return {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    };
-  }
-
   async getFooters(): Promise<FooterListResponse> {
-    const response = await axios.get(API_URL);
+    const response = await apiClient.get(API_URL);
     return response.data;
   }
 
   async getFootersAdmin(): Promise<FooterListResponse> {
-    const response = await axios.get(`${API_URL}/admin`, {
-      headers: this.getAuthHeaders(),
-    });
+    const response = await apiClient.get(`${API_URL}/admin`);
     return response.data;
   }
 
   async getFooterById(id: string): Promise<FooterResponse> {
-    const response = await axios.get(`${API_URL}/${id}`);
+    const response = await apiClient.get(`${API_URL}/${id}`);
     return response.data;
   }
 
   async getFootersBySection(section: string): Promise<FooterListResponse> {
-    const response = await axios.get(`${API_URL}/section/${section}`);
+    const response = await apiClient.get(`${API_URL}/section/${section}`);
     return response.data;
   }
 
   async createFooter(data: CreateFooterData): Promise<FooterResponse> {
-    const response = await axios.post(API_URL, data, {
-      headers: this.getAuthHeaders(),
-    });
+    const response = await apiClient.post(API_URL, data);
     return response.data;
   }
 
   async updateFooter(id: string, data: UpdateFooterData): Promise<FooterResponse> {
-    const response = await axios.patch(`${API_URL}/${id}`, data, {
-      headers: this.getAuthHeaders(),
-    });
+    const response = await apiClient.patch(`${API_URL}/${id}`, data);
     return response.data;
   }
 
   async deleteFooter(id: string): Promise<FooterResponse> {
-    const response = await axios.delete(`${API_URL}/${id}`, {
-      headers: this.getAuthHeaders(),
-    });
+    const response = await apiClient.delete(`${API_URL}/${id}`);
     return response.data;
   }
 }

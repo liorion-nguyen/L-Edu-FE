@@ -73,10 +73,32 @@ const SessionManagement: React.FC = () => {
     fetchSessions();
   }, [pagination.current, pagination.pageSize, searchTerm, courseFilter, sortBy, sortOrder]);
 
-  // Fetch courses for filter
   useEffect(() => {
     fetchCourses();
   }, []);
+
+  useEffect(() => {
+    if (!isModalVisible) return;
+    if (editingSession) {
+      form.setFieldsValue({
+        title: editingSession.title,
+        sessionNumber: editingSession.sessionNumber,
+        description: editingSession.description,
+        courseId: editingSession.courseId,
+        mode: editingSession.mode,
+        videoUrl: editingSession.videoUrl?.videoUrl,
+        videoUrlMode: editingSession.videoUrl?.mode,
+        quizId: editingSession.quizId?.quizId,
+        quizIdMode: editingSession.quizId?.mode,
+        notesMd: editingSession.notesMd?.notesMd,
+        notesMdMode: editingSession.notesMd?.mode,
+      });
+      setFormValues({});
+    } else {
+      form.resetFields();
+      setFormValues({});
+    }
+  }, [isModalVisible, editingSession, form]);
 
   const fetchSessions = async () => {
     try {
@@ -222,20 +244,6 @@ const SessionManagement: React.FC = () => {
 
   const handleEdit = (session: Session) => {
     setEditingSession(session);
-    form.setFieldsValue({
-      title: session.title,
-      sessionNumber: session.sessionNumber,
-      description: session.description,
-      courseId: session.courseId,
-      mode: session.mode,
-      videoUrl: session.videoUrl?.videoUrl,
-      videoUrlMode: session.videoUrl?.mode,
-      quizId: session.quizId?.quizId,
-      quizIdMode: session.quizId?.mode,
-      notesMd: session.notesMd?.notesMd,
-      notesMdMode: session.notesMd?.mode,
-    });
-    setFormValues({});
     setIsModalVisible(true);
   };
 
@@ -292,8 +300,6 @@ const SessionManagement: React.FC = () => {
         };
       }
 
-      console.log('Sending data:', cleanValues);
-
       if (editingSession) {
         // Update session
         const updateData: UpdateSessionData = cleanValues;
@@ -317,6 +323,7 @@ const SessionManagement: React.FC = () => {
 
   const handleModalCancel = () => {
     setIsModalVisible(false);
+    setEditingSession(null);
     form.resetFields();
     setFormValues({});
   };
@@ -359,11 +366,11 @@ const SessionManagement: React.FC = () => {
         border: "1px solid var(--border-color)",
         borderRadius: "8px"
       }}>
-        <div style={{ marginBottom: "16px", display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+        <Space size="middle" wrap style={{ marginBottom: 16 }}>
           <Search
             placeholder={t('dashboard.sessions.searchPlaceholder')}
             allowClear
-            style={{ width: 300 }}
+            style={{ width: 320, minWidth: 200 }}
             prefix={<SearchOutlined />}
             onSearch={handleSearch}
             onChange={(e) => {
@@ -373,16 +380,20 @@ const SessionManagement: React.FC = () => {
               }
             }}
           />
-          
           <Select
             placeholder={t('dashboard.sessions.filterByCourse')}
-            style={{ width: 200 }}
+            style={{ width: 220, minWidth: 150 }}
             allowClear
-            value={courseFilter}
+            value={courseFilter || undefined}
             onChange={(value) => {
               setCourseFilter(value);
               setPagination(prev => ({ ...prev, current: 1 }));
             }}
+            showSearch
+            optionFilterProp="children"
+            filterOption={(input, option) =>
+              String(option?.children ?? '').toLowerCase().includes(input.toLowerCase())
+            }
           >
             {courses.map(course => (
               <Select.Option key={course._id} value={course._id}>
@@ -390,10 +401,9 @@ const SessionManagement: React.FC = () => {
               </Select.Option>
             ))}
           </Select>
-
           <Select
             placeholder={t('dashboard.sessions.sortBy')}
-            style={{ width: 150 }}
+            style={{ width: 160 }}
             value={sortBy}
             onChange={(value) => {
               setSortBy(value);
@@ -405,10 +415,9 @@ const SessionManagement: React.FC = () => {
             <Select.Option value="title">{t('dashboard.sessions.sortByTitle')}</Select.Option>
             <Select.Option value="order">{t('dashboard.sessions.sortByOrder')}</Select.Option>
           </Select>
-
           <Select
             placeholder={t('dashboard.sessions.sortOrder')}
-            style={{ width: 150 }}
+            style={{ width: 140 }}
             value={sortOrder}
             onChange={(value) => {
               setSortOrder(value);
@@ -418,13 +427,15 @@ const SessionManagement: React.FC = () => {
             <Select.Option value="desc">{t('dashboard.sessions.sortDesc')}</Select.Option>
             <Select.Option value="asc">{t('dashboard.sessions.sortAsc')}</Select.Option>
           </Select>
-        </div>
+        </Space>
 
         <Table
+          rowKey="_id"
           columns={columns}
           dataSource={sessions}
           loading={loading}
-          rowKey="_id"
+          size="middle"
+          locale={{ emptyText: t('dashboard.sessions.noSessions') || 'No sessions' }}
           pagination={{
             current: pagination.current,
             pageSize: pagination.pageSize,
@@ -435,7 +446,7 @@ const SessionManagement: React.FC = () => {
               `${range[0]}-${range[1]} ${t('dashboard.sessions.of')} ${total} ${t('dashboard.sessions.sessions')}`,
           }}
           onChange={handleTableChange}
-          scroll={{ x: 1200 }}
+          scroll={{ x: 1200, y: 480 }}
           style={{ background: "transparent" }}
         />
       </Card>
@@ -446,6 +457,8 @@ const SessionManagement: React.FC = () => {
         onOk={handleModalOk}
         onCancel={handleModalCancel}
         width={800}
+        destroyOnClose
+        maskClosable={false}
         style={{
           background: "var(--bg-primary)",
         }}
@@ -463,9 +476,8 @@ const SessionManagement: React.FC = () => {
         <Form
           form={form}
           layout="vertical"
-          initialValues={{ 
-            mode: "OPEN"
-          }}
+          key={editingSession?._id ?? 'add'}
+          initialValues={{ mode: "OPEN" }}
         >
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
             <Form.Item
@@ -498,7 +510,14 @@ const SessionManagement: React.FC = () => {
               label={t('dashboard.sessions.course')}
               rules={[{ required: true, message: t('dashboard.sessions.courseRequired') }]}
             >
-              <Select placeholder={t('dashboard.sessions.selectCourse')}>
+              <Select
+                placeholder={t('dashboard.sessions.selectCourse')}
+                showSearch
+                optionFilterProp="children"
+                filterOption={(input, option) =>
+                  String(option?.children ?? '').toLowerCase().includes(input.toLowerCase())
+                }
+              >
                 {courses.map(course => (
                   <Select.Option key={course._id} value={course._id}>
                     {course.title}
@@ -511,7 +530,7 @@ const SessionManagement: React.FC = () => {
               name="mode"
               label={t('dashboard.sessions.mode')}
             >
-              <Select>
+              <Select placeholder={t('dashboard.sessions.mode')} optionFilterProp="children">
                 <Select.Option value="OPEN">OPEN</Select.Option>
                 <Select.Option value="CLOSED">CLOSED</Select.Option>
               </Select>

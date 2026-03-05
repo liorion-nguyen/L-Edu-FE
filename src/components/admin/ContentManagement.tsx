@@ -38,6 +38,24 @@ const ContentManagement: React.FC = () => {
     fetchContents();
   }, []);
 
+  useEffect(() => {
+    if (!modalVisible) return;
+    if (editingContent) {
+      form.setFieldsValue({
+        page: editingContent.page,
+        section: editingContent.section || 'intro',
+        title: editingContent.title,
+        subtitle: editingContent.subtitle,
+        descriptions: editingContent.descriptions?.join('\n') ?? '',
+        sections: editingContent.sections ?? [],
+        isActive: editingContent.isActive,
+        order: editingContent.order ?? 0,
+      });
+    } else {
+      form.resetFields();
+    }
+  }, [modalVisible, editingContent, form]);
+
   const fetchContents = async () => {
     try {
       setLoading(true);
@@ -60,16 +78,6 @@ const ContentManagement: React.FC = () => {
 
   const handleEdit = (content: Content) => {
     setEditingContent(content);
-    form.setFieldsValue({
-      page: content.page,
-      section: content.section || 'intro', // Default to 'intro' if section is undefined
-      title: content.title,
-      subtitle: content.subtitle,
-      descriptions: content.descriptions.join('\n'),
-      sections: content.sections || [], // Ensure sections is always an array
-      isActive: content.isActive,
-      order: content.order || 0, // Default to 0 if order is undefined
-    });
     setModalVisible(true);
   };
 
@@ -91,12 +99,20 @@ const ContentManagement: React.FC = () => {
         message.success('Content created successfully');
       }
       setModalVisible(false);
+      setEditingContent(null);
+      form.resetFields();
       fetchContents();
     } catch (error) {
       message.error('Failed to save content');
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleModalCancel = () => {
+    setModalVisible(false);
+    setEditingContent(null);
+    form.resetFields();
   };
 
   const handleDelete = async (id: string) => {
@@ -216,23 +232,29 @@ const ContentManagement: React.FC = () => {
         </div>
 
         <Table
+          rowKey="_id"
           columns={columns}
           dataSource={contents}
-          rowKey="_id"
           loading={loading}
-          pagination={{ pageSize: 10 }}
+          size="middle"
+          locale={{ emptyText: 'No content' }}
+          pagination={{ pageSize: 10, showSizeChanger: true, showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}` }}
+          scroll={{ y: 480 }}
         />
 
         <Modal
           title={editingContent ? 'Edit Content' : 'Add Content'}
           open={modalVisible}
-          onCancel={() => setModalVisible(false)}
+          onCancel={handleModalCancel}
           footer={null}
           width={800}
+          destroyOnClose
+          maskClosable={false}
         >
           <Form
             form={form}
             layout="vertical"
+            key={editingContent?._id ?? 'add'}
             onFinish={handleSubmit}
           >
             <Row gutter={16}>
@@ -414,7 +436,7 @@ const ContentManagement: React.FC = () => {
 
             <Form.Item style={{ marginBottom: 0, textAlign: 'right' }}>
               <Space>
-                <Button onClick={() => setModalVisible(false)}>
+                <Button onClick={handleModalCancel}>
                   Cancel
                 </Button>
                 <Button type="primary" htmlType="submit" loading={loading}>

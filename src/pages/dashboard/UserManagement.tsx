@@ -44,10 +44,27 @@ const UserManagement: React.FC = () => {
   });
   const [form] = Form.useForm();
 
-  // Fetch users on component mount
   useEffect(() => {
     fetchUsers();
   }, [pagination.current, pagination.pageSize, searchTerm]);
+
+  useEffect(() => {
+    if (!isModalVisible) return;
+    if (editingUser) {
+      const rawPhone = editingUser.phone as string | { country?: string; number?: string } | undefined;
+      const phoneValue = rawPhone != null && typeof rawPhone === 'object' && 'number' in rawPhone
+        ? [rawPhone.country, rawPhone.number].filter(Boolean).join(' ')
+        : typeof rawPhone === 'string' ? rawPhone : undefined;
+      form.setFieldsValue({
+        ...editingUser,
+        phone: phoneValue,
+        birthday: editingUser.birthday ? new Date(editingUser.birthday).toISOString().split('T')[0] : undefined,
+      });
+    } else {
+      form.resetFields();
+      form.setFieldsValue({ status: 'ACTIVE', role: 'STUDENT' });
+    }
+  }, [isModalVisible, editingUser, form]);
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -113,12 +130,19 @@ const UserManagement: React.FC = () => {
       title: t('dashboard.users.phone'),
       dataIndex: "phone",
       key: "phone",
-      render: (phone: string) => (
-        <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-          <PhoneOutlined style={{ color: "var(--text-secondary)" }} />
-          {phone || 'N/A'}
-        </div>
-      ),
+      render: (phone: string | { country?: string; number?: string } | null | undefined) => {
+        const display = typeof phone === 'string'
+          ? phone
+          : phone && typeof phone === 'object' && 'number' in phone
+            ? [phone.country, phone.number].filter(Boolean).join(' ') || 'N/A'
+            : 'N/A';
+        return (
+          <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+            <PhoneOutlined style={{ color: "var(--text-secondary)" }} />
+            {display}
+          </div>
+        );
+      },
     },
     {
       title: t('dashboard.users.status'),
@@ -194,10 +218,6 @@ const UserManagement: React.FC = () => {
 
   const handleEdit = (user: User) => {
     setEditingUser(user);
-    form.setFieldsValue({
-      ...user,
-      birthday: user.birthday ? new Date(user.birthday).toISOString().split('T')[0] : undefined,
-    });
     setIsModalVisible(true);
   };
 
@@ -245,6 +265,7 @@ const UserManagement: React.FC = () => {
 
   const handleModalCancel = () => {
     setIsModalVisible(false);
+    setEditingUser(null);
     form.resetFields();
   };
 
@@ -286,11 +307,11 @@ const UserManagement: React.FC = () => {
         border: "1px solid var(--border-color)",
         borderRadius: "8px"
       }}>
-        <div style={{ marginBottom: "16px" }}>
+        <Space direction="vertical" size="middle" style={{ width: '100%', marginBottom: 16 }}>
           <Search
             placeholder={t('dashboard.users.searchPlaceholder')}
             allowClear
-            style={{ width: 300 }}
+            style={{ width: 320, maxWidth: '100%' }}
             prefix={<SearchOutlined />}
             onSearch={handleSearch}
             onChange={(e) => {
@@ -299,12 +320,15 @@ const UserManagement: React.FC = () => {
               }
             }}
           />
-        </div>
+        </Space>
 
         <Table
+          rowKey={(record) => record._id}
           columns={columns}
-          dataSource={users.map(user => ({ ...user, key: user._id }))}
+          dataSource={users}
           loading={loading}
+          size="middle"
+          locale={{ emptyText: t('dashboard.users.noUsers') || 'No users' }}
           pagination={{
             current: pagination.current,
             pageSize: pagination.pageSize,
@@ -315,7 +339,7 @@ const UserManagement: React.FC = () => {
               `${range[0]}-${range[1]} ${t('dashboard.users.of')} ${total} ${t('dashboard.users.users')}`,
           }}
           onChange={handleTableChange}
-          scroll={{ x: 800 }}
+          scroll={{ x: 800, y: 480 }}
           style={{ background: "transparent" }}
         />
       </Card>
@@ -326,10 +350,9 @@ const UserManagement: React.FC = () => {
         onOk={handleModalOk}
         onCancel={handleModalCancel}
         width={600}
-        destroyOnClose={true}
-        maskClosable={true}
-        closable={true}
-        centered={false}
+        destroyOnClose
+        maskClosable={false}
+        closable
         zIndex={1000}
         style={{
           background: "var(--bg-primary)",
@@ -354,6 +377,7 @@ const UserManagement: React.FC = () => {
         <Form
           form={form}
           layout="vertical"
+          key={editingUser?._id ?? 'add'}
           initialValues={{ status: "ACTIVE", role: "STUDENT" }}
         >
           <Form.Item
@@ -397,7 +421,7 @@ const UserManagement: React.FC = () => {
             label={t('dashboard.users.status')}
             rules={[{ required: true, message: t('dashboard.users.statusRequired') }]}
           >
-            <Select>
+            <Select placeholder={t('dashboard.users.status')} optionFilterProp="children">
               <Select.Option value="ACTIVE">{t('dashboard.users.statusActive')}</Select.Option>
               <Select.Option value="INACTIVE">{t('dashboard.users.statusInactive')}</Select.Option>
               <Select.Option value="NOT_ACTIVED">Not Activated</Select.Option>
@@ -409,7 +433,7 @@ const UserManagement: React.FC = () => {
             label={t('dashboard.users.role')}
             rules={[{ required: true, message: t('dashboard.users.roleRequired') }]}
           >
-            <Select>
+            <Select placeholder={t('dashboard.users.role')} optionFilterProp="children">
               <Select.Option value="ADMIN">{t('dashboard.users.roleAdmin')}</Select.Option>
               <Select.Option value="STUDENT">{t('dashboard.users.roleStudent')}</Select.Option>
               <Select.Option value="TEACHER">Teacher</Select.Option>

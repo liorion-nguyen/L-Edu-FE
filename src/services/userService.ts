@@ -1,7 +1,6 @@
-import axios from 'axios';
-import { envConfig } from '../config';
+import apiClient from './api';
 
-const API_BASE_URL = `${envConfig.serverURL}/dashboard/users`;
+const API_BASE_URL = '/dashboard/users';
 
 export interface User {
   _id: string;
@@ -78,20 +77,9 @@ export interface ApiResponse<T> {
 }
 
 class UserService {
-  private getAuthHeaders() {
-    const token = localStorage.getItem('accessToken');
-    return {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    };
-  }
-
   async getAllUsers(params: UserQueryParams = {}): Promise<ApiResponse<User[]>> {
     try {
-      const response = await axios.get(API_BASE_URL, {
-        headers: this.getAuthHeaders(),
-        params,
-      });
+      const response = await apiClient.get(API_BASE_URL, { params });
       return response.data;
     } catch (error: any) {
       throw new Error(error.response?.data?.message || 'Failed to fetch users');
@@ -100,9 +88,7 @@ class UserService {
 
   async getUserById(id: string): Promise<ApiResponse<User>> {
     try {
-      const response = await axios.get(`${API_BASE_URL}/${id}`, {
-        headers: this.getAuthHeaders(),
-      });
+      const response = await apiClient.get(`${API_BASE_URL}/${id}`);
       return response.data;
     } catch (error: any) {
       throw new Error(error.response?.data?.message || 'Failed to fetch user');
@@ -111,9 +97,7 @@ class UserService {
 
   async createUser(userData: CreateUserData): Promise<ApiResponse<User>> {
     try {
-      const response = await axios.post(API_BASE_URL, userData, {
-        headers: this.getAuthHeaders(),
-      });
+      const response = await apiClient.post(API_BASE_URL, userData);
       return response.data;
     } catch (error: any) {
       throw new Error(error.response?.data?.message || 'Failed to create user');
@@ -122,9 +106,7 @@ class UserService {
 
   async updateUser(id: string, userData: UpdateUserData): Promise<ApiResponse<User>> {
     try {
-      const response = await axios.put(`${API_BASE_URL}/${id}`, userData, {
-        headers: this.getAuthHeaders(),
-      });
+      const response = await apiClient.put(`${API_BASE_URL}/${id}`, userData);
       return response.data;
     } catch (error: any) {
       throw new Error(error.response?.data?.message || 'Failed to update user');
@@ -133,9 +115,7 @@ class UserService {
 
   async deleteUser(id: string): Promise<ApiResponse<User>> {
     try {
-      const response = await axios.delete(`${API_BASE_URL}/${id}`, {
-        headers: this.getAuthHeaders(),
-      });
+      const response = await apiClient.delete(`${API_BASE_URL}/${id}`);
       return response.data;
     } catch (error: any) {
       throw new Error(error.response?.data?.message || 'Failed to delete user');
@@ -144,9 +124,7 @@ class UserService {
 
   async getUserStats(): Promise<ApiResponse<UserStats>> {
     try {
-      const response = await axios.get(`${API_BASE_URL}/stats/overview`, {
-        headers: this.getAuthHeaders(),
-      });
+      const response = await apiClient.get(`${API_BASE_URL}/stats/overview`);
       return response.data;
     } catch (error: any) {
       throw new Error(error.response?.data?.message || 'Failed to fetch user statistics');

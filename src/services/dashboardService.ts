@@ -1,5 +1,4 @@
-import axios from 'axios';
-import { envConfig } from '../config';
+import apiClient from './api';
 
 interface DashboardStats {
   totalUsers: number;
@@ -40,19 +39,9 @@ interface ReviewTrendsData {
 }
 
 class DashboardService {
-  private getAuthHeaders() {
-    const token = localStorage.getItem('token');
-    return {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    };
-  }
-
   async getDashboardStats(): Promise<DashboardStats> {
     try {
-      const response = await axios.get(`${envConfig.serverURL}/dashboard/stats`, {
-        headers: this.getAuthHeaders(),
-      });
+      const response = await apiClient.get('/dashboard/stats');
       return response.data;
     } catch (error) {
       console.error('Error fetching dashboard stats:', error);
@@ -62,9 +51,7 @@ class DashboardService {
 
   async getUserGrowthData(): Promise<UserGrowthData[]> {
     try {
-      const response = await axios.get(`${envConfig.serverURL}/dashboard/stats/user-growth`, {
-        headers: this.getAuthHeaders(),
-      });
+      const response = await apiClient.get('/dashboard/stats/user-growth');
       return response.data;
     } catch (error) {
       console.error('Error fetching user growth data:', error);
@@ -74,9 +61,7 @@ class DashboardService {
 
   async getCourseEnrollmentData(): Promise<CourseEnrollmentData[]> {
     try {
-      const response = await axios.get(`${envConfig.serverURL}/dashboard/stats/course-enrollment`, {
-        headers: this.getAuthHeaders(),
-      });
+      const response = await apiClient.get('/dashboard/stats/course-enrollment');
       return response.data;
     } catch (error) {
       console.error('Error fetching course enrollment data:', error);
@@ -86,9 +71,7 @@ class DashboardService {
 
   async getChatActivityData(): Promise<ChatActivityData[]> {
     try {
-      const response = await axios.get(`${envConfig.serverURL}/dashboard/stats/chat-activity`, {
-        headers: this.getAuthHeaders(),
-      });
+      const response = await apiClient.get('/dashboard/stats/chat-activity');
       return response.data;
     } catch (error) {
       console.error('Error fetching chat activity data:', error);
@@ -98,9 +81,7 @@ class DashboardService {
 
   async getReviewTrendsData(): Promise<ReviewTrendsData[]> {
     try {
-      const response = await axios.get(`${envConfig.serverURL}/dashboard/stats/review-trends`, {
-        headers: this.getAuthHeaders(),
-      });
+      const response = await apiClient.get('/dashboard/stats/review-trends');
       return response.data;
     } catch (error) {
       console.error('Error fetching review trends data:', error);
@@ -110,9 +91,7 @@ class DashboardService {
 
   async getRecentActivities(): Promise<any[]> {
     try {
-      const response = await axios.get(`${envConfig.serverURL}/dashboard/recent-activities`, {
-        headers: this.getAuthHeaders(),
-      });
+      const response = await apiClient.get('/dashboard/recent-activities');
       return response.data;
     } catch (error) {
       console.error('Error fetching recent activities:', error);

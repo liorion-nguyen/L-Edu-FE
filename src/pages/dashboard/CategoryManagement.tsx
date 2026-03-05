@@ -23,6 +23,7 @@ import {
   EditOutlined,
   DeleteOutlined,
   UploadOutlined,
+  SearchOutlined,
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { categoryService, Category, CreateCategoryData, UpdateCategoryData } from '../../services/categoryService';
@@ -58,6 +59,24 @@ const CategoryManagement: React.FC = () => {
     fetchStats();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pagination.current, pagination.pageSize, searchText]);
+
+  useEffect(() => {
+    if (!isModalVisible) return;
+    if (editingCategory) {
+      form.setFieldsValue({
+        name: editingCategory.name,
+        description: editingCategory.description,
+        color: editingCategory.color,
+        isActive: editingCategory.isActive,
+        order: editingCategory.order,
+      });
+      setFormValues({ icon: editingCategory.icon });
+    } else {
+      form.resetFields();
+      setFormValues({});
+      form.setFieldsValue({ isActive: true, order: 0 });
+    }
+  }, [isModalVisible, editingCategory, form]);
 
   const fetchCategories = async () => {
     try {
@@ -97,14 +116,6 @@ const CategoryManagement: React.FC = () => {
 
   const handleEdit = (category: Category) => {
     setEditingCategory(category);
-    form.setFieldsValue({
-      name: category.name,
-      description: category.description,
-      color: category.color,
-      isActive: category.isActive,
-      order: category.order,
-    });
-    setFormValues({ icon: category.icon });
     setIsModalVisible(true);
   };
 
@@ -152,6 +163,7 @@ const CategoryManagement: React.FC = () => {
 
   const handleModalCancel = () => {
     setIsModalVisible(false);
+    setEditingCategory(null);
     form.resetFields();
     setFormValues({});
   };
@@ -329,10 +341,12 @@ const CategoryManagement: React.FC = () => {
       </Row>
 
       <Card>
-        <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
+        <Space size="middle" wrap style={{ marginBottom: 16, justifyContent: 'space-between', width: '100%' }}>
           <Input.Search
             placeholder={t('dashboard.categories.searchPlaceholder')}
-            style={{ width: 300, minWidth: 200 }}
+            allowClear
+            prefix={<SearchOutlined />}
+            style={{ width: 320, minWidth: 200 }}
             onSearch={handleSearch}
             onChange={(e) => {
               if (e.target.value === '') {
@@ -347,14 +361,16 @@ const CategoryManagement: React.FC = () => {
           >
             {t('dashboard.categories.addCategory')}
           </Button>
-        </div>
+        </Space>
 
         <Table
+          rowKey="_id"
           columns={columns}
           dataSource={categories}
-          rowKey="_id"
           loading={loading}
-          scroll={{ x: 600 }}
+          size="middle"
+          locale={{ emptyText: t('dashboard.categories.noCategories') || 'No categories' }}
+          scroll={{ x: 600, y: 480 }}
           pagination={{
             current: pagination.current,
             pageSize: pagination.pageSize,
@@ -380,6 +396,8 @@ const CategoryManagement: React.FC = () => {
         onOk={handleModalOk}
         onCancel={handleModalCancel}
         width={600}
+        destroyOnClose
+        maskClosable={false}
         style={{
           backgroundColor: 'var(--background-color)',
           color: 'var(--text-color)',
@@ -394,6 +412,7 @@ const CategoryManagement: React.FC = () => {
         <Form
           form={form}
           layout="vertical"
+          key={editingCategory?._id ?? 'add'}
           initialValues={{
             isActive: true,
             order: 0,

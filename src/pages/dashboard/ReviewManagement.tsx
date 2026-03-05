@@ -54,6 +54,23 @@ const ReviewManagement: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pagination.current, searchTerm, statusFilter]);
 
+  useEffect(() => {
+    if (!isModalVisible) return;
+    if (editingReview) {
+      const userLabel = editingReview.user?.fullName ?? editingReview.user?._id ?? '—';
+      const courseLabel = editingReview.course?.name ?? '—';
+      form.setFieldsValue({
+        user: userLabel,
+        course: courseLabel,
+        rating: editingReview.rating,
+        comment: editingReview.comment,
+        status: editingReview.status,
+      });
+    } else {
+      form.resetFields();
+    }
+  }, [isModalVisible, editingReview, form]);
+
   const fetchReviews = async () => {
     try {
       setLoading(true);
@@ -104,11 +121,6 @@ const ReviewManagement: React.FC = () => {
 
   const handleEdit = (review: Review) => {
     setEditingReview(review);
-    form.setFieldsValue({
-      rating: review.rating,
-      comment: review.comment,
-      status: review.status,
-    });
     setIsModalVisible(true);
   };
 
@@ -136,8 +148,8 @@ const ReviewManagement: React.FC = () => {
 
   const handleModalCancel = () => {
     setIsModalVisible(false);
-    form.resetFields();
     setEditingReview(null);
+    form.resetFields();
   };
 
   const handleDelete = async (reviewId: string) => {
@@ -347,11 +359,11 @@ const ReviewManagement: React.FC = () => {
         border: "1px solid var(--border-color)",
         borderRadius: "8px"
       }}>
-        <div style={{ marginBottom: "16px", display: "flex", gap: "16px", flexWrap: "wrap" }}>
+        <Space size="middle" wrap style={{ marginBottom: 16 }}>
           <Search
             placeholder={t('dashboard.reviews.searchPlaceholder')}
             allowClear
-            style={{ width: 300 }}
+            style={{ width: 320, minWidth: 200 }}
             prefix={<SearchOutlined />}
             onSearch={handleSearch}
             onChange={(e) => !e.target.value && handleSearch('')}
@@ -359,20 +371,23 @@ const ReviewManagement: React.FC = () => {
           <Select
             placeholder={t('dashboard.reviews.status')}
             allowClear
-            style={{ width: 200 }}
-            value={statusFilter}
+            style={{ width: 220, minWidth: 150 }}
+            value={statusFilter || undefined}
             onChange={handleStatusFilter}
           >
             <Select.Option value="PENDING">{t('dashboard.reviews.statusPending')}</Select.Option>
             <Select.Option value="APPROVED">{t('dashboard.reviews.statusApproved')}</Select.Option>
             <Select.Option value="REJECTED">{t('dashboard.reviews.statusRejected')}</Select.Option>
           </Select>
-        </div>
+        </Space>
 
         <Table
+          rowKey={(record) => record._id}
           columns={columns}
           dataSource={reviews}
           loading={loading}
+          size="middle"
+          locale={{ emptyText: t('dashboard.reviews.noReviews') || 'No reviews' }}
           pagination={{
             current: pagination.current,
             pageSize: pagination.pageSize,
@@ -383,7 +398,7 @@ const ReviewManagement: React.FC = () => {
               `${range[0]}-${range[1]} ${t('dashboard.reviews.of')} ${total} ${t('dashboard.reviews.reviews')}`,
             onChange: handlePageChange,
           }}
-          scroll={{ x: 1000 }}
+          scroll={{ x: 1000, y: 480 }}
           style={{ background: "transparent" }}
         />
       </Card>
@@ -394,6 +409,8 @@ const ReviewManagement: React.FC = () => {
         onOk={handleModalOk}
         onCancel={handleModalCancel}
         width={600}
+        destroyOnClose
+        maskClosable={false}
         footer={[
           <Button key="cancel" onClick={handleModalCancel}>
             {t('dashboard.reviews.cancel')}
@@ -406,6 +423,7 @@ const ReviewManagement: React.FC = () => {
         <Form
           form={form}
           layout="vertical"
+          key={editingReview?._id ?? 'add'}
         >
           <Form.Item
             name="user"
@@ -438,11 +456,12 @@ const ReviewManagement: React.FC = () => {
           <Form.Item
             name="status"
             label={t('dashboard.reviews.status')}
+            rules={[{ required: true }]}
           >
-            <Select>
-              <Select.Option value="approved">{t('dashboard.reviews.statusApproved')}</Select.Option>
-              <Select.Option value="pending">{t('dashboard.reviews.statusPending')}</Select.Option>
-              <Select.Option value="rejected">{t('dashboard.reviews.statusRejected')}</Select.Option>
+            <Select placeholder={t('dashboard.reviews.status')} optionFilterProp="children">
+              <Select.Option value="PENDING">{t('dashboard.reviews.statusPending')}</Select.Option>
+              <Select.Option value="APPROVED">{t('dashboard.reviews.statusApproved')}</Select.Option>
+              <Select.Option value="REJECTED">{t('dashboard.reviews.statusRejected')}</Select.Option>
             </Select>
           </Form.Item>
         </Form>

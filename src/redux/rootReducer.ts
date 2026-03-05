@@ -3,12 +3,14 @@ import authReducer from './slices/auth';
 import coursesReducer from './slices/courses';
 import messagesReducer from './slices/messages';
 import { examsReducer } from './slices/exams';
-// slices
+import categoriesReducer from './slices/categories';
+
 const rootReducer = combineReducers({
-    auth: authReducer,
-    courses: coursesReducer,
-    messages: messagesReducer,
-    exams: examsReducer,
+  auth: authReducer,
+  courses: coursesReducer,
+  messages: messagesReducer,
+  exams: examsReducer,
+  categories: categoriesReducer,
 });
 
 export default rootReducer;

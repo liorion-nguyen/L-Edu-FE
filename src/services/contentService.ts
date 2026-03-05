@@ -1,7 +1,6 @@
-import axios from 'axios';
-import { envConfig } from '../config';
+import apiClient from './api';
 
-const API_URL = `${envConfig.serverURL}/content`;
+const API_URL = '/content';
 
 export interface ContentSection {
   title: string;
@@ -59,49 +58,33 @@ export interface UpdateContentData {
 }
 
 class ContentService {
-  private getAuthHeaders() {
-    const token = localStorage.getItem('accessToken');
-    return {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    };
-  }
-
   async getContents(): Promise<ContentListResponse> {
-    const response = await axios.get(API_URL, {
-      headers: this.getAuthHeaders(),
-    });
+    const response = await apiClient.get(API_URL);
     return response.data;
   }
 
   async getContentByPage(page: string): Promise<ContentListResponse> {
-    const response = await axios.get(`${API_URL}/page/${page}`);
+    const response = await apiClient.get(`${API_URL}/page/${page}`);
     return response.data;
   }
 
   async getContentByPageAndSection(page: string, section: string): Promise<ContentResponse> {
-    const response = await axios.get(`${API_URL}/page/${page}/section/${section}`);
+    const response = await apiClient.get(`${API_URL}/page/${page}/section/${section}`);
     return response.data;
   }
 
   async createContent(data: CreateContentData): Promise<ContentResponse> {
-    const response = await axios.post(API_URL, data, {
-      headers: this.getAuthHeaders(),
-    });
+    const response = await apiClient.post(API_URL, data);
     return response.data;
   }
 
   async updateContent(id: string, data: UpdateContentData): Promise<ContentResponse> {
-    const response = await axios.patch(`${API_URL}/${id}`, data, {
-      headers: this.getAuthHeaders(),
-    });
+    const response = await apiClient.patch(`${API_URL}/${id}`, data);
     return response.data;
   }
 
   async deleteContent(id: string): Promise<void> {
-    await axios.delete(`${API_URL}/${id}`, {
-      headers: this.getAuthHeaders(),
-    });
+    await apiClient.delete(`${API_URL}/${id}`);
   }
 }
 

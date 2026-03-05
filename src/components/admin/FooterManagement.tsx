@@ -39,6 +39,21 @@ const FooterManagement: React.FC = () => {
     fetchFooters();
   }, []);
 
+  useEffect(() => {
+    if (!modalVisible) return;
+    if (editingFooter) {
+      form.setFieldsValue({
+        section: editingFooter.section,
+        title: editingFooter.title,
+        links: editingFooter.links ?? [],
+        isActive: editingFooter.isActive,
+        order: editingFooter.order,
+      });
+    } else {
+      form.resetFields();
+    }
+  }, [modalVisible, editingFooter, form]);
+
   const fetchFooters = async () => {
     try {
       setLoading(true);
@@ -61,13 +76,6 @@ const FooterManagement: React.FC = () => {
 
   const handleEdit = (footer: Footer) => {
     setEditingFooter(footer);
-    form.setFieldsValue({
-      section: footer.section,
-      title: footer.title,
-      links: footer.links,
-      isActive: footer.isActive,
-      order: footer.order,
-    });
     setModalVisible(true);
   };
 
@@ -83,10 +91,18 @@ const FooterManagement: React.FC = () => {
         message.success('Footer section created successfully');
       }
       setModalVisible(false);
+      setEditingFooter(null);
+      form.resetFields();
       fetchFooters();
     } catch (error: any) {
       message.error(error.response?.data?.message || 'Failed to save footer section');
     }
+  };
+
+  const handleModalCancel = () => {
+    setModalVisible(false);
+    setEditingFooter(null);
+    form.resetFields();
   };
 
   const handleDelete = async (id: string) => {
@@ -215,28 +231,34 @@ const FooterManagement: React.FC = () => {
         </Row>
 
         <Table
+          rowKey="_id"
           columns={columns}
           dataSource={footers}
           loading={loading}
-          rowKey="_id"
+          size="middle"
+          locale={{ emptyText: 'No footer sections' }}
           pagination={{
             pageSize: 10,
             showSizeChanger: true,
             showQuickJumper: true,
             showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} sections`,
           }}
+          scroll={{ y: 480 }}
         />
 
         <Modal
           title={editingFooter ? 'Edit Footer Section' : 'Add Footer Section'}
           open={modalVisible}
-          onCancel={() => setModalVisible(false)}
+          onCancel={handleModalCancel}
           footer={null}
           width={800}
+          destroyOnClose
+          maskClosable={false}
         >
           <Form
             form={form}
             layout="vertical"
+            key={editingFooter?._id ?? 'add'}
             onFinish={handleSubmit}
           >
             <Row gutter={16}>
@@ -246,7 +268,7 @@ const FooterManagement: React.FC = () => {
                   label="Section"
                   rules={[{ required: true, message: 'Please select a section' }]}
                 >
-                  <Select placeholder="Select footer section">
+                  <Select placeholder="Select footer section" optionFilterProp="children">
                     <Option value="company">Company</Option>
                     <Option value="support">Support</Option>
                     <Option value="legal">Legal</Option>
@@ -365,7 +387,7 @@ const FooterManagement: React.FC = () => {
 
             <Form.Item style={{ marginBottom: 0, textAlign: 'right' }}>
               <Space>
-                <Button onClick={() => setModalVisible(false)}>
+                <Button onClick={handleModalCancel}>
                   Cancel
                 </Button>
                 <Button type="primary" htmlType="submit">

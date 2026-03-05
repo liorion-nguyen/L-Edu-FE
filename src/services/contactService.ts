@@ -1,7 +1,6 @@
-import axios from 'axios';
-import { envConfig } from '../config';
+import apiClient from './api';
 
-const API_URL = `${envConfig.serverURL}/contact`;
+const API_URL = '/contact';
 
 export interface Contact {
   _id: string;
@@ -46,54 +45,38 @@ export interface ContactListResponse {
 }
 
 class ContactService {
-  private getAuthHeaders() {
-    const token = localStorage.getItem('accessToken');
-    return {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    };
-  }
-
   async getContacts(): Promise<ContactListResponse> {
-    const response = await axios.get(API_URL);
+    const response = await apiClient.get(API_URL);
     return response.data;
   }
 
   async getContactsAdmin(): Promise<ContactListResponse> {
-    const response = await axios.get(`${API_URL}/admin`, {
-      headers: this.getAuthHeaders(),
-    });
+    const response = await apiClient.get(`${API_URL}/admin`);
     return response.data;
   }
 
   async getContactById(id: string): Promise<ContactResponse> {
-    const response = await axios.get(`${API_URL}/${id}`);
+    const response = await apiClient.get(`${API_URL}/${id}`);
     return response.data;
   }
 
   async getContactsByType(type: string): Promise<ContactListResponse> {
-    const response = await axios.get(`${API_URL}/type/${type}`);
+    const response = await apiClient.get(`${API_URL}/type/${type}`);
     return response.data;
   }
 
   async createContact(data: CreateContactData): Promise<ContactResponse> {
-    const response = await axios.post(API_URL, data, {
-      headers: this.getAuthHeaders(),
-    });
+    const response = await apiClient.post(API_URL, data);
     return response.data;
   }
 
   async updateContact(id: string, data: UpdateContactData): Promise<ContactResponse> {
-    const response = await axios.patch(`${API_URL}/${id}`, data, {
-      headers: this.getAuthHeaders(),
-    });
+    const response = await apiClient.patch(`${API_URL}/${id}`, data);
     return response.data;
   }
 
   async deleteContact(id: string): Promise<ContactResponse> {
-    const response = await axios.delete(`${API_URL}/${id}`, {
-      headers: this.getAuthHeaders(),
-    });
+    const response = await apiClient.delete(`${API_URL}/${id}`);
     return response.data;
   }
 }

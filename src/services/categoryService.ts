@@ -1,7 +1,6 @@
-import axios from 'axios';
-import { envConfig } from '../config';
+import apiClient from './api';
 
-const API_URL = `${envConfig.serverURL}/dashboard/categories`;
+const API_URL = '/dashboard/categories';
 
 export interface Category {
   _id: string;
@@ -66,84 +65,52 @@ export interface UploadResponse {
 }
 
 class CategoryService {
-  private getAuthHeaders() {
-    const token = localStorage.getItem('accessToken');
-    return {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    };
-  }
-
-  private getFormDataHeaders() {
-    const token = localStorage.getItem('accessToken');
-    return {
-      'Authorization': `Bearer ${token}`,
-    };
-  }
-
   async getCategories(params?: CategoryQueryParams): Promise<CategoryListResponse> {
-    const response = await axios.get(API_URL, {
-      headers: this.getAuthHeaders(),
-      params,
-    });
+    const response = await apiClient.get(API_URL, { params });
     return response.data;
   }
 
-  // Public endpoint for students - no authentication required
   async getPublicCategories(): Promise<{ data: Category[] }> {
-    const response = await axios.get(`${envConfig.serverURL}/courses/categories`);
+    const response = await apiClient.get('/courses/categories');
     return response.data;
   }
 
   async getCategory(id: string): Promise<CategoryResponse> {
-    const response = await axios.get(`${API_URL}/${id}`, {
-      headers: this.getAuthHeaders(),
-    });
+    const response = await apiClient.get(`${API_URL}/${id}`);
     return response.data;
   }
 
   async createCategory(data: CreateCategoryData): Promise<CategoryResponse> {
-    const response = await axios.post(API_URL, data, {
-      headers: this.getAuthHeaders(),
-    });
+    const response = await apiClient.post(API_URL, data);
     return response.data;
   }
 
   async updateCategory(id: string, data: UpdateCategoryData): Promise<CategoryResponse> {
-    const response = await axios.patch(`${API_URL}/${id}`, data, {
-      headers: this.getAuthHeaders(),
-    });
+    const response = await apiClient.patch(`${API_URL}/${id}`, data);
     return response.data;
   }
 
   async deleteCategory(id: string): Promise<{ message: string }> {
-    const response = await axios.delete(`${API_URL}/${id}`, {
-      headers: this.getAuthHeaders(),
-    });
+    const response = await apiClient.delete(`${API_URL}/${id}`);
     return response.data;
   }
 
   async getCategoryStats(): Promise<CategoryStatsResponse> {
-    const response = await axios.get(`${API_URL}/stats`, {
-      headers: this.getAuthHeaders(),
-    });
+    const response = await apiClient.get(`${API_URL}/stats`);
     return response.data;
   }
 
   async uploadIcon(file: File): Promise<UploadResponse> {
     const formData = new FormData();
     formData.append('file', file);
-
-    const response = await axios.post(`${API_URL}/upload/icon`, formData, {
-      headers: this.getFormDataHeaders(),
+    const response = await apiClient.post(`${API_URL}/upload/icon`, formData, {
+      headers: { 'Content-Type': undefined as any },
     });
     return response.data;
   }
 
   async deleteIcon(url: string): Promise<{ message: string }> {
-    const response = await axios.delete(`${API_URL}/icon/${encodeURIComponent(url)}`, {
-      headers: this.getAuthHeaders(),
-    });
+    const response = await apiClient.delete(`${API_URL}/icon/${encodeURIComponent(url)}`);
     return response.data;
   }
 }

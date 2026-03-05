@@ -1,7 +1,6 @@
-import axios from 'axios';
-import { envConfig } from '../config';
+import apiClient from './api';
 
-const API_URL = `${envConfig.serverURL}/dashboard/courses`;
+const API_URL = '/dashboard/courses';
 
 export interface Course {
   _id: string;
@@ -107,143 +106,72 @@ export interface CourseStatsResponse {
 
 export const courseService = {
   async getAllCourses(params: CourseQueryParams): Promise<CourseListResponse> {
-    const token = localStorage.getItem('accessToken');
-    const response = await axios.get(API_URL, {
-      params,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await apiClient.get(API_URL, { params });
     return response.data;
   },
 
   async getCourseById(id: string): Promise<CourseResponse> {
-    const token = localStorage.getItem('accessToken');
-    const response = await axios.get(`${API_URL}/${id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await apiClient.get(`${API_URL}/${id}`);
     return response.data;
   },
 
   async createCourse(courseData: CreateCourseData): Promise<CourseResponse> {
-    const token = localStorage.getItem('accessToken');
-    const response = await axios.post(API_URL, courseData, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await apiClient.post(API_URL, courseData);
     return response.data;
   },
 
   async updateCourse(id: string, courseData: UpdateCourseData): Promise<CourseResponse> {
-    const token = localStorage.getItem('accessToken');
-    const response = await axios.put(`${API_URL}/${id}`, courseData, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await apiClient.put(`${API_URL}/${id}`, courseData);
     return response.data;
   },
 
   async deleteCourse(id: string): Promise<CourseResponse> {
-    const token = localStorage.getItem('accessToken');
-    const response = await axios.delete(`${API_URL}/${id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await apiClient.delete(`${API_URL}/${id}`);
     return response.data;
   },
 
   async getCourseStats(): Promise<CourseStatsResponse> {
-    const token = localStorage.getItem('accessToken');
-    const response = await axios.get(`${API_URL}/stats`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await apiClient.get(`${API_URL}/stats`);
     return response.data;
   },
 
   async addStudentToCourse(courseId: string, studentId: string): Promise<CourseResponse> {
-    const token = localStorage.getItem('accessToken');
-    const response = await axios.post(`${API_URL}/${courseId}/students`, { studentId }, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await apiClient.post(`${API_URL}/${courseId}/students`, { studentId });
     return response.data;
   },
 
   async removeStudentFromCourse(courseId: string, studentId: string): Promise<CourseResponse> {
-    const token = localStorage.getItem('accessToken');
-    const response = await axios.delete(`${API_URL}/${courseId}/students/${studentId}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await apiClient.delete(`${API_URL}/${courseId}/students/${studentId}`);
     return response.data;
   },
 
   async updateCourseInstructor(courseId: string, instructorId: string | null): Promise<CourseResponse> {
-    const token = localStorage.getItem('accessToken');
-    const response = await axios.put(`${API_URL}/${courseId}/instructor`, { instructorId: instructorId || null }, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await apiClient.put(`${API_URL}/${courseId}/instructor`, { instructorId: instructorId || null });
     return response.data;
   },
 
   async removeCourseInstructor(courseId: string): Promise<CourseResponse> {
-    const token = localStorage.getItem('accessToken');
-    const response = await axios.delete(`${API_URL}/${courseId}/instructor`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await apiClient.delete(`${API_URL}/${courseId}/instructor`);
     return response.data;
   },
 
   async getAvailableInstructors(): Promise<{ success: boolean; message: string; data: any[] }> {
-    const token = localStorage.getItem('accessToken');
-    const response = await axios.get(`${API_URL}/available/instructors`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await apiClient.get(`${API_URL}/available/instructors`);
     return response.data;
   },
 
   async getAvailableStudents(): Promise<{ success: boolean; message: string; data: any[] }> {
-    const token = localStorage.getItem('accessToken');
-    const response = await axios.get(`${API_URL}/available/students`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await apiClient.get(`${API_URL}/available/students`);
     return response.data;
   },
 
   async getCourseStudents(courseId: string): Promise<{ success: boolean; message: string; data: any[] }> {
-    const token = localStorage.getItem('accessToken');
-    const response = await axios.get(`${API_URL}/${courseId}/students`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await apiClient.get(`${API_URL}/${courseId}/students`);
     return response.data;
   },
 
   async getCourseInstructor(courseId: string): Promise<{ success: boolean; message: string; data: any }> {
-    const token = localStorage.getItem('accessToken');
-    const response = await axios.get(`${API_URL}/${courseId}/instructor`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await apiClient.get(`${API_URL}/${courseId}/instructor`);
     return response.data;
   },
 };

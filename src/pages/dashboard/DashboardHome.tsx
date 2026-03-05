@@ -1,4 +1,4 @@
-import { Card, Col, Row, Statistic, Typography, Table, Tag, Spin, Alert } from "antd";
+import { Card, Col, Row, Statistic, Typography, Table, Tag, Spin, Alert, Button } from "antd";
 import { 
   UserOutlined, 
   BookOutlined, 
@@ -7,31 +7,40 @@ import {
   MessageOutlined,
   ArrowUpOutlined,
   ArrowDownOutlined,
-  CommentOutlined
+  CommentOutlined,
+  ReloadOutlined
 } from "@ant-design/icons";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useTranslationWithRerender } from "../../hooks/useLanguageChange";
 import dashboardService from "../../services/dashboardService";
-import { 
-  LineChart, 
-  Line, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  Legend, 
-  ResponsiveContainer,
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
   BarChart,
-  Bar
+  Bar,
 } from 'recharts';
 import '../../styles/dashboard.css';
 
 const { Title } = Typography;
 
+const DASHBOARD_CACHE_TTL_MS = 2 * 60 * 1000;
+let dashboardCache: {
+  stats: any;
+  userGrowthData: { date: string; count: number }[];
+  courseEnrollmentData: { course: string; enrollments: number }[];
+  chatActivityData: { date: string; messages: number; conversations: number }[];
+  reviewTrendsData: { date: string; reviews: number; averageRating: number }[];
+  recentActivities: any[];
+  fetchedAt: number;
+} | null = null;
+
 const DashboardHome: React.FC = () => {
   const { t } = useTranslationWithRerender();
   
-  // State for dashboard data
   const [stats, setStats] = useState<any>(null);
   const [userGrowthData, setUserGrowthData] = useState<{ date: string; count: number }[]>([]);
   const [courseEnrollmentData, setCourseEnrollmentData] = useState<{ course: string; enrollments: number }[]>([]);
@@ -41,46 +50,62 @@ const DashboardHome: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch dashboard data
-  useEffect(() => {
-    const fetchDashboardData = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-
-        const [
-          statsResponse,
-          userGrowthResponse,
-          courseEnrollmentResponse,
-          chatActivityResponse,
-          reviewTrendsResponse,
-          recentActivitiesResponse
-        ] = await Promise.all([
-          dashboardService.getDashboardStats(),
-          dashboardService.getUserGrowthData(),
-          dashboardService.getCourseEnrollmentData(),
-          dashboardService.getChatActivityData(),
-          dashboardService.getReviewTrendsData(),
-          dashboardService.getRecentActivities()
-        ]);
-
-
-        setStats(statsResponse);
-        setUserGrowthData(userGrowthResponse);
-        setCourseEnrollmentData(courseEnrollmentResponse);
-        setChatActivityData(chatActivityResponse);
-        setReviewTrendsData(reviewTrendsResponse);
-        setRecentActivities(recentActivitiesResponse);
-      } catch (err) {
-        console.error('Error fetching dashboard data:', err);
-        setError('Không thể tải dữ liệu dashboard');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchDashboardData();
+  const fetchDashboardData = useCallback(async (forceRefresh = false) => {
+    const now = Date.now();
+    if (!forceRefresh && dashboardCache && now - dashboardCache.fetchedAt < DASHBOARD_CACHE_TTL_MS) {
+      setStats(dashboardCache.stats);
+      setUserGrowthData(dashboardCache.userGrowthData);
+      setCourseEnrollmentData(dashboardCache.courseEnrollmentData);
+      setChatActivityData(dashboardCache.chatActivityData);
+      setReviewTrendsData(dashboardCache.reviewTrendsData);
+      setRecentActivities(dashboardCache.recentActivities);
+      setLoading(false);
+      return;
+    }
+    try {
+      setLoading(true);
+      setError(null);
+      const [
+        statsResponse,
+        userGrowthResponse,
+        courseEnrollmentResponse,
+        chatActivityResponse,
+        reviewTrendsResponse,
+        recentActivitiesResponse
+      ] = await Promise.all([
+        dashboardService.getDashboardStats(),
+        dashboardService.getUserGrowthData(),
+        dashboardService.getCourseEnrollmentData(),
+        dashboardService.getChatActivityData(),
+        dashboardService.getReviewTrendsData(),
+        dashboardService.getRecentActivities()
+      ]);
+      setStats(statsResponse);
+      setUserGrowthData(userGrowthResponse);
+      setCourseEnrollmentData(courseEnrollmentResponse);
+      setChatActivityData(chatActivityResponse);
+      setReviewTrendsData(reviewTrendsResponse);
+      setRecentActivities(recentActivitiesResponse);
+      dashboardCache = {
+        stats: statsResponse,
+        userGrowthData: userGrowthResponse,
+        courseEnrollmentData: courseEnrollmentResponse,
+        chatActivityData: chatActivityResponse,
+        reviewTrendsData: reviewTrendsResponse,
+        recentActivities: recentActivitiesResponse,
+        fetchedAt: Date.now(),
+      };
+    } catch (err) {
+      console.error('Error fetching dashboard data:', err);
+      setError('Không thể tải dữ liệu dashboard');
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, [fetchDashboardData]);
 
   // Statistics cards data
   const statistics = stats ? [
@@ -139,12 +164,22 @@ const DashboardHome: React.FC = () => {
     { date: '01-05', count: 18 }
   ];
 
-  const chartCourseEnrollmentData = courseEnrollmentData.length > 0 ? courseEnrollmentData : [
-    { course: 'React Native', enrollments: 45 },
-    { course: 'JavaScript', enrollments: 38 },
-    { course: 'Python', enrollments: 32 },
-    { course: 'Web Development', enrollments: 28 }
-  ];
+  const chartCourseEnrollmentData = (() => {
+    const source = courseEnrollmentData.length > 0
+      ? courseEnrollmentData
+      : [
+          { course: 'React Native', enrollments: 45 },
+          { course: 'JavaScript', enrollments: 38 },
+          { course: 'Python', enrollments: 32 },
+          { course: 'Web Development', enrollments: 28 },
+        ];
+
+    // Lấy top 5 theo lượt đăng ký, bỏ bớt khoá 0 để chart rõ hơn
+    return [...source]
+      .filter(item => typeof item.enrollments === 'number' && item.enrollments > 0)
+      .sort((a, b) => b.enrollments - a.enrollments)
+      .slice(0, 5);
+  })();
 
   const chartChatActivityData = chatActivityData.length > 0 ? chatActivityData : [
     { date: '01-01', messages: 12, conversations: 8 },
@@ -234,9 +269,14 @@ const DashboardHome: React.FC = () => {
 
   return (
     <div className="dashboard-container">
-      <Title level={2} className="dashboard-title">
-        {t('dashboard.welcome')}
-      </Title>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24, flexWrap: 'wrap', gap: 16 }}>
+        <Title level={2} className="dashboard-title" style={{ margin: 0 }}>
+          {t('dashboard.welcome')}
+        </Title>
+        <Button type="primary" icon={<ReloadOutlined />} onClick={() => fetchDashboardData(true)} loading={loading}>
+          Làm mới
+        </Button>
+      </div>
       
       <div>
         {/* Statistics Cards */}
@@ -284,8 +324,12 @@ const DashboardHome: React.FC = () => {
             >
               <div className="chart-container">
                 {chartUserGrowthData && chartUserGrowthData.length > 0 ? (
-                  <ResponsiveContainer width="100%" height={300}>
-                    <LineChart data={chartUserGrowthData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                  <LineChart
+                    width={600}
+                    height={300}
+                    data={chartUserGrowthData}
+                    margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                  >
                       <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                       <XAxis 
                         dataKey="date" 
@@ -303,18 +347,16 @@ const DashboardHome: React.FC = () => {
                           borderRadius: '8px'
                         }}
                       />
-                      <Legend />
-                      <Line 
-                        type="monotone" 
-                        dataKey="count" 
-                        stroke="#1890ff" 
+                      <Line
+                        type="monotone"
+                        dataKey="count"
+                        stroke="#1890ff"
                         strokeWidth={2}
                         name="Người dùng mới"
                         dot={{ fill: '#1890ff', r: 4 }}
                         activeDot={{ r: 6 }}
                       />
                     </LineChart>
-                  </ResponsiveContainer>
                 ) : (
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#6b7280' }}>
                     Không có dữ liệu
@@ -332,8 +374,12 @@ const DashboardHome: React.FC = () => {
             >
               <div className="chart-container">
                 {chartCourseEnrollmentData && chartCourseEnrollmentData.length > 0 ? (
-                  <ResponsiveContainer width="100%" height={300}>
-                    <BarChart data={chartCourseEnrollmentData} margin={{ top: 5, right: 30, left: 20, bottom: 80 }}>
+                  <BarChart
+                    width={600}
+                    height={300}
+                    data={chartCourseEnrollmentData}
+                    margin={{ top: 5, right: 30, left: 20, bottom: 80 }}
+                  >
                       <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                       <XAxis 
                         dataKey="course" 
@@ -343,9 +389,11 @@ const DashboardHome: React.FC = () => {
                         stroke="#6b7280"
                         style={{ fontSize: '12px' }}
                       />
-                      <YAxis 
+                      <YAxis
                         stroke="#6b7280"
                         style={{ fontSize: '12px' }}
+                        allowDecimals={false}
+                        domain={[0, (dataMax: number) => Math.max(dataMax || 1, 4)]}
                       />
                       <Tooltip 
                         contentStyle={{ 
@@ -356,7 +404,6 @@ const DashboardHome: React.FC = () => {
                       />
                       <Bar dataKey="enrollments" fill="#52c41a" name="Lượt đăng ký" radius={[8, 8, 0, 0]} />
                     </BarChart>
-                  </ResponsiveContainer>
                 ) : (
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#6b7280' }}>
                     Không có dữ liệu
@@ -376,8 +423,12 @@ const DashboardHome: React.FC = () => {
             >
               <div className="chart-container">
                 {chartChatActivityData && chartChatActivityData.length > 0 ? (
-                  <ResponsiveContainer width="100%" height={300}>
-                    <LineChart data={chartChatActivityData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                  <LineChart
+                    width={600}
+                    height={300}
+                    data={chartChatActivityData}
+                    margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                  >
                       <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                       <XAxis 
                         dataKey="date" 
@@ -395,27 +446,25 @@ const DashboardHome: React.FC = () => {
                           borderRadius: '8px'
                         }}
                       />
-                      <Legend />
-                      <Line 
-                        type="monotone" 
-                        dataKey="messages" 
-                        stroke="#13c2c2" 
+                      <Line
+                        type="monotone"
+                        dataKey="messages"
+                        stroke="#13c2c2"
                         strokeWidth={2}
                         name="Tin nhắn"
                         dot={{ fill: '#13c2c2', r: 4 }}
                         activeDot={{ r: 6 }}
                       />
-                      <Line 
-                        type="monotone" 
-                        dataKey="conversations" 
-                        stroke="#eb2f96" 
+                      <Line
+                        type="monotone"
+                        dataKey="conversations"
+                        stroke="#eb2f96"
                         strokeWidth={2}
                         name="Cuộc trò chuyện"
                         dot={{ fill: '#eb2f96', r: 4 }}
                         activeDot={{ r: 6 }}
                       />
                     </LineChart>
-                  </ResponsiveContainer>
                 ) : (
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#6b7280' }}>
                     Không có dữ liệu
@@ -433,8 +482,12 @@ const DashboardHome: React.FC = () => {
             >
               <div className="chart-container">
                 {chartReviewTrendsData && chartReviewTrendsData.length > 0 ? (
-                  <ResponsiveContainer width="100%" height={300}>
-                    <BarChart data={chartReviewTrendsData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                  <BarChart
+                    width={600}
+                    height={300}
+                    data={chartReviewTrendsData}
+                    margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                  >
                       <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                       <XAxis 
                         dataKey="date" 
@@ -459,20 +512,18 @@ const DashboardHome: React.FC = () => {
                           borderRadius: '8px'
                         }}
                       />
-                      <Legend />
                       <Bar yAxisId="left" dataKey="reviews" fill="#722ed1" name="Số đánh giá" radius={[8, 8, 0, 0]} />
-                      <Line 
+                      <Line
                         yAxisId="right"
-                        type="monotone" 
-                        dataKey="averageRating" 
-                        stroke="#faad14" 
+                        type="monotone"
+                        dataKey="averageRating"
+                        stroke="#faad14"
                         strokeWidth={2}
                         name="Điểm TB"
                         dot={{ fill: '#faad14', r: 4 }}
                         activeDot={{ r: 6 }}
                       />
                     </BarChart>
-                  </ResponsiveContainer>
                 ) : (
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#6b7280' }}>
                     Không có dữ liệu

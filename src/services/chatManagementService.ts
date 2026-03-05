@@ -1,7 +1,6 @@
-import axios from 'axios';
-import { envConfig } from '../config';
+import apiClient from './api';
 
-const API_URL = `${envConfig.serverURL}/chat`;
+const API_URL = '/chat';
 
 export interface User {
   _id: string;
@@ -44,20 +43,9 @@ export interface ChatConversationWithMessages extends ChatConversation {
 }
 
 class ChatManagementService {
-  private getAuthHeaders() {
-    const token = localStorage.getItem('accessToken');
-    return {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    };
-  }
-
-  // Lấy tất cả cuộc trò chuyện (admin only)
   async getAllConversations(): Promise<ChatConversation[]> {
     try {
-      const response = await axios.get(`${API_URL}/conversations-history?isAdmin=true`, {
-        headers: this.getAuthHeaders(),
-      });
+      const response = await apiClient.get(`${API_URL}/conversations-history?isAdmin=true`);
       return response.data.data;
     } catch (error) {
       console.error('Error fetching all conversations:', error);
@@ -70,9 +58,7 @@ class ChatManagementService {
     try {
       console.log('Making API call to:', `${API_URL}/conversations/${conversationId}/messages`);
       
-      const response = await axios.get(`${API_URL}/conversations/${conversationId}/messages`, {
-        headers: this.getAuthHeaders(),
-      });
+      const response = await apiClient.get(`${API_URL}/conversations/${conversationId}/messages`);
       
       console.log('API Response status:', response.status);
       console.log('API Response data:', response.data);
@@ -94,9 +80,7 @@ class ChatManagementService {
   // Xóa cuộc trò chuyện
   async deleteConversation(conversationId: string): Promise<void> {
     try {
-      await axios.delete(`${API_URL}/conversations/${conversationId}`, {
-        headers: this.getAuthHeaders(),
-      });
+      await apiClient.delete(`${API_URL}/conversations/${conversationId}`);
     } catch (error) {
       console.error('Error deleting conversation:', error);
       throw error;
@@ -106,9 +90,7 @@ class ChatManagementService {
   // Xóa tin nhắn cụ thể
   async deleteMessage(messageId: string): Promise<void> {
     try {
-      await axios.delete(`${API_URL}/messages/${messageId}`, {
-        headers: this.getAuthHeaders(),
-      });
+      await apiClient.delete(`${API_URL}/messages/${messageId}`);
     } catch (error) {
       console.error('Error deleting message:', error);
       throw error;
@@ -118,9 +100,7 @@ class ChatManagementService {
   // Lấy thông tin user theo ID
   async getUserById(userId: string): Promise<User | null> {
     try {
-      const response = await axios.get(`${envConfig.serverURL}/dashboard/users/${userId}`, {
-        headers: this.getAuthHeaders(),
-      });
+      const response = await apiClient.get(`/dashboard/users/${userId}`);
       return response.data.data;
     } catch (error) {
       console.error('Error fetching user:', error);

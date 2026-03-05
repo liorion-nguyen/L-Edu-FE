@@ -249,10 +249,10 @@
 }
 
 .recharts-tooltip-wrapper {
-  background: var(--bg-secondary, #ffffff);
-  border: 1px solid var(--border-color, #e5e7eb);
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  /* Wrapper should be transparent so only inner tooltip box is visible */
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 
 .recharts-tooltip-label {

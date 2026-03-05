@@ -269,7 +269,6 @@ const ExamManagementPage: React.FC = () => {
     form.resetFields();
     setModalMode("edit");
     setEditingExamId(record._id);
-    setCreateModalVisible(true);
     setIsPrefilling(true);
     try {
       const detail: ExamDetail = await examService.getExamDetail(record._id);
@@ -324,9 +323,9 @@ const ExamManagementPage: React.FC = () => {
         questions: questionFields,
       });
       setJsonInput(JSON.stringify(questionFields, null, 2));
+      setCreateModalVisible(true);
     } catch (error) {
       message.error("Không thể tải dữ liệu bài kiểm tra để chỉnh sửa");
-      setCreateModalVisible(false);
       setEditingExamId(null);
       setModalMode("create");
     } finally {
@@ -489,7 +488,8 @@ const ExamManagementPage: React.FC = () => {
           columns={columns as any}
           dataSource={items}
           loading={loading}
-          pagination={{ pageSize: 10 }}
+          pagination={false}
+          scroll={{ y: 480 }}
         />
       </Card>
 
@@ -503,6 +503,7 @@ const ExamManagementPage: React.FC = () => {
         confirmLoading={isSubmitting}
         okButtonProps={{ disabled: isPrefilling }}
         destroyOnClose
+        maskClosable={false}
       >
         <Spin spinning={isPrefilling}>
           <Form
