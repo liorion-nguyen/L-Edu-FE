@@ -1,0 +1,7 @@
+{
+  "buildCommand": "pnpm run build",
+  "devCommand": "pnpm start",
+  "installCommand": "pnpm install",
+  "framework": "create-react-app",
+  "outputDirectory": "build"
+}
