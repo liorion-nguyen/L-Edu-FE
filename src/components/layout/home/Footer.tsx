@@ -4,7 +4,9 @@ import { useTranslationWithRerender } from "../../../hooks/useLanguageChange";
 import SectionLayout from "../../../layouts/SectionLayout";
 import { contactService, Contact } from "../../../services/contactService";
 import { footerService, Footer as FooterType } from "../../../services/footerService";
+import { linkedAppService, LinkedApp } from "../../../services/linkedAppService";
 import { getIconByValue } from "../../../constants/icons";
+import { LinkOutlined } from "@ant-design/icons";
 
 const { Title, Text } = Typography;
 
@@ -12,15 +14,17 @@ const Footer = () => {
   const { t } = useTranslationWithRerender();
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [footers, setFooters] = useState<FooterType[]>([]);
+  const [linkedApps, setLinkedApps] = useState<LinkedApp[]>([]);
   const [loading, setLoading] = useState(true);
   
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const [contactsResponse, footersResponse] = await Promise.all([
+        const [contactsResponse, footersResponse, linkedAppsResponse] = await Promise.all([
           contactService.getContacts(),
-          footerService.getFooters()
+          footerService.getFooters(),
+          linkedAppService.getLinkedApps().catch(() => ({ success: false, data: [] }))
         ]);
         
         if (contactsResponse.success) {
@@ -29,6 +33,10 @@ const Footer = () => {
         
         if (footersResponse.success) {
           setFooters(footersResponse.data);
+        }
+
+        if (linkedAppsResponse.success) {
+          setLinkedApps(linkedAppsResponse.data);
         }
       } catch (error) {
         console.error('Failed to fetch footer data:', error);
@@ -148,6 +156,49 @@ const Footer = () => {
                   </ul>
                 </Col>
               </>
+            )}
+
+            {/* Linked Apps Section */}
+            {linkedApps.length > 0 && (
+              <Col lg={4} md={8} sm={12} xs={24} style={styles.center}>
+                <Title level={4} style={styles.title}>
+                  Ứng Dụng Liên Kết
+                </Title>
+                <ul style={styles.list}>
+                  {linkedApps.slice(0, 5).map((app) => (
+                    <li key={app._id}>
+                      <a
+                        href={app.url}
+                        style={styles.link}
+                        {...(app.openInNewTab ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                        onClick={(e) => {
+                          if (app.openInNewTab) {
+                            e.preventDefault();
+                            window.open(app.url, '_blank', 'noopener,noreferrer');
+                          }
+                        }}
+                      >
+                        <Space>
+                          {app.icon ? (
+                            app.icon.startsWith('http') ? (
+                              <img 
+                                src={app.icon} 
+                                alt={app.name}
+                                style={{ width: '16px', height: '16px', objectFit: 'contain' }}
+                              />
+                            ) : (
+                              <span style={{ fontSize: '16px' }}>{app.icon}</span>
+                            )
+                          ) : (
+                            <LinkOutlined />
+                          )}
+                          <span>{app.name}</span>
+                        </Space>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </Col>
             )}
 
             {/* Contact Information */}

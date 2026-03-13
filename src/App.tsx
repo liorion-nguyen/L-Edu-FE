@@ -39,6 +39,7 @@ import ContentManagement from "./pages/dashboard/ContentManagement";
 import CategoryManagement from "./pages/dashboard/CategoryManagement";
 import CourseRegistrationManagement from "./components/admin/CourseRegistrationManagement";
 import ExamManagementPage from "./pages/dashboard/ExamManagement";
+import LinkedAppManagement from "./pages/dashboard/LinkedAppManagement";
 import ExamAttemptHistory from "./pages/dashboard/ExamAttemptHistory";
 import ExamOverviewPage from "./pages/exams/ExamOverviewPage";
 import ExamTakingPage from "./pages/exams/ExamTakingPage";
@@ -93,6 +94,7 @@ function App() {
         <Route path="/dashboard/content" element={<DashboardLayout><ContentManagement /></DashboardLayout>} />
         <Route path="/dashboard/categories" element={<DashboardLayout><CategoryManagement /></DashboardLayout>} />
         <Route path="/dashboard/course-registrations" element={<DashboardLayout><CourseRegistrationManagement /></DashboardLayout>} />
+        <Route path="/dashboard/linked-apps" element={<DashboardLayout><LinkedAppManagement /></DashboardLayout>} />
 
         {/* 404 Not Found */}
         <Route path="*" element={<MainLayout><NotFound/></MainLayout>} />

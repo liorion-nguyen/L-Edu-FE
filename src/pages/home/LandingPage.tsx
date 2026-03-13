@@ -8,6 +8,7 @@ import PartnerNetwork from "../../components/sections/PartnerNetwork";
 import Review from "../../components/sections/Reviews";
 import Statistic from "../../components/sections/Statistic";
 import SubscribeSection from "../../components/sections/SubscribeSection";
+import LinkedApps from "../../components/sections/LinkedApps";
 import ScrollAnimation from "../../components/common/ScrollAnimation";
 
 const sections = [
@@ -18,6 +19,7 @@ const sections = [
   { Component: Statistic, animation: "zoomIn" as const, delay: 0.4 },
   { Component: OurMentor, animation: "slideUp" as const, delay: 0.5 },
   { Component: Review, animation: "fadeIn" as const, delay: 0.6 },
+  { Component: LinkedApps, animation: "slideUp" as const, delay: 0.65 },
   { Component: OurBlog, animation: "slideUp" as const, delay: 0.7 },
   { Component: SubscribeSection, animation: "fadeIn" as const, delay: 0.8 },
 ];

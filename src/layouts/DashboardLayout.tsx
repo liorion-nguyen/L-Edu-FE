@@ -18,6 +18,7 @@ import {
   HistoryOutlined,
   SunOutlined,
   MoonOutlined,
+  LinkOutlined,
 } from "@ant-design/icons";
 import React, { useState, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -27,6 +28,7 @@ import { useSelector } from "../redux/store";
 import { RootState } from "../redux/store";
 import { Role } from "../enum/user.enum";
 import LanguageSwitcher from "../components/common/LanguageSwitcher";
+import { envConfig, localStorageConfig } from "../config";
 import "../styles/layout.css";
 
 const { Header, Sider, Content } = Layout;
@@ -113,13 +115,34 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
       icon: <MessageOutlined />,
       label: t('dashboard.chatManagement'),
     },
+    {
+      key: "/dashboard/linked-apps",
+      icon: <LinkOutlined />,
+      label: 'Linked Apps',
+    },
   ].filter((item) => {
     if (!item.roles) return true;
     if (!user?.role) return true;
     return item.roles.includes(user.role);
   }), [t, user?.role]);
 
+  const getAdminLink = () => {
+    const adminBase = envConfig.adminURL?.replace(/\/$/, "") || "";
+    const accessToken = typeof window !== "undefined" ? localStorage.getItem(localStorageConfig.accessToken) : null;
+    const refreshToken = typeof window !== "undefined" ? localStorage.getItem(localStorageConfig.refreshToken) : null;
+    if (accessToken) {
+      let url = `${adminBase}/auth/callback?token=${encodeURIComponent(accessToken)}`;
+      if (refreshToken) url += `&refresh_token=${encodeURIComponent(refreshToken)}`;
+      return url;
+    }
+    return `${adminBase}/Login`;
+  };
+
   const handleMenuClick = ({ key }: { key: string }) => {
+    if (key === "/dashboard") {
+      window.open(getAdminLink(), "_blank", "noopener,noreferrer");
+      return;
+    }
     navigate(key);
   };
 
@@ -129,21 +152,32 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
     navigate("/login");
   };
 
-  const userMenuItems = useMemo(() => [
-    {
-      key: "profile",
-      icon: <UserOutlined />,
-      label: t('dashboard.profile'),
-      onClick: () => navigate("/profile"),
-    },
-    {
-      key: "logout",
-      icon: <LogoutOutlined />,
-      label: t('dashboard.logout'),
-      onClick: handleLogout,
-    },
+  const userMenuItems = useMemo(() => {
+    const items: { key: string; icon: React.ReactNode; label: string; onClick: () => void }[] = [
+      {
+        key: "profile",
+        icon: <UserOutlined />,
+        label: t('dashboard.profile'),
+        onClick: () => navigate("/profile"),
+      },
+      ...(user?.role === Role.ADMIN
+        ? [{
+            key: "go-admin",
+            icon: <LinkOutlined />,
+            label: "Vào Admin",
+            onClick: () => window.open(getAdminLink(), "_blank", "noopener,noreferrer"),
+          }]
+        : []),
+      {
+        key: "logout",
+        icon: <LogoutOutlined />,
+        label: t('dashboard.logout'),
+        onClick: handleLogout,
+      },
+    ];
+    return items;
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  ], [t]);
+  }, [t, user?.role]);
 
   return (
     <Layout className="dashboard-layout" style={{ height: "100vh", background: "var(--bg-primary)" }}>
