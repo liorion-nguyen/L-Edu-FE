@@ -44,6 +44,8 @@ import ExamAttemptHistory from "./pages/dashboard/ExamAttemptHistory";
 import ExamOverviewPage from "./pages/exams/ExamOverviewPage";
 import ExamTakingPage from "./pages/exams/ExamTakingPage";
 import ExamResultPage from "./pages/exams/ExamResultPage";
+import MyClassesPage from "./pages/home/my-classes/MyClassesPage";
+import ClassDetailPage from "./pages/home/my-classes/ClassDetailPage";
 
 function App() {
   return (
@@ -69,6 +71,8 @@ function App() {
         <Route path="/course/create" element={<MainLayout><CreateCourse /></MainLayout>} />
         <Route path="/code-editor" element={<MainLayout><CodeEditorPage /></MainLayout>} />
         <Route path="/profile/:id" element={<MainLayout><Profile /></MainLayout>} />
+        <Route path="/my-classes" element={<MainLayout><MyClassesPage /></MainLayout>} />
+        <Route path="/my-classes/:id" element={<MainLayout><ClassDetailPage /></MainLayout>} />
         <Route path="/course/:id" element={<MainLayout><CourseDetail /></MainLayout>} />
         <Route path="/course/update/:id" element={<MainLayout><UpdateCourse /></MainLayout>} />
         <Route path="/course/document/:id" element={<MainLayout><Document /></MainLayout>} />

@@ -51,7 +51,11 @@ const Session = ({ item, exams }: { item: any; exams?: ExamSummary[] }) => {
   const screens = useBreakpoint();
 
   const handleView = (section: { type: string; id: string; name: string }) => {
-    if (section.type === "note") navigate(`/course/document/${section.id}`);
+    if (section.type === "note") {
+      // Mở tài liệu ở tab mới để học viên giữ nguyên trang tổng quan khóa học
+      window.open(`/course/document/${section.id}`, "_blank", "noopener,noreferrer");
+      return;
+    }
     if (section.type === "video") navigate(`/course/video/${section.id}`);
     if (section.type === "quiz") navigate(`/course/quiz/${section.id}`);
     if (section.type === "exam") {

@@ -44,33 +44,16 @@ const LoginMethods = () => {
         <Row justify="center" gutter={[12, 12]}>
             {loginMethods.map((method, index) => (
                 <Col key={index}>
-                    <Tooltip key={index} title={`${method.name}`} placement="bottom">
+                    <Tooltip key={index} title={method.name} placement="bottom">
                         <Button
+                            type="text"
                             onClick={method.handle}
                             style={{
-                                ...styles.socialButton,
-                                backgroundColor: method.color,
-                                borderColor: method.color,
-                            }}
-                            onMouseEnter={(e) => {
-                                e.currentTarget.style.backgroundColor = method.hoverColor;
-                                e.currentTarget.style.borderColor = method.hoverColor;
-                                e.currentTarget.style.transform = 'translateY(-2px)';
-                                e.currentTarget.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.2)';
-                                const icon = e.currentTarget.querySelector('img');
-                                if (icon) {
-                                    icon.style.transform = 'scale(1.1)';
-                                }
-                            }}
-                            onMouseLeave={(e) => {
-                                e.currentTarget.style.backgroundColor = method.color;
-                                e.currentTarget.style.borderColor = method.color;
-                                e.currentTarget.style.transform = 'translateY(0)';
-                                e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.1)';
-                                const icon = e.currentTarget.querySelector('img');
-                                if (icon) {
-                                    icon.style.transform = 'scale(1)';
-                                }
+                                padding: 0,
+                                height: 'auto',
+                                border: 'none',
+                                background: 'transparent',
+                                boxShadow: 'none',
                             }}
                         >
                             <img
@@ -91,7 +74,7 @@ const styles: { [key: string]: CSSProperties } = {
         width: "48px",
         height: "48px",
         borderRadius: "50%",
-        border: "1px solid",
+        border: "none !important",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",

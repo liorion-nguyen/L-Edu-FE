@@ -27,7 +27,7 @@ import {
   TeamOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import SectionLayout from "../../../layouts/SectionLayout";
 import { RootState, useDispatch, useSelector } from "../../../redux/store";
 import { getMyCourses } from "../../../redux/slices/courses";
@@ -48,6 +48,7 @@ type ProfileUpdatePayload = Partial<Omit<UserType, "_id" | "email" | "password" 
 
 const Profile: React.FC = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { user, loading: authLoading } = useSelector((state: RootState) => state.auth);
   const { myCourses, loading: coursesLoading } = useSelector((state: RootState) => state.courses);
   const { id } = useParams();
@@ -398,6 +399,15 @@ const Profile: React.FC = () => {
               </Card>
             </Col>
           </Row>
+
+          <Card title="Lớp học của tôi" style={{ ...styles.secondaryCard, marginTop: 24 }} bordered={false}>
+            <Paragraph type="secondary" style={{ marginBottom: 16 }}>
+              Xem lịch học, bài tập về nhà và nhận xét của giảng viên cho các lớp bạn tham gia.
+            </Paragraph>
+            <Button type="primary" icon={<TeamOutlined />} onClick={() => navigate("/my-classes")}>
+              Xem các lớp
+            </Button>
+          </Card>
 
           <Card title="Khoá học đang tham gia" style={{ ...styles.secondaryCard, marginTop: 24 }} bordered={false} className="profile-courses-card">
             <List

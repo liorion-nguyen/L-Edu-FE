@@ -54,10 +54,13 @@ const Header = () => {
       // },
     ];
 
-    // Add Dashboard link for admin users
-    if (user?.role === 'ADMIN') {
-      baseMenuItems.push({ key: "/dashboard", label: t('navigation.dashboard') });
-    }
+    // Tạm thời ẩn các link vào lớp học và dashboard khỏi header
+    // if (user) {
+    //   baseMenuItems.push({ key: "/my-classes", label: "Lớp học của tôi" });
+    // }
+    // if (user?.role === 'ADMIN') {
+    //   baseMenuItems.push({ key: "/dashboard", label: t('navigation.dashboard') });
+    // }
 
     setMenuItems(baseMenuItems);
   }, [language, t, user]);
