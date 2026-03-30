@@ -1,16 +1,16 @@
-import { MenuOutlined, LockOutlined, SunOutlined, MoonOutlined } from "@ant-design/icons";
-import { Button, Col, Drawer, Grid, Layout, Menu, Row, Typography } from "antd";
+import { LockOutlined, MenuOutlined, MoonOutlined, SunOutlined } from "@ant-design/icons";
+import { Drawer, Grid, Layout, Menu, Typography } from "antd";
 import { CSSProperties, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useTranslationWithRerender } from "../../../hooks/useLanguageChange";
 import { localStorageConfig } from "../../../config";
 import { COLORS } from "../../../constants/colors";
-import SectionLayout from "../../../layouts/SectionLayout";
+import { useTheme } from "../../../contexts/ThemeContext";
+import { Role } from "../../../enum/user.enum";
+import { useTranslationWithRerender } from "../../../hooks/useLanguageChange";
 import { getUser } from "../../../redux/slices/auth";
 import { RootState, useDispatch, useSelector } from "../../../redux/store";
-import UserMenu from "../UserMenu";
-import { useTheme } from "../../../contexts/ThemeContext";
 import LanguageSwitcher from "../../common/LanguageSwitcher";
+import UserMenu from "../UserMenu";
 
 const { useBreakpoint } = Grid;
 const { Text } = Typography;
@@ -54,13 +54,10 @@ const Header = () => {
       // },
     ];
 
-    // Tạm thời ẩn các link vào lớp học và dashboard khỏi header
-    // if (user) {
-    //   baseMenuItems.push({ key: "/my-classes", label: "Lớp học của tôi" });
-    // }
-    // if (user?.role === 'ADMIN') {
-    //   baseMenuItems.push({ key: "/dashboard", label: t('navigation.dashboard') });
-    // }
+    // Show student dashboard shortcut when logged in
+    if (user) {
+      baseMenuItems.push({ key: "/dashboard-program", label: "Dashboard" });
+    }
 
     setMenuItems(baseMenuItems);
   }, [language, t, user]);
@@ -121,102 +118,117 @@ const Header = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, user]);
 
-  const handleMenuClick = ({ key }: { key: string }) => {
-    console.log('Menu clicked:', key);
-    if (key === "logout") {
-      handleLogout();
-    } else {
-      console.log('Navigating to:', key);
-      navigate(key);
-    }
-  };
-
   const handleDrawerMenuClick = ({ key }: { key: string }) => {
-    console.log('Drawer menu clicked:', key);
     if (key === "logout") {
       handleLogout();
     } else {
-      console.log('Navigating to:', key);
       navigate(key);
     }
     setOpen(false);
   };
 
+  const isDesktop = getSizeScreen();
+
   return (
-    <Layout.Header style={styles.header}>
-      <SectionLayout>
-        <Row justify="space-between" align="middle" style={{ width: "100%" }}>
-          {/* Logo and Slogan */}
-          <Col lg={4} md={6} sm={18} xs={18}>
-            <div style={styles.logoContainer} onClick={handleHome}>
-              <img src="/logo_name.png" alt="logo" style={styles.logo} />
-            </div>
-          </Col>
+    <Layout.Header
+      style={{
+        ...styles.header,
+        background: "transparent",
+        borderBottom: "none",
+      }}
+    >
+      {/* Stitch-like navigation */}
+      <nav
+        className={`sticky top-0 z-50 backdrop-blur-xl border-b ${
+          isDark ? "bg-background-dark/80 border-slate-800" : "bg-white/80 border-slate-200"
+        }`}
+      >
+        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+          <button type="button" className="flex items-center gap-3 text-left" onClick={handleHome}>
+            <img src="/logo_name.png" alt="L-Edu" className="h-12"  />
+          </button>
 
-          {/* Menu for larger screens */}
-          <Col lg={16} md={12} sm={0} xs={0}>
-            <Menu
-              mode="horizontal"
-              selectedKeys={[location.pathname]}
-              items={menuItems.map((item) => ({
-                ...item,
-                label: <Text style={styles.menuItem}>{item.label}</Text>,
-              }))}
-              onClick={handleMenuClick}
-              style={styles.menu}
-            />
-          </Col>
-
-          {/* Enroll Button + Menu Icon for mobile */}
-          <Col lg={4} md={6} sm={6} xs={6} style={{ textAlign: "right" }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'flex-end' }}>
-              {/* Language Switcher - chỉ hiển thị trên desktop */}
-              {getSizeScreen() && <LanguageSwitcher />}
-              
-              {/* Theme Toggle Button - chỉ hiển thị trên desktop */}
-              {getSizeScreen() && (
-                <Button
-                  type="text"
-                  icon={isDark ? <SunOutlined /> : <MoonOutlined />}
-                  onClick={toggleTheme}
-                  style={{
-                    color: isDark ? '#ffd700' : '#1890ff',
-                    fontSize: '18px',
-                    width: '40px',
-                    height: '40px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                  title={isDark ? t('theme.switchToLight') : t('theme.switchToDark')}
-                />
-              )}
-              
-              {user ? (
-                getSizeScreen() && <UserMenu user={user} />
-              ) : (
-                <Button
-                  style={{
-                    ...styles.button,
-                    display: getSizeScreen() ? "inline-flex" : "none",
-                  }}
-                  onClick={handleLogin}
+          <div className="hidden md:flex items-center gap-8 text-sm font-semibold">
+            {menuItems
+              .filter((i: any) => i.key !== "logout" && i.key !== "/login" && i.key !== "/change-password")
+              .map((item: any) => (
+                <button
+                  key={item.key}
+                  type="button"
+                  onClick={() => navigate(item.key)}
+                  className={`transition-colors hover:text-primary ${
+                    location.pathname === item.key ? "text-primary" : "text-slate-700 dark:text-slate-200"
+                  }`}
                 >
-                  {t('course.enrollNow')}
-                </Button>
-              )}
-              
-              <MenuOutlined
+                  {item.label}
+                </button>
+              ))}
+          </div>
+
+          <div className="flex items-center gap-4">
+            {isDesktop && (
+              <>
+                <button
+                  className="h-10 w-10 rounded-xl flex items-center justify-center transition-colors"
+                  type="button"
+                  aria-label="Tìm kiếm"
+                  onClick={() => navigate("/course")}
+                  style={{
+                    color: "var(--text-secondary)",
+                  }}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: 22 }}>
+                    search
+                  </span>
+                </button>
+                <div className="h-6 w-[1px] bg-slate-200 dark:bg-slate-700 mx-1" />
+              </>
+            )}
+
+            {isDesktop && <LanguageSwitcher variant="iconButton" />}
+
+            {user?.role === Role.ADMIN && isDesktop && (
+              <button
+                type="button"
+                onClick={toggleTheme}
+                title={isDark ? t("theme.switchToLight") : t("theme.switchToDark")}
+                className="h-10 w-10 rounded-xl flex items-center justify-center border transition-colors"
                 style={{
-                  ...styles.menuIcon,
-                  display: getSizeScreen() ? "none" : "inline-flex",
+                  borderColor: "var(--border-color)",
+                  background: "var(--hover-bg)",
+                  color: isDark ? "#fbbf24" : "var(--primary-color)",
                 }}
-                onClick={() => setOpen(true)}
-              />
-            </div>
-          </Col>
-        </Row>
-      </SectionLayout>
+              >
+                <span style={{ fontSize: 18, lineHeight: 0, display: "inline-flex" }}>
+                  {isDark ? <SunOutlined /> : <MoonOutlined />}
+                </span>
+              </button>
+            )}
+
+            {user ? (
+              isDesktop ? (
+                <UserMenu user={user} />
+              ) : (
+                <MenuOutlined style={{ ...styles.menuIcon }} onClick={() => setOpen(true)} />
+              )
+            ) : (
+              <>
+                {isDesktop ? (
+                  <button
+                    type="button"
+                    className="px-5 py-2.5 bg-primary hover:bg-primary/90 text-white rounded-xl font-bold transition-all text-sm shadow-lg shadow-primary/25"
+                    onClick={handleLogin}
+                  >
+                    {t("navigation.login")}
+                  </button>
+                ) : (
+                  <MenuOutlined style={{ ...styles.menuIcon }} onClick={() => setOpen(true)} />
+                )}
+              </>
+            )}
+          </div>
+        </div>
+      </nav>
 
       {/* Drawer for mobile */}
       <Drawer
@@ -238,9 +250,13 @@ const Header = () => {
             {
               key: 'language-switcher',
               label: (
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <span>{t('language.switchLanguage')}</span>
-                  <LanguageSwitcher showIcon={false} />
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
+                    {t('language.switchLanguage')}
+                  </span>
+                  <div className="shrink-0">
+                    <LanguageSwitcher showIcon={false} />
+                  </div>
                 </div>
               ),
             },
@@ -248,17 +264,36 @@ const Header = () => {
             {
               key: 'theme-toggle',
               label: (
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <span>{isDark ? t('theme.light') : t('theme.dark')}</span>
-                  <Button
-                    type="text"
-                    icon={isDark ? <SunOutlined /> : <MoonOutlined />}
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
+                    {isDark ? t('theme.light') : t('theme.dark')}
+                  </span>
+                  <button
+                    type="button"
                     onClick={toggleTheme}
+                    title={isDark ? t("theme.switchToLight") : t("theme.switchToDark")}
+                    className="inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm font-semibold border transition-colors"
                     style={{
-                      color: isDark ? '#ffd700' : '#1890ff',
-                      fontSize: '16px',
+                      borderColor: "var(--border-color)",
+                      background: "var(--hover-bg)",
+                      color: "var(--text-primary)",
                     }}
-                  />
+                  >
+                    <span
+                      className="inline-flex items-center justify-center rounded-full"
+                      style={{
+                        width: 28,
+                        height: 28,
+                        background: isDark ? "rgba(251, 191, 36, 0.18)" : "rgba(35, 131, 226, 0.12)",
+                        color: isDark ? "#fbbf24" : "var(--primary-color)",
+                      }}
+                    >
+                      {isDark ? <SunOutlined /> : <MoonOutlined />}
+                    </span>
+                    <span className="leading-none">
+                      {isDark ? t("theme.light") : t("theme.dark")}
+                    </span>
+                  </button>
                 </div>
               ),
             },
@@ -267,7 +302,11 @@ const Header = () => {
             // Other menu items
             ...menuItems.map((item) => ({
               ...item,
-              label: <Text style={styles.menuItem}>{item.label}</Text>,
+              label: (
+                <Text style={{ ...styles.menuItem, color: "var(--text-primary)" }}>
+                  {item.label}
+                </Text>
+              ),
             }))
           ]}
           onClick={handleDrawerMenuClick}
@@ -287,6 +326,8 @@ const styles: {
   slogan: CSSProperties;
   menu: CSSProperties;
   menuItem: CSSProperties;
+  actions: CSSProperties;
+  actionDivider: CSSProperties;
   button: CSSProperties;
   menuIcon: CSSProperties;
   drawerTitle: CSSProperties;
@@ -295,14 +336,14 @@ const styles: {
   drawerMenu: CSSProperties;
 } = {
   header: {
-    background: COLORS.background.primary,
-    border: `1px solid ${COLORS.border.light}`,
     position: "fixed",
     zIndex: 1000,
     top: 0,
     left: 0,
     width: "100%",
     padding: 0,
+    height: 80,
+    lineHeight: "80px",
   },
   logoContainer: {
     display: "flex",
@@ -324,20 +365,34 @@ const styles: {
     borderBottom: "none",
   },
   menuItem: {
-    color: COLORS.text.primary,
     fontSize: "16px",
     fontWeight: 500,
   },
+  actions: {
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+    justifyContent: "flex-end",
+  },
+  actionDivider: {
+    height: 24,
+    marginInline: 4,
+    borderColor: "rgba(148, 163, 184, 0.5)",
+  },
   button: {
     background: COLORS.primary[500],
-    color: COLORS.background.primary,
+    color: "#fff",
     border: "none",
-    fontWeight: 500,
-    borderRadius: "8px",
+    fontWeight: 700,
+    borderRadius: 12,
+    height: 40,
+    paddingInline: 18,
+    boxShadow: "0 10px 24px rgba(24, 144, 255, 0.25)",
   },
   menuIcon: {
-    color: COLORS.text.primary,
+    color: "var(--text-primary)",
     fontSize: "18px",
+    cursor: "pointer",
   },
   drawerTitle: {
     color: "var(--text-primary)",

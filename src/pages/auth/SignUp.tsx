@@ -1,18 +1,19 @@
-import { Checkbox, Divider, Typography } from "antd";
-import { Field, Form, Formik } from "formik";
+import {
+    ArrowRightOutlined,
+  EyeInvisibleOutlined,
+    LockOutlined,
+    MailOutlined,
+    UserOutlined,
+} from "@ant-design/icons";
+import { Checkbox } from "antd";
+import { ErrorMessage, Field, Form, Formik } from "formik";
 import { Helmet } from "react-helmet-async";
-import { useNavigate } from "react-router-dom";
-import ButtonForm from "../../components/common/CustomButton";
-import InputForm from "../../components/common/CustomInput";
-import InputFormHide from "../../components/common/CustomInputHide";
-import { COLORS, SPACING } from "../../constants/colors";
+import { Link, useNavigate } from "react-router-dom";
+import { useTranslationWithRerender } from "../../hooks/useLanguageChange";
 import { register } from "../../redux/slices/auth";
 import { useDispatch } from "../../redux/store";
 import { SignUpValidationSchema } from "../../validations/authValidation";
 import LoginMethods from "./components/LoginMethods";
-import { useTranslationWithRerender } from "../../hooks/useLanguageChange";
-
-const { Title, Text } = Typography;
 
 interface SignUpValues {
     fullName: string;
@@ -49,18 +50,18 @@ const SignUp = () => {
     };
 
     return (
-        <div style={styles.formContainer}>
+        <div className="w-full">
             <Helmet>
                 <title>Sign Up | L-Edu</title>
             </Helmet>
 
-            <div style={styles.header}>
-                <Title level={1} style={styles.title}>
-                    {t('auth.signup.title')}
-                </Title>
-                <Text style={styles.subtitle}>
-                    {t('auth.signup.subtitle')}
-                </Text>
+            <div className="mb-7">
+                <h1 className="mb-2 text-3xl font-bold leading-tight text-slate-50">
+                    {t("auth.signup.pageTitle", "Đăng ký tài khoản")}
+                </h1>
+                <p className="text-slate-400">
+                    {t("auth.signup.pageSubtitle", "Tạo tài khoản để bắt đầu học ngay hôm nay")}
+                </p>
             </div>
 
             <Formik
@@ -68,68 +69,137 @@ const SignUp = () => {
                 validationSchema={SignUpValidationSchema}
                 onSubmit={handleSubmit}
             >
-                {({ errors, touched }) => (
-                    <Form style={styles.form}>
-                        <div style={styles.inputGroup}>
+                {({ isSubmitting }) => (
+                    <Form className="w-full">
+                        <div className="mb-4">
+                            <label className="mb-2 inline-block text-sm font-medium text-slate-200">{t("auth.signup.fullName")}</label>
                             <Field name="fullName">
                                 {({ field }: any) => (
-                                    <InputForm {...field} placeholder={t('auth.signup.fullName')} />
+                                    <div className="relative">
+                                        <UserOutlined className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-base text-slate-400" />
+                                        <input
+                                        {...field}
+                                        placeholder="Nguyen Van A"
+                                        className="h-[54px] w-full rounded-xl border border-[#25364d] bg-[rgba(18,30,48,0.9)] pl-11 pr-4 text-sm text-slate-200 outline-none transition focus:border-primary"
+                                        />
+                                    </div>
                                 )}
                             </Field>
+                            <ErrorMessage name="fullName">
+                                {(message) => <div className="mt-1.5 text-xs text-red-400">{message}</div>}
+                            </ErrorMessage>
                         </div>
 
-                        <div style={styles.inputGroup}>
+                        <div className="mb-4">
+                            <label className="mb-2 inline-block text-sm font-medium text-slate-200">{t("auth.signup.email")}</label>
                             <Field name="email">
                                 {({ field }: any) => (
-                                    <InputForm {...field} placeholder={t('auth.signup.email')} />
+                                    <div className="relative">
+                                        <MailOutlined className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-base text-slate-400" />
+                                        <input
+                                        {...field}
+                                        type="email"
+                                        placeholder="example@gmail.com"
+                                        className="h-[54px] w-full rounded-xl border border-[#25364d] bg-[rgba(18,30,48,0.9)] pl-11 pr-4 text-sm text-slate-200 outline-none transition focus:border-primary"
+                                        />
+                                    </div>
                                 )}
                             </Field>
+                            <ErrorMessage name="email">
+                                {(message) => <div className="mt-1.5 text-xs text-red-400">{message}</div>}
+                            </ErrorMessage>
                         </div>
 
-                        <div style={styles.inputGroup}>
-                            <Field name="password">
-                                {({ field }: any) => (
-                                    <InputFormHide {...field} placeholder={t('auth.signup.password')} />
-                                )}
-                            </Field>
+                        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+                            <div className="mb-4">
+                                <label className="mb-2 inline-block text-sm font-medium text-slate-200">{t("auth.signup.password")}</label>
+                                <Field name="password">
+                                    {({ field }: any) => (
+                                        <div className="relative">
+                                            <LockOutlined className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-base text-slate-400" />
+                                            <input
+                                            {...field}
+                                            placeholder="••••••••"
+                                            type="password"
+                                            className="h-[54px] w-full rounded-xl border border-[#25364d] bg-[rgba(18,30,48,0.9)] pl-11 pr-11 text-sm text-slate-200 outline-none transition focus:border-primary"
+                                            />
+                                            <EyeInvisibleOutlined className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-base text-slate-400" />
+                                        </div>
+                                    )}
+                                </Field>
+                                <ErrorMessage name="password">
+                                    {(message) => <div className="mt-1.5 text-xs text-red-400">{message}</div>}
+                                </ErrorMessage>
+                            </div>
+
+                            <div className="mb-4">
+                                <label className="mb-2 inline-block text-sm font-medium text-slate-200">{t("auth.signup.confirmPassword")}</label>
+                                <Field name="cfPassword">
+                                    {({ field }: any) => (
+                                        <div className="relative">
+                                            <LockOutlined className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-base text-slate-400" />
+                                            <input
+                                            {...field}
+                                            placeholder="••••••••"
+                                            type="password"
+                                            className="h-[54px] w-full rounded-xl border border-[#25364d] bg-[rgba(18,30,48,0.9)] pl-11 pr-11 text-sm text-slate-200 outline-none transition focus:border-primary"
+                                            />
+                                            <EyeInvisibleOutlined className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-base text-slate-400" />
+                                        </div>
+                                    )}
+                                </Field>
+                                <ErrorMessage name="cfPassword">
+                                    {(message) => <div className="mt-1.5 text-xs text-red-400">{message}</div>}
+                                </ErrorMessage>
+                            </div>
                         </div>
 
-                        <div style={styles.inputGroup}>
-                            <Field name="cfPassword">
-                                {({ field }: any) => (
-                                    <InputFormHide {...field} placeholder={t('auth.signup.confirmPassword')} />
-                                )}
-                            </Field>
-                        </div>
-
-                        <div style={styles.checkboxContainer}>
-                            <Checkbox style={styles.checkbox}>
-                                <Text style={styles.checkboxLabel}>
-                                    {t('auth.signup.agreeTerms')}{" "}
-                                    <Text style={styles.link}>
-                                        {t('auth.signup.termsLink')}
-                                    </Text>
-                                </Text>
+                        <div className="mb-4">
+                            <Checkbox className="text-slate-400">
+                                <span className="text-sm text-slate-400">
+                                    {t("auth.signup.agreeTerms")}{" "}
+                                    <button type="button" className="font-medium text-primary hover:underline">
+                                        {t("auth.signup.termsLink", "Điều khoản")}
+                                    </button>{" "}
+                                    <span>{t("auth.signup.and", "và")}</span>{" "}
+                                    <button type="button" className="font-medium text-primary hover:underline">
+                                        {t("auth.signup.policyLink", "Chính sách")}
+                                    </button>
+                                </span>
                             </Checkbox>
                         </div>
 
-                        <div style={styles.buttonContainer}>
-                            <ButtonForm label={t('auth.signup.signupButton')} type="submit" />
+                        <button
+                            type="submit"
+                            disabled={isSubmitting}
+                            className="mb-2 flex h-[54px] w-full items-center justify-center gap-2 rounded-xl bg-primary text-sm font-bold text-white shadow-[0_8px_20px_rgba(0,127,255,0.2)] transition hover:bg-[#0b74df] disabled:cursor-not-allowed disabled:opacity-70"
+                        >
+                            <span>{t("auth.signup.signupButton")}</span>
+                            <ArrowRightOutlined />
+                        </button>
+
+                        <div className="relative mt-8">
+                            <div className="absolute inset-0 flex items-center">
+                                <div className="h-px w-full bg-[rgba(148,163,184,0.28)]" />
+                            </div>
+                            <div className="relative flex justify-center">
+                                <span className="bg-background-dark px-4 text-[13px] text-[#6b7f97]">
+                                    {t("auth.signup.or")}
+                                </span>
+                            </div>
                         </div>
 
-                        <Divider style={styles.divider}>{t('auth.signup.or')}</Divider>
-
-                        <div style={styles.socialLogin}>
+                        <div className="mt-8">
                             <LoginMethods />
                         </div>
 
-                        <div style={styles.loginLink}>
-                            <Text style={styles.text}>
-                                {t('auth.signup.hasAccount')}{" "}
-                                <Text style={styles.link}>
-                                    <a href="/login">{t('auth.signup.loginLink')}</a>
-                                </Text>
-                            </Text>
+                        <div className="mt-10 text-center">
+                            <span className="text-sm text-slate-400">
+                                {t("auth.signup.hasAccount")}{" "}
+                                <Link to="/login" className="font-bold text-primary">
+                                    {t("auth.signup.loginLink")}
+                                </Link>
+                            </span>
                         </div>
                     </Form>
                 )}
@@ -139,81 +209,3 @@ const SignUp = () => {
 };
 
 export default SignUp;
-
-const styles: {
-    [key: string]: React.CSSProperties;
-} = {
-    formContainer: {
-        width: "100%",
-        maxWidth: "400px",
-        margin: "0 auto",
-        paddingBottom: SPACING.md,
-        height: "100vh",
-        overflowY: "auto",
-        overflowX: "hidden",
-    },
-    header: {
-        textAlign: "center",
-        marginBottom: SPACING.md,
-    },
-    title: {
-        color: COLORS.text.heading,
-        textAlign: "center",
-        marginBottom: "4px",
-        fontWeight: 700,
-        fontSize: "22px",
-        letterSpacing: "-0.025em",
-    },
-    subtitle: {
-        color: COLORS.text.secondary,
-        fontSize: "13px",
-        fontWeight: 400,
-        textAlign: "center",
-    },
-    form: {
-        width: "100%",
-    },
-    inputGroup: {
-        marginBottom: "8px",
-    },
-    checkboxContainer: {
-        marginBottom: "12px",
-    },
-    checkbox: {
-        margin: 0,
-    },
-    checkboxLabel: {
-        color: COLORS.text.primary,
-        fontSize: "14px",
-        fontWeight: 400,
-    },
-    link: {
-        color: COLORS.primary[600],
-        fontWeight: 500,
-        textDecoration: "none",
-        transition: "color 0.2s ease",
-    },
-    buttonContainer: {
-        width: "100%",
-        marginBottom: "8px",
-    },
-    loginLink: {
-        textAlign: "center",
-        marginTop: "8px",
-    },
-    text: {
-        color: COLORS.text.secondary,
-        fontSize: "14px",
-        fontWeight: 400,
-    },
-    divider: {
-        margin: "8px 0",
-        borderColor: COLORS.border.light,
-        color: COLORS.text.muted,
-        fontSize: "14px",
-        fontWeight: 500,
-    },
-    socialLogin: {
-        marginBottom: "8px",
-    },
-};

@@ -9,6 +9,40 @@
   border-color: var(--accent-color) !important;
 }
 
+/* Student dashboard — nền tối khớp #0b1219 / slate */
+.session-card-dashboard.ant-card {
+  border-color: rgba(71, 85, 105, 0.95) !important;
+}
+
+.session-card-dashboard.ant-card:hover {
+  box-shadow: 0 12px 32px rgba(0, 127, 255, 0.12) !important;
+  border-color: rgba(0, 127, 255, 0.35) !important;
+}
+
+.session-card-dashboard .section-item:hover:not(.disabled) {
+  border-color: rgba(0, 127, 255, 0.45) !important;
+  background: rgba(30, 41, 59, 0.92) !important;
+}
+
+.session-card-dashboard .section-item:hover::before {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(0, 127, 255, 0.12),
+    transparent
+  );
+}
+
+.session-card-dashboard .section-item.disabled:hover {
+  border-color: rgba(71, 85, 105, 0.9) !important;
+  background: rgba(15, 23, 42, 0.72) !important;
+}
+
+.session-card-dashboard .ant-typography,
+.session-card-dashboard .ant-card-body {
+  color: inherit;
+}
+
 /* Section Item Hover Effects */
 .section-item {
   position: relative;

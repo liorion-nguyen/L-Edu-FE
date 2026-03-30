@@ -1,89 +1,69 @@
-import { Button, Col, Row, Tooltip } from "antd";
-import { CSSProperties } from "react";
+import React from "react";
+import { useLocation } from "react-router-dom";
 
-const LoginMethods = () => {
-    const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+const POST_LOGIN_REDIRECT_KEY = "post-login-redirect";
+
+type Props = {
+    /** Where to come back after OAuth finishes (defaults to current path+search). */
+    returnTo?: string;
+};
+
+const LoginMethods: React.FC<Props> = ({ returnTo }) => {
+    const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
+    const location = useLocation();
+
+    const resolvedReturnTo = returnTo ?? `${location.pathname}${location.search}`;
+
+    const rememberReturnTo = () => {
+        try {
+            localStorage.setItem(POST_LOGIN_REDIRECT_KEY, resolvedReturnTo);
+        } catch {
+            // ignore storage issues
+        }
+    };
 
     const handleGoogleLogin = () => {
+        rememberReturnTo();
         window.location.href = `${API_BASE_URL}/auth/google`;
     };
 
     const handleFacebookLogin = () => {
+        rememberReturnTo();
         window.location.href = `${API_BASE_URL}/auth/facebook`;
-    };
-
-    const handleGitHubLogin = () => {
-        window.location.href = `${API_BASE_URL}/auth/github`;
     };
 
     const loginMethods = [
         {
-            name: "Facebook",
-            icon: "/images/icons/socials/ic_facebook.svg",
-            handle: handleFacebookLogin,
-            color: "#1877F2",
-            hoverColor: "#166FE5"
-        },
-        {
-            name: "Github",
-            icon: "/images/icons/socials/ic_github.svg",
-            handle: handleGitHubLogin,
-            color: "#333333",
-            hoverColor: "#24292E"
-        },
-        {
             name: "Google",
             icon: "/images/icons/socials/ic_google.svg",
             handle: handleGoogleLogin,
-            color: "#DB4437",
-            hoverColor: "#C23321"
+        },
+        {
+            name: "Facebook",
+            icon: "/images/icons/socials/ic_facebook.svg",
+            handle: handleFacebookLogin,
         }
     ];
 
     return (
-        <Row justify="center" gutter={[12, 12]}>
-            {loginMethods.map((method, index) => (
-                <Col key={index}>
-                    <Tooltip key={index} title={method.name} placement="bottom">
-                        <Button
-                            type="text"
-                            onClick={method.handle}
-                            style={{
-                                padding: 0,
-                                height: 'auto',
-                                border: 'none',
-                                background: 'transparent',
-                                boxShadow: 'none',
-                            }}
-                        >
-                            <img
-                                src={method.icon}
-                                alt={method.name}
-                                style={styles.socialIcon}
-                            />
-                        </Button>
-                    </Tooltip>
-                </Col>
+        <div className="grid grid-cols-2 gap-3">
+            {loginMethods.map((method) => (
+                <button
+                    key={method.name}
+                    type="button"
+                    onClick={method.handle}
+                    className="flex h-[54px] w-full items-center justify-center gap-2 rounded-xl border border-[#25364d] bg-[rgba(15,23,42,0.78)] text-sm font-medium text-slate-300 transition hover:bg-[rgba(18,30,48,0.95)]"
+                >
+                    <img
+                        src={method.icon}
+                        alt={method.name}
+                        className="h-5 w-5"
+                    />
+                    <span>{method.name}</span>
+                </button>
             ))}
-        </Row>
+        </div>
     );
-};
-
-const styles: { [key: string]: CSSProperties } = {
-    socialButton: {
-        width: "48px",
-        height: "48px",
-        borderRadius: "50%",
-        border: "none !important",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        cursor: "pointer",
-        padding: 0,
-        background: "transparent",
-        position: "relative",
-        overflow: "hidden",
-    },
 };
 
 export default LoginMethods;

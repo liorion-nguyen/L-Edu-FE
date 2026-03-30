@@ -1,16 +1,11 @@
-import { Typography, notification, Button } from "antd";
-import { ArrowLeftOutlined } from "@ant-design/icons";
-import { Form, Formik } from "formik";
+import { ArrowLeftOutlined, ArrowRightOutlined, EyeInvisibleOutlined, LockOutlined } from "@ant-design/icons";
+import { notification } from "antd";
+import { ErrorMessage, Field, Form, Formik } from "formik";
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useTranslationWithRerender } from "../../hooks/useLanguageChange";
-import CustomButton from "../../components/common/CustomButton";
-import CustomInputHide from "../../components/common/CustomInputHide";
-import { COLORS, SPACING } from "../../constants/colors";
 import * as Yup from 'yup';
 import axios from "axios";
-
-const { Title, Text } = Typography;
 
 interface ChangePasswordFormData {
   currentPassword: string;
@@ -56,30 +51,25 @@ const ChangePassword: React.FC = () => {
   };
 
   return (
-    <div style={styles.formContainer}>
-      <div style={styles.backButton}>
-        <Button 
-          type="text" 
-          icon={<ArrowLeftOutlined />}
+    <div className="w-full">
+      <div className="mb-5">
+        <button
+          type="button"
           onClick={() => navigate(-1)}
-          style={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            gap: '8px',
-            color: COLORS.text.secondary 
-          }}
+          className="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-slate-300"
         >
-          {t('auth.changePassword.backButton')}
-        </Button>
+          <ArrowLeftOutlined />
+          <span>{t('auth.changePassword.backButton')}</span>
+        </button>
       </div>
-      
-      <div style={styles.header}>
-        <Title level={2} style={styles.title}>
+
+      <div className="mb-7">
+        <h2 className="mb-2 text-3xl font-bold leading-tight text-slate-50">
           {t('auth.changePassword.title')}
-        </Title>
-        <Text style={styles.subtitle}>
+        </h2>
+        <p className="text-slate-400">
           {t('auth.changePassword.subtitle')}
-        </Text>
+        </p>
       </div>
 
       <Formik
@@ -92,87 +82,97 @@ const ChangePassword: React.FC = () => {
         onSubmit={handleChangePassword}
       >
         {({ isSubmitting }) => (
-          <Form style={styles.form}>
-            <div style={styles.inputGroup}>
-              <CustomInputHide
-                label={t('auth.changePassword.currentPassword')}
-                name="currentPassword"
-                placeholder={t('auth.changePassword.currentPasswordPlaceholder')}
-              />
+          <Form className="w-full">
+            <div className="mb-4">
+              <label className="mb-2 inline-block text-sm font-medium text-slate-200">
+                {t('auth.changePassword.currentPassword')}
+              </label>
+              <Field name="currentPassword">
+                {({ field }: any) => (
+                  <div className="relative">
+                    <LockOutlined className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-base text-slate-400" />
+                    <input
+                      {...field}
+                      type="password"
+                      placeholder={t('auth.changePassword.currentPasswordPlaceholder')}
+                      className="h-[54px] w-full rounded-xl border border-[#25364d] bg-[rgba(18,30,48,0.9)] pl-11 pr-11 text-sm text-slate-200 outline-none transition focus:border-primary"
+                    />
+                    <EyeInvisibleOutlined className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-base text-slate-400" />
+                  </div>
+                )}
+              </Field>
+              <ErrorMessage name="currentPassword">
+                {(message) => <div className="mt-1.5 text-xs text-red-400">{message}</div>}
+              </ErrorMessage>
             </div>
 
-            <div style={styles.inputGroup}>
-              <CustomInputHide
-                label={t('auth.changePassword.newPassword')}
-                name="newPassword"
-                placeholder={t('auth.changePassword.newPasswordPlaceholder')}
-              />
+            <div className="mb-4">
+              <label className="mb-2 inline-block text-sm font-medium text-slate-200">
+                {t('auth.changePassword.newPassword')}
+              </label>
+              <Field name="newPassword">
+                {({ field }: any) => (
+                  <div className="relative">
+                    <LockOutlined className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-base text-slate-400" />
+                    <input
+                      {...field}
+                      type="password"
+                      placeholder={t('auth.changePassword.newPasswordPlaceholder')}
+                      className="h-[54px] w-full rounded-xl border border-[#25364d] bg-[rgba(18,30,48,0.9)] pl-11 pr-11 text-sm text-slate-200 outline-none transition focus:border-primary"
+                    />
+                    <EyeInvisibleOutlined className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-base text-slate-400" />
+                  </div>
+                )}
+              </Field>
+              <ErrorMessage name="newPassword">
+                {(message) => <div className="mt-1.5 text-xs text-red-400">{message}</div>}
+              </ErrorMessage>
             </div>
 
-            <div style={styles.inputGroup}>
-              <CustomInputHide
-                label={t('auth.changePassword.confirmNewPassword')}
-                name="confirmPassword"
-                placeholder={t('auth.changePassword.confirmNewPasswordPlaceholder')}
-              />
+            <div className="mb-4">
+              <label className="mb-2 inline-block text-sm font-medium text-slate-200">
+                {t('auth.changePassword.confirmNewPassword')}
+              </label>
+              <Field name="confirmPassword">
+                {({ field }: any) => (
+                  <div className="relative">
+                    <LockOutlined className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-base text-slate-400" />
+                    <input
+                      {...field}
+                      type="password"
+                      placeholder={t('auth.changePassword.confirmNewPasswordPlaceholder')}
+                      className="h-[54px] w-full rounded-xl border border-[#25364d] bg-[rgba(18,30,48,0.9)] pl-11 pr-11 text-sm text-slate-200 outline-none transition focus:border-primary"
+                    />
+                    <EyeInvisibleOutlined className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-base text-slate-400" />
+                  </div>
+                )}
+              </Field>
+              <ErrorMessage name="confirmPassword">
+                {(message) => <div className="mt-1.5 text-xs text-red-400">{message}</div>}
+              </ErrorMessage>
             </div>
 
-            <div style={styles.buttonContainer}>
-              <CustomButton
+            <button
                 type="submit"
-                label={t('auth.changePassword.changePasswordButton')}
                 disabled={isLoading || isSubmitting}
-                loading={isLoading}
-              />
+                className="mb-2 flex h-[54px] w-full items-center justify-center gap-2 rounded-xl bg-primary text-sm font-bold text-white shadow-[0_8px_20px_rgba(0,127,255,0.2)] transition hover:bg-[#0b74df] disabled:cursor-not-allowed disabled:opacity-70"
+            >
+              <span>{t('auth.changePassword.changePasswordButton')}</span>
+              <ArrowRightOutlined />
+            </button>
+
+            <div className="mt-8 text-center">
+              <span className="text-sm text-slate-400">
+                <Link to="/login" className="font-semibold text-primary hover:underline">
+                  {t("auth.login.title", "Đăng nhập")}
+                </Link>
+              </span>
             </div>
           </Form>
         )}
       </Formik>
     </div>
   );
-};
-
-const styles: {
-  [key: string]: React.CSSProperties;
-} = {
-  formContainer: {
-    width: "100%",
-    maxWidth: "400px",
-    margin: "0 auto",
-    paddingBottom: SPACING.md,
-    height: "100vh",
-    overflowY: "auto",
-    overflowX: "hidden",
-  },
-  backButton: {
-    marginBottom: SPACING.sm,
-  },
-  header: {
-    textAlign: "center",
-    marginBottom: SPACING.md,
-  },
-  title: {
-    color: COLORS.text.heading,
-    marginBottom: "4px",
-    fontWeight: 700,
-    fontSize: "22px",
-    letterSpacing: "-0.025em",
-  },
-  subtitle: {
-    color: COLORS.text.secondary,
-    fontSize: "13px",
-    fontWeight: 400,
-  },
-  form: {
-    width: "100%",
-  },
-  inputGroup: {
-    marginBottom: "16px",
-  },
-  buttonContainer: {
-    width: "100%",
-    marginBottom: "16px",
-  },
 };
 
 export default ChangePassword;

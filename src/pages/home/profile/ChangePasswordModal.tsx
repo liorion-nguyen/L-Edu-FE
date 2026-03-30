@@ -3,9 +3,8 @@ import { Form, Formik } from "formik";
 import React, { useState } from "react";
 import CustomButton from "../../../components/common/CustomButton";
 import CustomInputHide from "../../../components/common/CustomInputHide";
-import { COLORS, SPACING } from "../../../constants/colors";
 import * as Yup from 'yup';
-import axios from "axios";
+import apiClient from "../../../services/api";
 
 const { Title, Text } = Typography;
 
@@ -36,7 +35,7 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ onSuccess }) 
   const handleChangePassword = async (values: ChangePasswordFormData) => {
     setIsLoading(true);
     try {
-      await axios.post('/auth/change-password', {
+      await apiClient.post('/auth/change-password', {
         currentPassword: values.currentPassword,
         newPassword: values.newPassword,
       });
@@ -130,14 +129,14 @@ const styles: {
     marginBottom: "24px",
   },
   title: {
-    color: "#1f2937",
+    color: "var(--text-primary)",
     marginBottom: "8px",
     fontWeight: 600,
     fontSize: "18px",
     letterSpacing: "-0.025em",
   },
   subtitle: {
-    color: "#6b7280",
+    color: "var(--text-secondary)",
     fontSize: "14px",
     fontWeight: 400,
     lineHeight: "1.5",

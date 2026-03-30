@@ -1,0 +1,454 @@
+/**
+ * Theme cho nội dung học / thi trong StudentDashboardLayout (/dashboard-program/*)
+ * — nền trong suốt, thẻ slate, accent primary #007fff (không dùng tím mặc định của trang thi cũ).
+ */
+
+/* —— Làm bài —— */
+.exam-taking-page--dashboard {
+  min-height: auto;
+  background: transparent !important;
+  padding: 0 !important;
+}
+
+.exam-taking-page--dashboard .exam-container {
+  max-width: 100%;
+}
+
+.exam-taking-page--dashboard .exam-header-card,
+.exam-taking-page--dashboard .exam-content-card,
+.exam-taking-page--dashboard .timer-card,
+.exam-taking-page--dashboard .navigator-card {
+  background: rgba(30, 41, 59, 0.45) !important;
+  border-color: rgba(71, 85, 105, 0.9) !important;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.22) !important;
+}
+
+html.dark .exam-taking-page--dashboard .exam-header-card,
+html.dark .exam-taking-page--dashboard .exam-content-card,
+html.dark .exam-taking-page--dashboard .timer-card,
+html.dark .exam-taking-page--dashboard .navigator-card {
+  background: rgba(15, 23, 42, 0.72) !important;
+}
+
+.exam-taking-page--dashboard .exam-title {
+  background: linear-gradient(135deg, #f8fafc 0%, #007fff 55%, #38bdf8 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+}
+
+html:not(.dark) .exam-taking-page--dashboard .exam-title {
+  background: linear-gradient(135deg, #0f172a 0%, #007fff 60%, #0369a1 100%) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+}
+
+.exam-taking-page--dashboard .stat-badge.total {
+  background: linear-gradient(135deg, #007fff 0%, #0052a3 100%) !important;
+  box-shadow: 0 2px 12px rgba(0, 127, 255, 0.35) !important;
+}
+
+.exam-taking-page--dashboard .question-number-badge {
+  background: linear-gradient(135deg, #007fff 0%, #0052a3 100%) !important;
+  box-shadow: 0 4px 16px rgba(0, 127, 255, 0.35) !important;
+}
+
+.exam-taking-page--dashboard .view-mode-toggle {
+  background: rgba(15, 23, 42, 0.5) !important;
+  border: 1px solid rgba(71, 85, 105, 0.85) !important;
+}
+
+html:not(.dark) .exam-taking-page--dashboard .view-mode-toggle {
+  background: rgba(241, 245, 249, 0.95) !important;
+  border-color: rgba(148, 163, 184, 0.6) !important;
+}
+
+/* —— Tổng quan / kết quả bài thi —— */
+.exam-overview-page--dashboard,
+.exam-result-page--dashboard {
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.exam-overview-page--dashboard .ant-typography,
+.exam-result-page--dashboard .ant-typography {
+  color: inherit;
+}
+
+html.dark .exam-overview-page--dashboard h1.ant-typography,
+html.dark .exam-overview-page--dashboard h2.ant-typography,
+html.dark .exam-result-page--dashboard h1.ant-typography,
+html.dark .exam-result-page--dashboard h2.ant-typography,
+html.dark .exam-result-page--dashboard h3.ant-typography {
+  color: #f8fafc !important;
+}
+
+.exam-overview-page--dashboard .ant-card,
+.exam-result-page--dashboard .ant-card {
+  background: rgba(30, 41, 59, 0.45) !important;
+  border-color: rgba(71, 85, 105, 0.9) !important;
+}
+
+html.dark .exam-overview-page--dashboard .ant-card,
+html.dark .exam-result-page--dashboard .ant-card {
+  background: rgba(15, 23, 42, 0.72) !important;
+}
+
+.exam-overview-page--dashboard .ant-descriptions-bordered .ant-descriptions-item-label,
+.exam-result-page--dashboard .ant-descriptions-bordered .ant-descriptions-item-label {
+  background: rgba(15, 23, 42, 0.35) !important;
+}
+
+html:not(.dark) .exam-overview-page--dashboard .ant-card,
+html:not(.dark) .exam-result-page--dashboard .ant-card {
+  background: #ffffff !important;
+  border-color: rgb(226 232 240) !important;
+}
+
+/* Ghi chú buổi học — markdown trong thẻ slate (đọc được trên nền tối / sáng) */
+.markdown-dashboard-learn .markdown-viewer {
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+/* ── Dark (Tailwind html.dark hoặc data-theme=dark): chữ sáng, accent primary/sky ── */
+html.dark .markdown-dashboard-learn .markdown-viewer,
+[data-theme="dark"] .markdown-dashboard-learn .markdown-viewer {
+  color: #e2e8f0 !important;
+}
+
+html.dark .markdown-dashboard-learn .aui-md-h1,
+[data-theme="dark"] .markdown-dashboard-learn .aui-md-h1 {
+  color: #38bdf8 !important;
+}
+
+html.dark .markdown-dashboard-learn .aui-md-h2,
+html.dark .markdown-dashboard-learn .aui-md-h3,
+[data-theme="dark"] .markdown-dashboard-learn .aui-md-h2,
+[data-theme="dark"] .markdown-dashboard-learn .aui-md-h3 {
+  color: #f1f5f9 !important;
+}
+
+html.dark .markdown-dashboard-learn .aui-md-h4,
+[data-theme="dark"] .markdown-dashboard-learn .aui-md-h4 {
+  color: #e2e8f0 !important;
+}
+
+html.dark .markdown-dashboard-learn .aui-md-h5,
+html.dark .markdown-dashboard-learn .aui-md-h6,
+[data-theme="dark"] .markdown-dashboard-learn .aui-md-h5,
+[data-theme="dark"] .markdown-dashboard-learn .aui-md-h6 {
+  color: #cbd5e1 !important;
+}
+
+html.dark .markdown-dashboard-learn .aui-md-p,
+html.dark .markdown-dashboard-learn .aui-md-ul > li,
+html.dark .markdown-dashboard-learn .aui-md-ol > li,
+[data-theme="dark"] .markdown-dashboard-learn .aui-md-p,
+[data-theme="dark"] .markdown-dashboard-learn .aui-md-ul > li,
+[data-theme="dark"] .markdown-dashboard-learn .aui-md-ol > li {
+  color: #e2e8f0 !important;
+}
+
+html.dark .markdown-dashboard-learn .aui-md-ul > li::marker,
+html.dark .markdown-dashboard-learn .aui-md-ol > li::marker,
+[data-theme="dark"] .markdown-dashboard-learn .aui-md-ul > li::marker,
+[data-theme="dark"] .markdown-dashboard-learn .aui-md-ol > li::marker {
+  color: #94a3b8 !important;
+}
+
+html.dark .markdown-dashboard-learn .aui-md-ul > li > strong:first-child,
+html.dark .markdown-dashboard-learn .aui-md-ol > li > strong:first-child,
+[data-theme="dark"] .markdown-dashboard-learn .aui-md-ul > li > strong:first-child,
+[data-theme="dark"] .markdown-dashboard-learn .aui-md-ol > li > strong:first-child {
+  color: #f8fafc !important;
+}
+
+html.dark .markdown-dashboard-learn .aui-md-a,
+[data-theme="dark"] .markdown-dashboard-learn .aui-md-a {
+  color: #38bdf8 !important;
+  border-bottom-color: rgba(56, 189, 248, 0.45) !important;
+}
+
+html.dark .markdown-dashboard-learn .aui-md-a:hover,
+[data-theme="dark"] .markdown-dashboard-learn .aui-md-a:hover {
+  color: #7dd3fc !important;
+  background-color: rgba(0, 127, 255, 0.12) !important;
+}
+
+html.dark .markdown-dashboard-learn .aui-md-strong,
+[data-theme="dark"] .markdown-dashboard-learn .aui-md-strong {
+  color: #f8fafc !important;
+}
+
+html.dark .markdown-dashboard-learn .aui-md-em,
+[data-theme="dark"] .markdown-dashboard-learn .aui-md-em {
+  color: #cbd5e1 !important;
+}
+
+html.dark .markdown-dashboard-learn .aui-md-blockquote,
+[data-theme="dark"] .markdown-dashboard-learn .aui-md-blockquote {
+  background: rgba(15, 23, 42, 0.65) !important;
+  border-left-color: #007fff !important;
+  color: #cbd5e1 !important;
+}
+
+html.dark .markdown-dashboard-learn .aui-md-hr,
+[data-theme="dark"] .markdown-dashboard-learn .aui-md-hr {
+  border-bottom-color: rgba(71, 85, 105, 0.85) !important;
+}
+
+html.dark .markdown-dashboard-learn .aui-md-inline-code,
+[data-theme="dark"] .markdown-dashboard-learn .aui-md-inline-code {
+  background: rgba(0, 127, 255, 0.18) !important;
+  color: #7dd3fc !important;
+  border: 1px solid rgba(56, 189, 248, 0.25);
+}
+
+html.dark .markdown-dashboard-learn .aui-md-h1 code,
+html.dark .markdown-dashboard-learn .aui-md-h2 code,
+html.dark .markdown-dashboard-learn .aui-md-h3 code,
+html.dark .markdown-dashboard-learn .aui-md-h4 code,
+[data-theme="dark"] .markdown-dashboard-learn .aui-md-h1 code,
+[data-theme="dark"] .markdown-dashboard-learn .aui-md-h2 code,
+[data-theme="dark"] .markdown-dashboard-learn .aui-md-h3 code,
+[data-theme="dark"] .markdown-dashboard-learn .aui-md-h4 code {
+  background: rgba(0, 127, 255, 0.2) !important;
+  color: #e0f2fe !important;
+}
+
+html.dark .markdown-dashboard-learn .aui-md-pre,
+[data-theme="dark"] .markdown-dashboard-learn .aui-md-pre {
+  background: rgba(15, 23, 42, 0.92) !important;
+  color: #e2e8f0 !important;
+  border-color: rgba(71, 85, 105, 0.85) !important;
+}
+
+html.dark .markdown-dashboard-learn .aui-md-pre code,
+[data-theme="dark"] .markdown-dashboard-learn .aui-md-pre code {
+  color: #e2e8f0 !important;
+}
+
+/* Bảng: ghi đè màu xanh lá / xám đậm mặc định của MarkdownViewer.css */
+html.dark .markdown-dashboard-learn .aui-md-table,
+[data-theme="dark"] .markdown-dashboard-learn .aui-md-table {
+  border-color: rgba(71, 85, 105, 0.85) !important;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
+}
+
+html.dark .markdown-dashboard-learn .aui-md-th,
+[data-theme="dark"] .markdown-dashboard-learn .aui-md-th {
+  background: rgba(30, 41, 59, 0.95) !important;
+  color: #f1f5f9 !important;
+  border-bottom-color: rgba(71, 85, 105, 0.9) !important;
+}
+
+html.dark .markdown-dashboard-learn .markdown-viewer th,
+[data-theme="dark"] .markdown-dashboard-learn .markdown-viewer th {
+  background: rgba(30, 41, 59, 0.95) !important;
+  color: #f1f5f9 !important;
+  border-bottom-color: rgba(71, 85, 105, 0.9) !important;
+}
+
+html.dark .markdown-dashboard-learn .aui-md-td,
+[data-theme="dark"] .markdown-dashboard-learn .aui-md-td {
+  color: #e2e8f0 !important;
+  border-color: rgba(51, 65, 85, 0.75) !important;
+}
+
+html.dark .markdown-dashboard-learn .aui-md-tr:hover,
+[data-theme="dark"] .markdown-dashboard-learn .aui-md-tr:hover {
+  background-color: rgba(30, 41, 59, 0.55) !important;
+}
+
+html.dark .markdown-dashboard-learn .aui-md-tr:nth-child(even),
+[data-theme="dark"] .markdown-dashboard-learn .aui-md-tr:nth-child(even) {
+  background-color: rgba(15, 23, 42, 0.45) !important;
+}
+
+html.dark .markdown-dashboard-learn .markdown-viewer .table-wrapper,
+[data-theme="dark"] .markdown-dashboard-learn .markdown-viewer .table-wrapper {
+  background: rgba(15, 23, 42, 0.5) !important;
+  border-color: rgba(71, 85, 105, 0.8) !important;
+}
+
+html.dark .markdown-dashboard-learn .markdown-viewer td code,
+[data-theme="dark"] .markdown-dashboard-learn .markdown-viewer td code {
+  background: rgba(0, 127, 255, 0.15) !important;
+  color: #7dd3fc !important;
+  border-color: rgba(71, 85, 105, 0.5) !important;
+}
+
+html.dark .markdown-dashboard-learn .markdown-viewer table a,
+[data-theme="dark"] .markdown-dashboard-learn .markdown-viewer table a {
+  color: #38bdf8 !important;
+}
+
+html.dark .markdown-dashboard-learn .markdown-viewer table a:hover,
+[data-theme="dark"] .markdown-dashboard-learn .markdown-viewer table a:hover {
+  color: #7dd3fc !important;
+}
+
+/* Mục lục (TOC) bên phải */
+html.dark .markdown-dashboard-learn .table-of-contents.toc-hovered,
+[data-theme="dark"] .markdown-dashboard-learn .table-of-contents.toc-hovered {
+  background: rgba(15, 23, 42, 0.96) !important;
+  border-left-color: rgba(71, 85, 105, 0.85) !important;
+  box-shadow: -4px 0 16px rgba(0, 0, 0, 0.35) !important;
+}
+
+html.dark .markdown-dashboard-learn .toc-title,
+[data-theme="dark"] .markdown-dashboard-learn .toc-title {
+  color: #94a3b8 !important;
+}
+
+html.dark .markdown-dashboard-learn .toc-item-text,
+[data-theme="dark"] .markdown-dashboard-learn .toc-item-text {
+  color: #cbd5e1 !important;
+}
+
+html.dark .markdown-dashboard-learn .toc-item:hover .toc-item-text,
+html.dark .markdown-dashboard-learn .toc-item.toc-active .toc-item-text,
+[data-theme="dark"] .markdown-dashboard-learn .toc-item:hover .toc-item-text,
+[data-theme="dark"] .markdown-dashboard-learn .toc-item.toc-active .toc-item-text {
+  color: #f8fafc !important;
+}
+
+html.dark .markdown-dashboard-learn .toc-level-4,
+html.dark .markdown-dashboard-learn .toc-level-5,
+html.dark .markdown-dashboard-learn .toc-level-6,
+[data-theme="dark"] .markdown-dashboard-learn .toc-level-4,
+[data-theme="dark"] .markdown-dashboard-learn .toc-level-5,
+[data-theme="dark"] .markdown-dashboard-learn .toc-level-6 {
+  color: #94a3b8 !important;
+}
+
+/* ── Light: chữ đậm trên nền thẻ sáng ── */
+html:not(.dark) .markdown-dashboard-learn .aui-md-p,
+html:not(.dark) .markdown-dashboard-learn .aui-md-ul > li,
+html:not(.dark) .markdown-dashboard-learn .aui-md-ol > li,
+[data-theme="light"] .markdown-dashboard-learn .aui-md-p,
+[data-theme="light"] .markdown-dashboard-learn .aui-md-ul > li,
+[data-theme="light"] .markdown-dashboard-learn .aui-md-ol > li {
+  color: #0f172a !important;
+}
+
+html:not(.dark) .markdown-dashboard-learn .aui-md-h1,
+html:not(.dark) .markdown-dashboard-learn .aui-md-h2,
+html:not(.dark) .markdown-dashboard-learn .aui-md-h3,
+[data-theme="light"] .markdown-dashboard-learn .aui-md-h1,
+[data-theme="light"] .markdown-dashboard-learn .aui-md-h2,
+[data-theme="light"] .markdown-dashboard-learn .aui-md-h3 {
+  color: #0c4a6e !important;
+}
+
+html:not(.dark) .markdown-dashboard-learn .aui-md-a,
+[data-theme="light"] .markdown-dashboard-learn .aui-md-a {
+  color: #007fff !important;
+}
+
+/* Kết quả — badge câu hỏi dùng primary thay vì tím */
+.exam-result-page--dashboard .review-question-number {
+  background: linear-gradient(135deg, #007fff 0%, #0052a3 100%) !important;
+  box-shadow: 0 4px 12px rgba(0, 127, 255, 0.3) !important;
+}
+
+.exam-taking-page--dashboard .timer-label,
+.exam-taking-page--dashboard .navigator-title span,
+.exam-taking-page--dashboard .stat-label {
+  color: #64748b !important;
+}
+
+html.dark .exam-taking-page--dashboard .timer-label,
+html.dark .exam-taking-page--dashboard .navigator-title span,
+html.dark .exam-taking-page--dashboard .stat-label {
+  color: #94a3b8 !important;
+}
+
+/* ───────────────────────────────────────────────────────────────
+   Student settings (/dashboard-program/settings)
+   Make UpdateProfile (antd) match current slate/primary theme.
+   ─────────────────────────────────────────────────────────────── */
+
+.student-settings-profile-form .ant-form-item {
+  margin-bottom: 18px;
+}
+
+.student-settings-profile-form .ant-form-item-label > label {
+  font-weight: 600;
+  color: #334155 !important; /* slate-700 */
+}
+
+html.dark .student-settings-profile-form .ant-form-item-label > label {
+  color: #cbd5e1 !important; /* slate-300 */
+  text-shadow: none !important;
+}
+
+.student-settings-profile-form .ant-input,
+.student-settings-profile-form .ant-input-affix-wrapper,
+.student-settings-profile-form .ant-picker,
+.student-settings-profile-form .ant-select-selector,
+.student-settings-profile-form .ant-input-number,
+.student-settings-profile-form textarea.ant-input {
+  background: rgb(241 245 249 / 0.95) !important; /* slate-100 */
+  border-color: rgb(226 232 240) !important; /* slate-200 */
+  color: #0f172a !important; /* slate-900 */
+  border-radius: 12px !important;
+}
+
+html.dark .student-settings-profile-form .ant-input,
+html.dark .student-settings-profile-form .ant-input-affix-wrapper,
+html.dark .student-settings-profile-form .ant-picker,
+html.dark .student-settings-profile-form .ant-select-selector,
+html.dark .student-settings-profile-form .ant-input-number,
+html.dark .student-settings-profile-form textarea.ant-input {
+  background: rgba(15, 23, 42, 0.55) !important;
+  border-color: rgba(71, 85, 105, 0.75) !important;
+  color: #e2e8f0 !important;
+}
+
+.student-settings-profile-form .ant-input::placeholder,
+.student-settings-profile-form textarea.ant-input::placeholder {
+  color: #94a3b8 !important;
+}
+
+html.dark .student-settings-profile-form .ant-input::placeholder,
+html.dark .student-settings-profile-form textarea.ant-input::placeholder {
+  color: #64748b !important;
+}
+
+.student-settings-profile-form .ant-input:focus,
+.student-settings-profile-form .ant-input-affix-wrapper-focused,
+.student-settings-profile-form .ant-picker-focused,
+.student-settings-profile-form .ant-select-focused .ant-select-selector,
+.student-settings-profile-form .ant-input-number-focused,
+.student-settings-profile-form textarea.ant-input:focus {
+  border-color: rgba(0, 127, 255, 0.6) !important;
+  box-shadow: 0 0 0 3px rgba(0, 127, 255, 0.18) !important;
+}
+
+/* Upload button + submit button (UpdateProfile already has these classes) */
+.student-settings-profile-form .profile-upload-btn,
+.student-settings-profile-form .profile-submit-btn {
+  background: #007fff !important;
+  border: 1px solid rgba(0, 127, 255, 0.65) !important;
+  color: #ffffff !important;
+  border-radius: 12px !important;
+  height: 44px !important;
+  font-weight: 700 !important;
+  box-shadow: 0 10px 24px rgba(0, 127, 255, 0.22) !important;
+}
+
+.student-settings-profile-form .profile-upload-btn:hover,
+.student-settings-profile-form .profile-submit-btn:hover {
+  background: #006fe6 !important;
+  border-color: rgba(0, 127, 255, 0.85) !important;
+  box-shadow: 0 12px 28px rgba(0, 127, 255, 0.28) !important;
+}
+
+/* Avatar */
+.student-settings-profile-form .ant-avatar {
+  background: rgba(0, 127, 255, 0.18) !important;
+  color: #007fff !important;
+}

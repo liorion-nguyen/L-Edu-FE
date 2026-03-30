@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { Result, Button, Spin, Alert } from 'antd';
+import { Button, Spin, Alert } from 'antd';
 import { CheckCircleOutlined, CloseCircleOutlined, LoadingOutlined } from '@ant-design/icons';
 import axios from 'axios';
 
@@ -55,12 +55,12 @@ const EmailVerification: React.FC = () => {
     switch (verificationStatus) {
       case 'loading':
         return (
-          <div style={{ textAlign: 'center', padding: '40px 0' }}>
+          <div className="py-10 text-center">
             <Spin 
               indicator={<LoadingOutlined style={{ fontSize: 48, color: '#1890ff' }} spin />} 
               size="large"
             />
-            <p style={{ marginTop: 20, fontSize: 16, color: '#666' }}>
+            <p className="mt-5 text-base text-slate-400">
               Đang xác thực email...
             </p>
           </div>
@@ -68,51 +68,45 @@ const EmailVerification: React.FC = () => {
 
       case 'success':
         return (
-          <Result
-            icon={<CheckCircleOutlined style={{ color: '#52c41a' }} />}
-            title="Xác thực email thành công!"
-            subTitle={
-              <div>
-                <p>Email <strong>{email}</strong> đã được xác thực thành công.</p>
-                <p>Tài khoản của bạn đã được kích hoạt và bạn có thể đăng nhập ngay bây giờ.</p>
-              </div>
-            }
-            extra={[
-              <Button type="primary" key="login" onClick={handleGoToLogin} size="large">
+          <div className="text-center">
+            <CheckCircleOutlined className="mb-4 text-5xl text-green-500" />
+            <h2 className="mb-2 text-3xl font-bold text-slate-50">Xác thực email thành công!</h2>
+            <p className="mb-1 text-slate-300">
+              Email <strong>{email}</strong> đã được xác thực thành công.
+            </p>
+            <p className="mb-8 text-slate-400">Tài khoản của bạn đã được kích hoạt và bạn có thể đăng nhập ngay bây giờ.</p>
+            <div className="flex flex-wrap items-center justify-center gap-3">
+              <Button type="primary" onClick={handleGoToLogin} size="large">
                 Đăng nhập ngay
-              </Button>,
-              <Button key="home" onClick={handleGoToHome} size="large">
+              </Button>
+              <Button onClick={handleGoToHome} size="large">
                 Về trang chủ
-              </Button>,
-            ]}
-          />
+              </Button>
+            </div>
+          </div>
         );
 
       case 'error':
         return (
-          <Result
-            icon={<CloseCircleOutlined style={{ color: '#ff4d4f' }} />}
-            title="Xác thực email thất bại"
-            subTitle={
-              <div>
-                <Alert
-                  message={message}
-                  type="error"
-                  showIcon
-                  style={{ marginBottom: 16 }}
-                />
-                <p>Có thể token đã hết hạn hoặc không hợp lệ. Vui lòng thử lại.</p>
-              </div>
-            }
-            extra={[
-              <Button type="primary" key="login" onClick={handleGoToLogin} size="large">
+          <div className="text-center">
+            <CloseCircleOutlined className="mb-4 text-5xl text-red-500" />
+            <h2 className="mb-4 text-3xl font-bold text-slate-50">Xác thực email thất bại</h2>
+            <Alert
+              message={message}
+              type="error"
+              showIcon
+              className="mb-4 text-left"
+            />
+            <p className="mb-8 text-slate-400">Có thể token đã hết hạn hoặc không hợp lệ. Vui lòng thử lại.</p>
+            <div className="flex flex-wrap items-center justify-center gap-3">
+              <Button type="primary" onClick={handleGoToLogin} size="large">
                 Đăng nhập
-              </Button>,
-              <Button key="home" onClick={handleGoToHome} size="large">
+              </Button>
+              <Button onClick={handleGoToHome} size="large">
                 Về trang chủ
-              </Button>,
-            ]}
-          />
+              </Button>
+            </div>
+          </div>
         );
 
       default:
@@ -121,23 +115,8 @@ const EmailVerification: React.FC = () => {
   };
 
   return (
-    <div style={{ 
-      minHeight: '100vh', 
-      display: 'flex', 
-      alignItems: 'center', 
-      justifyContent: 'center',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      padding: '20px'
-    }}>
-      <div style={{
-        background: 'white',
-        borderRadius: '12px',
-        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
-        padding: '40px',
-        maxWidth: '600px',
-        width: '100%',
-        textAlign: 'center'
-      }}>
+    <div className="flex min-h-screen items-center justify-center bg-background-dark px-6 py-10">
+      <div className="w-full max-w-2xl rounded-2xl border border-[#25364d] bg-[rgba(18,30,48,0.85)] p-8 shadow-[0_12px_40px_rgba(0,0,0,0.35)]">
         {renderContent()}
       </div>
     </div>

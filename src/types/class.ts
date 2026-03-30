@@ -48,3 +48,13 @@ export interface SessionNote {
   homework: string;
   studentComments: Array<{ userId: string; comment: string }>;
 }
+
+export interface ScheduleEvent {
+  classId: string;
+  className: string;
+  courseId?: string;
+  courseName?: string;
+  start: string; // ISO
+  end: string; // ISO
+  platform?: string;
+}

@@ -13,7 +13,9 @@ import { Role } from "../../../enum/user.enum";
 import SectionLayout from "../../../layouts/SectionLayout";
 import { getCourseById } from "../../../redux/slices/courses";
 import { RootState, useDispatch, useSelector } from "../../../redux/store";
+import { getUser } from "../../../redux/slices/auth";
 import { useIsAdmin } from "../../../utils/auth";
+import { studentDashboardDocumentPath, studentDashboardVideoPath } from "../../../utils/studentDashboardRoutes";
 import CourseReviews from "../../../components/course/CourseReviews";
 import ScrollAnimation from "../../../components/common/ScrollAnimation";
 import { showNotification } from "../../../components/common/Toaster";
@@ -24,9 +26,22 @@ import "./courseDetail.css";
 const { Text } = Typography;
 const useBreakpoint = Grid.useBreakpoint;
 
-const Session = ({ item, exams }: { item: any; exams?: ExamSummary[] }) => {
+export const Session = ({
+  item,
+  exams,
+  hideAdminActions,
+  variant = "default",
+}: {
+  item: any;
+  exams?: ExamSummary[];
+  /** Ẩn nút cập nhật session (dùng trong student dashboard) */
+  hideAdminActions?: boolean;
+  /** Giao diện tối khớp student dashboard (`/dashboard-program/courses/...`) */
+  variant?: "default" | "dashboard";
+}) => {
   const { t } = useTranslationWithRerender();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { user } = useSelector((state: RootState) => state.auth);
   const [examModalVisible, setExamModalVisible] = useState(false);
   const [selectedExamId, setSelectedExamId] = useState<string | null>(null);
@@ -52,11 +67,20 @@ const Session = ({ item, exams }: { item: any; exams?: ExamSummary[] }) => {
 
   const handleView = (section: { type: string; id: string; name: string }) => {
     if (section.type === "note") {
-      // Mở tài liệu ở tab mới để học viên giữ nguyên trang tổng quan khóa học
+      if (variant === "dashboard") {
+        navigate(studentDashboardDocumentPath(section.id));
+        return;
+      }
       window.open(`/course/document/${section.id}`, "_blank", "noopener,noreferrer");
       return;
     }
-    if (section.type === "video") navigate(`/course/video/${section.id}`);
+    if (section.type === "video") {
+      if (variant === "dashboard") {
+        navigate(studentDashboardVideoPath(section.id));
+        return;
+      }
+      navigate(`/course/video/${section.id}`);
+    }
     if (section.type === "quiz") navigate(`/course/quiz/${section.id}`);
     if (section.type === "exam") {
       setSelectedExamId(section.id);
@@ -80,20 +104,35 @@ const Session = ({ item, exams }: { item: any; exams?: ExamSummary[] }) => {
   };
 
   const handleStartExam = async () => {
-    if (!selectedExamId || !user?._id) {
+    if (!selectedExamId) return;
+
+    // If token exists but redux user is not hydrated yet, fetch user first.
+    const token = typeof window !== "undefined" ? localStorage.getItem("jwt-access-token") : null;
+    let fetchedUserId: string | undefined;
+    if (!user?._id && token) {
+      const result = await dispatch(getUser());
+      if (getUser.rejected.match(result)) {
+        showNotification(ToasterType.error, "Exam", "Vui lòng đăng nhập trước khi làm bài");
+        return;
+      }
+      fetchedUserId = (result as any)?.payload?._id;
+    }
+    const latestUserId = (user?._id ?? fetchedUserId) as string | undefined;
+    if (!latestUserId) {
       showNotification(ToasterType.error, "Exam", "Vui lòng đăng nhập trước khi làm bài");
       return;
     }
     try {
       setStartingExam(true);
       const attempt = await examService.createAttempt(selectedExamId, {
-        studentId: user._id,
+        studentId: latestUserId,
         deviceInfo: {
           userAgent: window.navigator.userAgent,
         },
       });
       setExamModalVisible(false);
-      navigate(`/exams/${selectedExamId}/take?attemptId=${attempt._id}`);
+      const examBase = variant === "dashboard" ? "/dashboard-program/exams" : "/exams";
+      navigate(`${examBase}/${selectedExamId}/take?attemptId=${attempt._id}`);
     } catch (error: any) {
       const message = error?.response?.data?.message || "Không thể bắt đầu bài kiểm tra";
       showNotification(ToasterType.error, "Exam", message);
@@ -103,62 +142,124 @@ const Session = ({ item, exams }: { item: any; exams?: ExamSummary[] }) => {
   };
 
   const isAdmin = useIsAdmin();
+  const isDash = variant === "dashboard";
+  const sessionLocked = item.mode === Mode.CLOSE;
+
+  const sessionCardClass = [
+    "modern-session-card",
+    isDash && "session-card-dashboard",
+    "!rounded-2xl !border !relative !overflow-hidden transition-all duration-300",
+    isDash
+      ? "!bg-slate-800/55 !border-slate-600/95 !shadow-[0_4px_24px_rgba(0,0,0,0.35)]"
+      : "!bg-[var(--bg-primary)] !border-[var(--border-color)] !shadow-[0_4px_20px_rgba(0,0,0,0.08)]",
+    sessionLocked && (isDash ? "!opacity-[0.88]" : "!opacity-70"),
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   const getSectionIcon = (type: string) => {
+    const iconClass = "text-xl text-white";
     switch (type) {
       case "note":
-        return <FileTextOutlined style={styles.sectionIcon} />;
+        return <FileTextOutlined className={iconClass} />;
       case "video":
-        return <PlayCircleOutlined style={styles.sectionIcon} />;
+        return <PlayCircleOutlined className={iconClass} />;
       case "exam":
       case "quiz":
-        return <FilePdfOutlined style={styles.sectionIcon} />;
+        return <FilePdfOutlined className={iconClass} />;
       default:
-        return <BookOutlined style={styles.sectionIcon} />;
+        return <BookOutlined className={iconClass} />;
     }
   };
 
   return (
-    <Card
-      className="modern-session-card"
-      style={{
-        ...styles.container,
-        ...(item.mode === Mode.CLOSE ? styles.lockedContainer : {}),
-      }}
-      hoverable
-    >
-      <div style={styles.sessionHeader}>
-        <div style={styles.sessionHeaderLeft}>
-          <div style={styles.sessionBadge}>
-            <Text style={styles.sessionBadgeText}>
-              {t('courseDetail.lesson')} {item.sessionNumber}
+    <Card className={sessionCardClass} styles={{ body: { padding: 20 } }} hoverable>
+      <div
+        className={[
+          "flex justify-between items-start mb-4 pb-3 border-b-2",
+          isDash ? "border-slate-600" : "border-[var(--border-color)]",
+        ].join(" ")}
+      >
+        <div className="flex-1 relative min-w-0">
+          <div
+            className={[
+              "inline-block px-3 py-1 rounded-2xl mb-2 shadow-md",
+              isDash
+                ? "bg-gradient-to-br from-[#007fff] to-[#0056b3] shadow-[0_2px_10px_rgba(0,127,255,0.35)]"
+                : "bg-gradient-to-br from-[var(--accent-color)] to-[#764ba2]",
+            ].join(" ")}
+          >
+            <Text className="!text-white !text-xs !font-semibold !m-0">
+              {t("courseDetail.lesson")} {item.sessionNumber}
             </Text>
           </div>
-          <Title level={4} style={styles.sessionTitle}>
+          <Title
+            level={4}
+            className={
+              isDash
+                ? "!mt-1 !mb-0 !text-xl !font-bold !text-slate-50 !leading-snug"
+                : "!mt-1 !mb-0 !text-xl !font-bold !text-[var(--text-primary)] !leading-snug"
+            }
+          >
             {item.title}
           </Title>
         </div>
-        <div style={styles.viewCount}>
-          <EyeOutlined style={styles.viewIcon} />
-          <Text style={styles.viewText}>{item?.views || 0}</Text>
+        <div
+          className={[
+            "flex items-center gap-1.5 px-3 py-1.5 rounded-[10px] shrink-0",
+            isDash ? "bg-slate-950/95 border border-slate-600/85" : "bg-[var(--bg-secondary)]",
+          ].join(" ")}
+        >
+          <EyeOutlined className={isDash ? "text-sky-400 text-base" : "text-[var(--accent-color)] text-base"} />
+          <Text
+            className={
+              isDash
+                ? "!text-[13px] !font-semibold !text-slate-200 !m-0"
+                : "!text-[13px] !font-semibold !text-[var(--text-primary)] !m-0"
+            }
+          >
+            {item?.views || 0}
+          </Text>
         </div>
       </div>
 
-      <div style={styles.sectionsContainer}>
+      <div className="flex flex-col gap-2.5">
         {sections.map((section, index) => (
           <div
             key={`${section.type}-${index}`}
-            className={`section-item ${!section.status ? 'disabled' : ''}`}
-            style={styles.sectionItem}
+            className={[
+              "section-item flex items-center gap-3 px-4 py-3 rounded-xl border transition-all duration-300",
+              !section.status ? "disabled" : "cursor-pointer",
+              isDash
+                ? "bg-slate-900/72 border-slate-600/90"
+                : "bg-[var(--bg-secondary)] border-[var(--border-color)]",
+            ].join(" ")}
             onClick={() => section.status && handleView(section)}
           >
-            <div style={styles.sectionIconWrapper}>
+            <div
+              className={[
+                "section-icon-wrapper w-10 h-10 flex items-center justify-center shrink-0 rounded-[10px]",
+                isDash
+                  ? "bg-gradient-to-br from-[#007fff] to-[#0052a3]"
+                  : "bg-gradient-to-br from-[var(--accent-color)] to-[#764ba2]",
+              ].join(" ")}
+            >
               {getSectionIcon(section.type)}
             </div>
-            <div style={styles.sectionContent}>
-              <Text style={styles.sectionText}>{section.name}</Text>
+            <div className="flex-1 flex items-center gap-2 min-w-0">
+              <Text
+                className={
+                  isDash
+                    ? "!text-sm !font-medium !text-slate-200 !m-0"
+                    : "!text-sm !font-medium !text-[var(--text-primary)] !m-0"
+                }
+              >
+                {section.name}
+              </Text>
               {!section.status && (
-                <LockOutlined style={styles.lockIconSmall} />
+                <LockOutlined
+                  className={isDash ? "text-sm text-slate-400" : "text-sm text-[var(--text-secondary)]"}
+                />
               )}
             </div>
             <Button
@@ -169,218 +270,187 @@ const Session = ({ item, exams }: { item: any; exams?: ExamSummary[] }) => {
                 e.stopPropagation();
                 if (section.status) handleView(section);
               }}
-              style={styles.sectionButton}
-              className="section-action-button"
+              className={[
+                "section-action-button h-9 px-4 !rounded-[10px] text-[13px] font-semibold shrink-0",
+                isDash && section.status
+                  ? "!rounded-xl !bg-primary !border-primary hover:!bg-[#006fe6] !shadow-md !shadow-primary/25"
+                  : "",
+              ]
+                .filter(Boolean)
+                .join(" ")}
             >
               {section.status
                 ? section.type === "exam"
-                  ? t('courseDetail.startExam')
-                  : t('courseDetail.view')
-                : t('courseDetail.locked')}
+                  ? t("courseDetail.startExam")
+                  : t("courseDetail.view")
+                : t("courseDetail.locked")}
             </Button>
           </div>
         ))}
       </div>
 
-      {isAdmin && (
-        <div style={styles.adminActions}>
+      {isAdmin && !hideAdminActions && (
+        <div
+          className={[
+            "mt-4 pt-4 border-t-2 flex justify-center",
+            isDash ? "border-slate-600" : "border-[var(--border-color)]",
+          ].join(" ")}
+        >
           <Button
             type="default"
             icon={<ProductOutlined />}
             size="large"
             onClick={() => navigate(`/session/updateSession/${item._id}`)}
-            style={styles.updateButton}
-            className="update-session-btn"
+            className="update-session-btn !h-[38px] !px-5 !rounded-[10px] !text-sm !font-semibold !bg-transparent !border-2 !border-[var(--accent-color)] !text-[var(--accent-color)] transition-all duration-300"
           >
-            {t('courseDetail.updateSession')}
+            {t("courseDetail.updateSession")}
           </Button>
         </div>
       )}
 
-      {item.mode === Mode.CLOSE && (
-        <div style={styles.lockOverlay}>
-          <LockOutlined style={styles.lockIcon} />
-          <Title level={4} style={styles.lockText}>
-            {t('courseDetail.temporarilyLocked')}
+      {sessionLocked && (
+        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-4 rounded-[20px] bg-black/85 backdrop-blur-sm">
+          <LockOutlined className="text-5xl text-[var(--accent-color)]" />
+          <Title level={4} className="!m-0 !text-xl !text-white !font-semibold">
+            {t("courseDetail.temporarilyLocked")}
           </Title>
         </div>
       )}
 
       {/* Exam Confirmation Modal */}
       <Modal
-        title={
-          <div style={styles.modalTitle}>
-            <div style={styles.modalTitleIcon}>
-              <ExclamationCircleOutlined />
-            </div>
-            <div>
-              <div style={styles.modalTitleText}>Sẵn sàng bắt đầu bài kiểm tra?</div>
-              <div style={styles.modalTitleSubtext}>Vui lòng xem kỹ thông tin trước khi bắt đầu</div>
-            </div>
-          </div>
-        }
         open={examModalVisible}
         onCancel={() => {
           setExamModalVisible(false);
           setExamDetails(null);
           setSelectedExamId(null);
         }}
-        footer={[
-          <Button 
-            key="cancel" 
-            onClick={() => {
-              setExamModalVisible(false);
-              setExamDetails(null);
-              setSelectedExamId(null);
-            }}
-            style={styles.modalCancelButton}
-          >
-            {t('common.cancel')}
-          </Button>,
-          <Button
-            key="start"
-            type="primary"
-            loading={startingExam}
-            onClick={handleStartExam}
-            style={styles.modalStartButton}
-            className="start-exam-confirm-btn"
-          >
-            {t('courseDetail.startExam')}
-          </Button>,
-        ]}
-        width={720}
+        footer={null}
+        width={560}
         centered
         className="exam-confirmation-modal"
         styles={{
-          body: { padding: "24px" },
+          body: { padding: 0 },
         }}
       >
         {loadingExam ? (
-          <div style={styles.loadingContainer}>
+          <div className="p-10 text-center">
             <Spin size="large" />
-            <div style={styles.loadingText}>Đang tải thông tin bài kiểm tra...</div>
+            <div className="mt-4 text-sm text-slate-600 dark:text-slate-400">Đang tải thông tin bài kiểm tra...</div>
           </div>
         ) : examDetails ? (
-          <div style={styles.modalContent}>
-            {/* Exam Header */}
-            <div style={styles.examHeader}>
-              <Title level={3} style={styles.examTitle}>{examDetails.title}</Title>
-              <div style={styles.examScoreBadge}>
-                <Text style={styles.examScoreText}>Điểm tối đa: {examDetails.totalPoints}</Text>
+          <div className="overflow-hidden rounded-2xl bg-white dark:bg-[#0f1923] border border-slate-200 dark:border-primary/20 shadow-2xl">
+            {/* Header */}
+            <div className="relative h-32 border-b border-slate-200 dark:border-primary/20 bg-primary/10 dark:bg-primary/10 overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/25 to-transparent" />
+              <div className="absolute top-0 right-0 p-6 opacity-20 text-slate-900 dark:text-white">
+                <span className="material-symbols-outlined text-[96px] leading-none rotate-12">quiz</span>
+              </div>
+              <div className="absolute bottom-4 left-6 flex items-center gap-3">
+                <div className="size-12 rounded-xl bg-primary flex items-center justify-center text-white shadow-[0_0_16px_rgba(0,127,255,0.45)]">
+                  <span className="material-symbols-outlined">assignment</span>
+                </div>
+                <div className="min-w-0">
+                  <h3 className="text-xl font-black text-slate-900 dark:text-white leading-tight truncate">
+                    {examDetails.title}
+                  </h3>
+                  <p className="text-[11px] text-primary font-bold uppercase tracking-[0.22em]">
+                    {t("courseDetail.startExam")}
+                  </p>
+                </div>
               </div>
             </div>
 
-            {/* Exam Info Cards */}
-            <Row gutter={[16, 16]}>
-              <Col span={24}>
-                <Card 
-                  size="small" 
-                  style={styles.infoCard}
-                  className="exam-info-card"
+            <div className="p-7 space-y-6">
+              {/* Stats */}
+              <div className="grid grid-cols-3 gap-3">
+                <div className="flex flex-col items-center justify-center p-3 rounded-xl bg-primary/5 dark:bg-primary/5 border border-primary/10">
+                  <span className="material-symbols-outlined text-primary mb-1">help</span>
+                  <span className="text-lg font-black text-slate-900 dark:text-slate-100">
+                    {(examDetails as any)?.questions?.length ?? "--"}
+                  </span>
+                  <span className="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wider">
+                    Questions
+                  </span>
+                </div>
+                <div className="flex flex-col items-center justify-center p-3 rounded-xl bg-primary/5 dark:bg-primary/5 border border-primary/10">
+                  <span className="material-symbols-outlined text-primary mb-1">schedule</span>
+                  <span className="text-lg font-black text-slate-900 dark:text-slate-100">{examDetails.config.durationMinutes}</span>
+                  <span className="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wider">
+                    Minutes
+                  </span>
+                </div>
+                <div className="flex flex-col items-center justify-center p-3 rounded-xl bg-primary/5 dark:bg-primary/5 border border-primary/10">
+                  <span className="material-symbols-outlined text-primary mb-1">stars</span>
+                  <span className="text-lg font-black text-slate-900 dark:text-slate-100">
+                    {examDetails.config.passingScore ?? examDetails.totalPoints}
+                  </span>
+                  <span className="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wider">
+                    Min. Pts
+                  </span>
+                </div>
+              </div>
+
+              {/* Warnings */}
+              <div className="space-y-3">
+                <div className="flex gap-3 p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-700 dark:text-amber-200">
+                  <span className="material-symbols-outlined shrink-0">warning</span>
+                  <div className="text-sm">
+                    <p className="font-black">Lưu ý thời gian</p>
+                    <p className="opacity-80">
+                      Khi nhấn bắt đầu, thời gian sẽ được tính ngay lập tức. Hãy đảm bảo thiết bị ổn định và kết nối internet tốt trước khi bắt đầu.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+                    <span className="material-symbols-outlined text-primary text-lg">verified</span>
+                    <span>Tự động lưu trong quá trình làm bài</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+                    <span className="material-symbols-outlined text-primary text-lg">desktop_access_disabled</span>
+                    <span>Thoát tab có thể ảnh hưởng đến phiên làm bài</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="flex gap-3 pt-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setExamModalVisible(false);
+                    setExamDetails(null);
+                    setSelectedExamId(null);
+                  }}
+                  className="flex-1 h-[46px] rounded-xl font-bold text-sm text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors border border-slate-200 dark:border-slate-700"
                 >
-                  <Descriptions column={1} size="small" colon={false}>
-                    {examDetails.description && (
-                      <Descriptions.Item 
-                        label={<span style={styles.descriptionLabel}>📝 Mô tả</span>}
-                      >
-                        <Text style={styles.descriptionText}>{examDetails.description}</Text>
-                      </Descriptions.Item>
-                    )}
-                    <Descriptions.Item 
-                      label={<span style={styles.descriptionLabel}>⏱️ Thời lượng</span>}
-                    >
-                      <Space>
-                        <ClockCircleOutlined style={styles.infoIcon} />
-                        <Text strong style={styles.infoValue}>
-                          {examDetails.config.durationMinutes} phút
-                        </Text>
-                      </Space>
-                    </Descriptions.Item>
-                    {examDetails.config.passingScore !== undefined && (
-                      <Descriptions.Item 
-                        label={<span style={styles.descriptionLabel}>🏆 Điểm đạt</span>}
-                      >
-                        <Space>
-                          <FlagOutlined style={styles.infoIcon} />
-                          <Text strong style={styles.infoValue}>
-                            {examDetails.config.passingScore} điểm
-                          </Text>
-                        </Space>
-                      </Descriptions.Item>
-                    )}
-                  </Descriptions>
-                </Card>
-              </Col>
-            </Row>
+                  {t("common.cancel")}
+                </button>
+                <button
+                  type="button"
+                  onClick={handleStartExam}
+                  disabled={startingExam}
+                  className="flex-[2] h-[46px] rounded-xl font-black text-sm text-white bg-primary shadow-[0_0_16px_rgba(0,127,255,0.45)] hover:brightness-110 active:scale-[0.98] transition-all inline-flex items-center justify-center gap-2 disabled:opacity-60"
+                >
+                  {t("courseDetail.startExam")}
+                  <span className="material-symbols-outlined text-[20px] leading-none">rocket_launch</span>
+                </button>
+              </div>
+            </div>
 
-            {/* Settings Card */}
-            <Card 
-              size="small" 
-              title={<span style={styles.settingsTitle}>⚙️ Cài đặt</span>}
-              style={styles.settingsCard}
-              className="exam-settings-card"
-            >
-              <Row gutter={[12, 12]}>
-                <Col xs={24} sm={12}>
-                  <div style={styles.settingItem}>
-                    <Text style={styles.settingLabel}>Xáo trộn câu hỏi</Text>
-                    <Tag 
-                      color={examDetails.config.shuffleQuestions ? "success" : "default"}
-                      style={styles.settingTag}
-                    >
-                      {examDetails.config.shuffleQuestions ? "Có" : "Không"}
-                    </Tag>
-                  </div>
-                </Col>
-                <Col xs={24} sm={12}>
-                  <div style={styles.settingItem}>
-                    <Text style={styles.settingLabel}>Xáo trộn đáp án</Text>
-                    <Tag 
-                      color={examDetails.config.shuffleOptions ? "success" : "default"}
-                      style={styles.settingTag}
-                    >
-                      {examDetails.config.shuffleOptions ? "Có" : "Không"}
-                    </Tag>
-                  </div>
-                </Col>
-                <Col xs={24} sm={12}>
-                  <div style={styles.settingItem}>
-                    <Text style={styles.settingLabel}>Cho phép quay lại</Text>
-                    <Tag 
-                      color={examDetails.config.allowBacktrack ? "processing" : "default"}
-                      style={styles.settingTag}
-                    >
-                      {examDetails.config.allowBacktrack ? "Có" : "Không"}
-                    </Tag>
-                  </div>
-                </Col>
-                <Col xs={24} sm={12}>
-                  <div style={styles.settingItem}>
-                    <Text style={styles.settingLabel}>Tự nộp khi hết giờ</Text>
-                    <Tag 
-                      color={examDetails.config.autoSubmit ? "error" : "default"}
-                      style={styles.settingTag}
-                    >
-                      {examDetails.config.autoSubmit ? "Có" : "Không"}
-                    </Tag>
-                  </div>
-                </Col>
-              </Row>
-            </Card>
-
-            {/* Warning Alert */}
-            <Alert
-              message={<span style={styles.alertMessage}>⚠️ Lưu ý quan trọng</span>}
-              description={
-                <Text style={styles.alertDescription}>
-                  Khi nhấn bắt đầu, thời gian sẽ được tính ngay lập tức. Hãy đảm bảo thiết bị ổn định và kết nối internet tốt trước khi bắt đầu.
-                </Text>
-              }
-              type="warning"
-              showIcon={false}
-              style={styles.warningAlert}
-              className="exam-warning-alert"
-            />
+            {/* Footer decorative */}
+            <div className="px-7 py-3 bg-slate-50 dark:bg-slate-900/50 border-t border-slate-200 dark:border-primary/10 flex justify-between items-center">
+              <span className="text-[10px] text-slate-400 dark:text-slate-500 font-mono truncate">
+                EXAM_ID: {String(examDetails._id).slice(-10).toUpperCase()}
+              </span>
+              <div className="flex gap-1 shrink-0">
+                <div className="w-1.5 h-1.5 rounded-full bg-primary/40" />
+                <div className="w-1.5 h-1.5 rounded-full bg-primary/20" />
+                <div className="w-1.5 h-1.5 rounded-full bg-primary/10" />
+              </div>
+            </div>
           </div>
         ) : null}
       </Modal>
@@ -838,166 +908,6 @@ const styles: {
   },
   reviewsSection: {
     marginBottom: "40px",
-  },
-  container: {
-    padding: "20px",
-    background: "var(--bg-primary)",
-    borderRadius: "16px",
-    border: "1px solid var(--border-color)",
-    position: "relative",
-    boxShadow: "0 4px 20px rgba(0, 0, 0, 0.08)",
-    transition: "all 0.3s ease",
-    overflow: "hidden",
-  },
-  lockedContainer: {
-    opacity: 0.7,
-  },
-  sessionHeader: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    marginBottom: "16px",
-    paddingBottom: "12px",
-    borderBottom: "2px solid var(--border-color)",
-  },
-  sessionHeaderLeft: {
-    flex: 1,
-    position: "relative",
-  },
-  sessionBadge: {
-    display: "inline-block",
-    background: "linear-gradient(135deg, var(--accent-color) 0%, #764ba2 100%)",
-    padding: "4px 12px",
-    borderRadius: "16px",
-    marginBottom: "8px",
-    boxShadow: "0 2px 8px rgba(102, 126, 234, 0.3)",
-  },
-  sessionBadgeText: {
-    color: "white",
-    fontSize: "12px",
-    fontWeight: 600,
-    margin: 0,
-  },
-  sessionTitle: {
-    fontSize: "20px",
-    fontWeight: 700,
-    color: "var(--text-primary)",
-    marginTop: "4px",
-    marginBottom: 0,
-    lineHeight: "1.3",
-  },
-  viewCount: {
-    display: "flex",
-    alignItems: "center",
-    gap: "6px",
-    padding: "6px 12px",
-    background: "var(--bg-secondary)",
-    borderRadius: "10px",
-  },
-  viewIcon: {
-    color: "var(--accent-color)",
-    fontSize: "16px",
-  },
-  viewText: {
-    color: "var(--text-primary)",
-    fontSize: "13px",
-    fontWeight: 600,
-  },
-  sectionsContainer: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "10px",
-  },
-  sectionItem: {
-    display: "flex",
-    alignItems: "center",
-    gap: "12px",
-    padding: "12px 16px",
-    background: "var(--bg-secondary)",
-    borderRadius: "12px",
-    border: "1px solid var(--border-color)",
-    transition: "all 0.3s ease",
-    cursor: "pointer",
-  },
-  sectionIconWrapper: {
-    width: "40px",
-    height: "40px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    background: "linear-gradient(135deg, var(--accent-color) 0%, #764ba2 100%)",
-    borderRadius: "10px",
-    flexShrink: 0,
-  },
-  sectionIcon: {
-    fontSize: "20px",
-    color: "white",
-  },
-  sectionContent: {
-    flex: 1,
-    display: "flex",
-    alignItems: "center",
-    gap: "8px",
-  },
-  sectionText: {
-    color: "var(--text-primary)",
-    fontSize: "14px",
-    fontWeight: 500,
-  },
-  lockIconSmall: {
-    color: "var(--text-secondary)",
-    fontSize: "14px",
-  },
-  sectionButton: {
-    borderRadius: "10px",
-    fontWeight: 600,
-    height: "36px",
-    padding: "0 16px",
-    fontSize: "13px",
-    flexShrink: 0,
-  },
-  adminActions: {
-    marginTop: "16px",
-    paddingTop: "16px",
-    borderTop: "2px solid var(--border-color)",
-    display: "flex",
-    justifyContent: "center",
-  },
-  updateButton: {
-    background: "transparent",
-    border: "2px solid var(--accent-color)",
-    color: "var(--accent-color)",
-    borderRadius: "10px",
-    fontWeight: 600,
-    height: "38px",
-    padding: "0 20px",
-    fontSize: "14px",
-    transition: "all 0.3s ease",
-  },
-  lockOverlay: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    background: "rgba(0, 0, 0, 0.85)",
-    backdropFilter: "blur(4px)",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: "16px",
-    borderRadius: "20px",
-    zIndex: 10,
-  },
-  lockIcon: {
-    fontSize: "48px",
-    color: "var(--accent-color)",
-  },
-  lockText: {
-    color: "white",
-    margin: 0,
-    fontSize: "20px",
   },
   modalTitle: {
     display: "flex",

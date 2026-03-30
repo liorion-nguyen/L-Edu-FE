@@ -7,6 +7,7 @@ import { envConfig, localStorageConfig } from '../../config';
 import { ToasterType } from '../../enum/toaster';
 import { AuthenticationState, LoginRequestType, LoginResponseType, RegisterRequestType } from '../../types/auth';
 import { UserType } from '../../types/user';
+import apiClient from '../../services/api';
 
 type RegisterFailureAction = PayloadAction<string>;
 type LoginFailureAction = PayloadAction<string>;
@@ -140,8 +141,9 @@ export const getUser = createAsyncThunk(
     'auth/getUser',
     async (_, { rejectWithValue }) => {
         try {
-            const result = await axios.get(`${envConfig.serverURL}/users`);
-            return result.data.data;
+            // Use apiClient to attach Authorization header from localStorage.
+            const result = await apiClient.get(`/users`);
+            return (result as any).data?.data ?? (result as any).data;
         } catch (error: Error | any) {
             const errorMessage: string = error.response
                 ? error.response.data.message

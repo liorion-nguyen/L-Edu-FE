@@ -1,14 +1,10 @@
-import { Typography, notification } from "antd";
-import { Form, Formik } from "formik";
+import { ArrowRightOutlined, MailOutlined, SafetyOutlined } from "@ant-design/icons";
+import { notification } from "antd";
+import { ErrorMessage, Field, Form, Formik } from "formik";
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import CustomButton from "../../components/common/CustomButton";
-import CustomInput from "../../components/common/CustomInput";
-import { COLORS, SPACING } from "../../constants/colors";
+import { Link, useNavigate } from "react-router-dom";
 import * as Yup from 'yup';
 import axios from "axios";
-
-const { Title, Text, Link } = Typography;
 
 interface ForgotPasswordFormData {
   email: string;
@@ -80,17 +76,15 @@ const ForgotPassword: React.FC = () => {
   };
 
   return (
-    <div style={styles.formContainer}>
-      <div style={styles.header}>
-        <Title level={2} style={styles.title}>
-          Quên mật khẩu
-        </Title>
-        <Text style={styles.subtitle}>
+    <div className="w-full">
+      <div className="mb-7">
+        <h2 className="mb-2 text-3xl font-bold leading-tight text-slate-50">Quên mật khẩu</h2>
+        <p className="text-slate-400">
           {step === 'email' 
             ? 'Nhập email của bạn để nhận mã OTP'
             : 'Nhập mã OTP đã được gửi đến email của bạn'
           }
-        </Text>
+        </p>
       </div>
 
       {step === 'email' ? (
@@ -100,24 +94,35 @@ const ForgotPassword: React.FC = () => {
           onSubmit={handleSendOTP}
         >
           {({ isSubmitting }) => (
-            <Form style={styles.form}>
-              <div style={styles.inputGroup}>
-                <CustomInput
-                  label="Email"
-                  name="email"
-                  type="email"
-                  placeholder="Nhập email của bạn"
-                />
+            <Form className="w-full">
+              <div className="mb-4">
+                <label className="mb-2 inline-block text-sm font-medium text-slate-200">Email</label>
+                <Field name="email">
+                  {({ field }: any) => (
+                    <div className="relative">
+                      <MailOutlined className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-base text-slate-400" />
+                      <input
+                        {...field}
+                        type="email"
+                        placeholder="email@example.com"
+                        className="h-[54px] w-full rounded-xl border border-[#25364d] bg-[rgba(18,30,48,0.9)] pl-11 pr-4 text-sm text-slate-200 outline-none transition focus:border-primary"
+                      />
+                    </div>
+                  )}
+                </Field>
+                <ErrorMessage name="email">
+                  {(message) => <div className="mt-1.5 text-xs text-red-400">{message}</div>}
+                </ErrorMessage>
               </div>
 
-              <div style={styles.buttonContainer}>
-                <CustomButton
+              <button
                   type="submit"
-                  label="Gửi mã OTP"
                   disabled={isLoading || isSubmitting}
-                  loading={isLoading}
-                />
-              </div>
+                  className="mb-2 flex h-[54px] w-full items-center justify-center gap-2 rounded-xl bg-primary text-sm font-bold text-white shadow-[0_8px_20px_rgba(0,127,255,0.2)] transition hover:bg-[#0b74df] disabled:cursor-not-allowed disabled:opacity-70"
+              >
+                <span>{isLoading ? "Đang gửi..." : "Gửi mã OTP"}</span>
+                <ArrowRightOutlined />
+              </button>
             </Form>
           )}
         </Formik>
@@ -128,108 +133,58 @@ const ForgotPassword: React.FC = () => {
           onSubmit={handleVerifyOTP}
         >
           {({ isSubmitting }) => (
-            <Form style={styles.form}>
-              <div style={styles.inputGroup}>
-                <CustomInput
-                  label="Mã OTP"
-                  name="code"
-                  placeholder="Nhập mã OTP"
-                />
+            <Form className="w-full">
+              <div className="mb-4">
+                <label className="mb-2 inline-block text-sm font-medium text-slate-200">Mã OTP</label>
+                <Field name="code">
+                  {({ field }: any) => (
+                    <div className="relative">
+                      <SafetyOutlined className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-base text-slate-400" />
+                      <input
+                        {...field}
+                        placeholder="Nhập mã OTP"
+                        className="h-[54px] w-full rounded-xl border border-[#25364d] bg-[rgba(18,30,48,0.9)] pl-11 pr-4 text-sm text-slate-200 outline-none transition focus:border-primary"
+                      />
+                    </div>
+                  )}
+                </Field>
+                <ErrorMessage name="code">
+                  {(message) => <div className="mt-1.5 text-xs text-red-400">{message}</div>}
+                </ErrorMessage>
               </div>
 
-              <div style={styles.buttonContainer}>
-                <CustomButton
+              <button
                   type="submit"
-                  label="Xác nhận"
                   disabled={isLoading || isSubmitting}
-                  loading={isLoading}
-                />
-              </div>
+                  className="mb-2 flex h-[54px] w-full items-center justify-center gap-2 rounded-xl bg-primary text-sm font-bold text-white shadow-[0_8px_20px_rgba(0,127,255,0.2)] transition hover:bg-[#0b74df] disabled:cursor-not-allowed disabled:opacity-70"
+              >
+                <span>{isLoading ? "Đang xác thực..." : "Xác nhận"}</span>
+                <ArrowRightOutlined />
+              </button>
 
-              <div style={styles.resendContainer}>
-                <Text style={styles.text}>
+              <div className="mb-4 text-center">
+                <span className="text-sm text-slate-400">
                   Không nhận được mã?{" "}
-                  <Link onClick={() => setStep('email')} style={styles.link}>
+                  <button type="button" onClick={() => setStep('email')} className="font-semibold text-primary hover:underline">
                     Gửi lại
-                  </Link>
-                </Text>
+                  </button>
+                </span>
               </div>
             </Form>
           )}
         </Formik>
       )}
 
-      <div style={styles.loginLink}>
-        <Text style={styles.text}>
+      <div className="mt-10 text-center">
+        <span className="text-sm text-slate-400">
           Đã nhớ mật khẩu?{" "}
-          <Link href="/login" style={styles.link}>
+          <Link to="/login" className="font-bold text-primary">
             Đăng nhập ngay
           </Link>
-        </Text>
+        </span>
       </div>
     </div>
   );
-};
-
-const styles: {
-  [key: string]: React.CSSProperties;
-} = {
-  formContainer: {
-    width: "100%",
-    maxWidth: "400px",
-    margin: "0 auto",
-    paddingBottom: SPACING.md,
-    height: "100vh",
-    overflowY: "auto",
-    overflowX: "hidden",
-  },
-  header: {
-    textAlign: "center",
-    marginBottom: SPACING.md,
-  },
-  title: {
-    color: COLORS.text.heading,
-    marginBottom: "4px",
-    fontWeight: 700,
-    fontSize: "22px",
-    letterSpacing: "-0.025em",
-  },
-  subtitle: {
-    color: COLORS.text.secondary,
-    fontSize: "13px",
-    fontWeight: 400,
-  },
-  form: {
-    width: "100%",
-  },
-  inputGroup: {
-    marginBottom: "16px",
-  },
-  buttonContainer: {
-    width: "100%",
-    marginBottom: "16px",
-  },
-  resendContainer: {
-    textAlign: "center",
-    marginBottom: "16px",
-  },
-  loginLink: {
-    textAlign: "center",
-    marginTop: "8px",
-  },
-  link: {
-    color: COLORS.primary[600],
-    fontWeight: 500,
-    textDecoration: "none",
-    transition: "color 0.2s ease",
-    fontSize: "14px",
-    cursor: "pointer",
-  },
-  text: {
-    color: COLORS.text.secondary,
-    fontSize: "14px",
-    fontWeight: 400,
-  },
 };
 
 export default ForgotPassword;

@@ -1,18 +1,22 @@
 import { Alert, Button, Card, Checkbox, Col, Input, Radio, Row, Segmented, Space, Spin, Typography, Badge, Divider } from "antd";
 import { QuestionCircleOutlined, CheckCircleOutlined, ClockCircleOutlined, FileTextOutlined } from "@ant-design/icons";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { ExamTimer } from "../../components/exam/ExamTimer";
 import QuestionNavigator from "../../components/exam/QuestionNavigator";
+import DashboardProgramBackButton from "../../components/common/DashboardProgramBackButton";
 import { showNotification } from "../../components/common/Toaster";
 import { ToasterType } from "../../enum/toaster";
-import { useSelector } from "../../redux/store";
+import { useDispatch, useSelector } from "../../redux/store";
 import { examService } from "../../services/examService";
 import { AttemptAnswerPayload, ExamAttempt, ExamDetail, ExamQuestionType } from "../../types/exam";
 import { RootState } from "../../redux/store";
 import { Role } from "../../enum/user.enum";
 import MarkdownViewer from "../../components/common/MarkdownViewer";
 import "./ExamTakingPage.css";
+import { getExamRoutesBase, isDashboardProgramExamPath } from "../../utils/studentDashboardRoutes";
+import { localStorageConfig } from "../../config";
+import { getUser } from "../../redux/slices/auth";
 
 const { Title, Paragraph } = Typography;
 
@@ -105,8 +109,11 @@ const transformExamDetail = (detail: ExamDetail) => {
 const ExamTakingPage: React.FC = () => {
   const { examId } = useParams();
   const [searchParams] = useSearchParams();
+  const location = useLocation();
+  const isDashboardExam = isDashboardProgramExamPath(location.pathname);
   const { user } = useSelector((state: RootState) => state.auth);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const [exam, setExam] = useState<ExamDetail | null>(null);
   const [attempt, setAttempt] = useState<ExamAttempt | null>(null);
@@ -126,6 +133,15 @@ const ExamTakingPage: React.FC = () => {
   const [viewMode, setViewMode] = useState<"single" | "all">("single");
 
   const attemptIdFromUrl = searchParams.get("attemptId");
+
+  // Hydrate redux user if token exists but state is empty (direct deep-link case).
+  useEffect(() => {
+    if (user?._id) return;
+    const token = typeof window !== "undefined" ? localStorage.getItem(localStorageConfig.accessToken) : null;
+    if (token) {
+      void dispatch(getUser());
+    }
+  }, [dispatch, user?._id]);
 
   useEffect(() => {
     let mounted = true;
@@ -221,7 +237,8 @@ const ExamTakingPage: React.FC = () => {
         setAttempt(data);
         setAnswersMap(initialAnswers);
         if (!attemptIdFromUrl && data?._id) {
-          navigate(`/exams/${examId}/take?attemptId=${data._id}`, { replace: true });
+          const base = getExamRoutesBase(window.location.pathname);
+          navigate(`${base}/${examId}/take?attemptId=${data._id}`, { replace: true });
         }
       } catch (error: any) {
         const message = error?.response?.data?.message || "Không thể tải dữ liệu bài kiểm tra";
@@ -340,7 +357,8 @@ const ExamTakingPage: React.FC = () => {
     try {
       await flushPendingSave();
       const result = await examService.submitAttempt(examId, attempt._id, auto ? { forceSubmit: true } : undefined);
-      navigate(`/exams/${examId}/result/${result._id}`);
+      const base = getExamRoutesBase(location.pathname);
+      navigate(`${base}/${examId}/result/${result._id}`);
     } catch (error: any) {
       if (error?.response?.status === 404) {
         showNotification(ToasterType.error, "Exam", "Không tìm thấy bài kiểm tra. Có thể đề đã bị xoá hoặc đổi ID.");
@@ -376,8 +394,15 @@ const ExamTakingPage: React.FC = () => {
 
   if (!exam) {
     return (
-      <div style={{ display: "flex", justifyContent: "center", marginTop: 80 }}>
-        <Spin />
+      <div className={isDashboardExam ? "exam-taking-page exam-taking-page--dashboard" : undefined}>
+        {isDashboardExam && (
+          <div className="mb-4">
+            <DashboardProgramBackButton />
+          </div>
+        )}
+        <div style={{ display: "flex", justifyContent: "center", marginTop: 80 }}>
+          <Spin />
+        </div>
       </div>
     );
   }
@@ -594,7 +619,12 @@ const ExamTakingPage: React.FC = () => {
   );
 
   return (
-    <div className="exam-taking-page">
+    <div className={`exam-taking-page${isDashboardExam ? " exam-taking-page--dashboard" : ""}`}>
+      {isDashboardExam && (
+        <div className="mb-4">
+          <DashboardProgramBackButton />
+        </div>
+      )}
       <div className="exam-container">
         {/* Main Content Area */}
         <div className="exam-main-content">

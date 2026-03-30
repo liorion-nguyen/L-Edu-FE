@@ -1,5 +1,5 @@
 import { LinkOutlined, LockOutlined, LogoutOutlined, UserOutlined } from "@ant-design/icons";
-import { Avatar, Dropdown, Menu } from "antd";
+import { Dropdown, Menu } from "antd";
 import { useNavigate } from "react-router-dom";
 import { envConfig, localStorageConfig } from "../../config";
 import { Role } from "../../enum/user.enum";
@@ -32,12 +32,32 @@ const UserMenu = ({ user }: { user: any }) => {
   };
 
   const menu = (
-    <Menu>
-      <Menu.Item key="profile" icon={<UserOutlined />} onClick={() => navigate(`/profile/${user?._id}`)}>
+    <Menu
+      selectable={false}
+      className="min-w-[220px] p-2 rounded-2xl border shadow-xl"
+      style={{
+        background: "var(--bg-primary)",
+        borderColor: "var(--border-color)",
+        boxShadow: "0 20px 50px rgba(2, 6, 23, 0.25)",
+      }}
+    >
+      <Menu.Item
+        key="profile"
+        icon={<UserOutlined />}
+        onClick={() => navigate(`/profile/${user?._id}`)}
+        className="!my-0 !rounded-xl !px-3 !py-2 hover:!text-primary"
+        style={{ color: "var(--text-primary)" }}
+      >
         {user?.fullName}
       </Menu.Item>
-      <Menu.Divider />
-      <Menu.Item key="change-password" icon={<LockOutlined />} onClick={() => navigate('/change-password')}>
+      <Menu.Divider className="!my-2" style={{ background: "var(--border-color)" }} />
+      <Menu.Item
+        key="change-password"
+        icon={<LockOutlined />}
+        onClick={() => navigate("/change-password")}
+        className="!my-0 !rounded-xl !px-3 !py-2 hover:!text-primary"
+        style={{ color: "var(--text-secondary)" }}
+      >
         {t('auth.changePassword.title')}
       </Menu.Item>
       {user?.role === Role.ADMIN && (
@@ -45,19 +65,39 @@ const UserMenu = ({ user }: { user: any }) => {
           key="go-admin"
           icon={<LinkOutlined />}
           onClick={() => window.open(getAdminLink(), "_blank", "noopener,noreferrer")}
+          className="!my-0 !rounded-xl !px-3 !py-2 hover:!text-primary"
+          style={{ color: "var(--text-secondary)" }}
         >
           Vào Admin
         </Menu.Item>
       )}
-      <Menu.Item key="logout" icon={<LogoutOutlined />} onClick={handleLogout}>
+      <Menu.Item
+        key="logout"
+        icon={<LogoutOutlined />}
+        onClick={handleLogout}
+        className="!my-0 !rounded-xl !px-3 !py-2"
+        style={{ color: "#ef4444" }}
+      >
         {t('navigation.logout')}
       </Menu.Item>
     </Menu>
   );
 
   return (
-    <Dropdown overlay={menu} trigger={["click"]} placement="bottomRight">
-      <Avatar src={user?.avatar || "./images/landing/sections/fakeImages/avatarStudent.png"} style={{ cursor: "pointer" }} />
+    <Dropdown overlay={menu} trigger={["click"]} placement="bottomRight" overlayClassName="ledu-user-menu">
+      <button
+        type="button"
+        aria-label={t("navigation.userMenu") ?? "User menu"}
+        className="inline-flex items-center justify-center rounded-full outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-slate-900"
+      >
+        <img
+          src={user?.avatar || "./images/landing/sections/fakeImages/avatarStudent.png"}
+          alt="avatar"
+          className="h-10 w-10 rounded-full object-cover ring-1 ring-slate-200 dark:ring-slate-700 shadow-sm transition-all hover:ring-primary/50"
+          loading="lazy"
+          referrerPolicy="no-referrer"
+        />
+      </button>
     </Dropdown>
   );
 };

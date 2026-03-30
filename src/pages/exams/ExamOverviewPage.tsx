@@ -2,23 +2,38 @@ import { CalendarOutlined, ClockCircleOutlined, FlagOutlined } from "@ant-design
 import { Alert, Button, Card, Col, Descriptions, Row, Space, Spin, Tag, Typography } from "antd";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "../../redux/store";
 import { examService } from "../../services/examService";
 import { ExamDetail } from "../../types/exam";
 import { RootState } from "../../redux/store";
 import { showNotification } from "../../components/common/Toaster";
 import { ToasterType } from "../../enum/toaster";
+import DashboardProgramBackButton from "../../components/common/DashboardProgramBackButton";
+import { getExamRoutesBase, isDashboardProgramExamPath } from "../../utils/studentDashboardRoutes";
+import { localStorageConfig } from "../../config";
+import { getUser } from "../../redux/slices/auth";
 
 const { Title, Text } = Typography;
 
 const ExamOverviewPage: React.FC = () => {
   const { examId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  const isDashboardExam = isDashboardProgramExamPath(location.pathname);
   const { user } = useSelector((state: RootState) => state.auth);
   const [loading, setLoading] = useState(true);
   const [exam, setExam] = useState<Pick<ExamDetail, "_id" | "title" | "description" | "config" | "visibility" | "totalPoints"> | null>(null);
   const dispatch = useDispatch();
+
+  // Deep-link case: token exists but redux user not hydrated yet.
+  useEffect(() => {
+    if (user?._id) return;
+    const token = typeof window !== "undefined" ? localStorage.getItem(localStorageConfig.accessToken) : null;
+    if (token) {
+      void dispatch(getUser());
+    }
+  }, [dispatch, user?._id]);
 
   useEffect(() => {
     const fetchOverview = async () => {
@@ -49,7 +64,8 @@ const ExamOverviewPage: React.FC = () => {
           userAgent: window.navigator.userAgent,
         },
       });
-      navigate(`/exams/${examId}/take?attemptId=${attempt._id}`);
+      const base = getExamRoutesBase(location.pathname);
+      navigate(`${base}/${examId}/take?attemptId=${attempt._id}`);
     } catch (error: any) {
       const message = error?.response?.data?.message || "Không thể bắt đầu bài kiểm tra";
       showNotification(ToasterType.error, "Exam", message);
@@ -71,8 +87,12 @@ const ExamOverviewPage: React.FC = () => {
   const { config } = exam;
 
   return (
-    <div style={{ padding: 24, maxWidth: 960, margin: "0 auto" }}>
+    <div
+      className={isDashboardExam ? "exam-overview-page--dashboard w-full" : undefined}
+      style={isDashboardExam ? { width: "100%" } : { padding: 24, maxWidth: 960, margin: "0 auto" }}
+    >
       <Space direction="vertical" size={24} style={{ width: "100%" }}>
+        {isDashboardExam && <DashboardProgramBackButton />}
         <div>
           <Title level={2}>{exam.title}</Title>
           <Text type="secondary">Điểm tối đa: {exam.totalPoints}</Text>

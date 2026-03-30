@@ -1,41 +1,60 @@
-import { Divider, Typography, notification } from "antd";
-import { Form, Formik } from "formik";
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import CustomButton from "../../components/common/CustomButton";
-import CustomInput from "../../components/common/CustomInput";
-import CustomInputHide from "../../components/common/CustomInputHide";
-import { SPACING } from "../../constants/colors";
+import {
+  ArrowRightOutlined,
+  EyeInvisibleOutlined,
+  LockOutlined,
+  MailOutlined,
+} from "@ant-design/icons";
+import { Checkbox, notification } from "antd";
+import { ErrorMessage, Field, Form, Formik } from "formik";
+import React, { useRef, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { useTranslationWithRerender } from "../../hooks/useLanguageChange";
 import { login } from "../../redux/slices/auth";
 import { useDispatch } from "../../redux/store";
 import { LoginValidationSchema } from "../../validations/authValidation";
 import LoginMethods from "./components/LoginMethods";
 
-const { Title, Text, Link } = Typography;
-
 interface LoginFormData {
   email: string;
   password: string;
 }
 
-const Login: React.FC = () => {
+type Props = {
+  /** Called when login succeeds (useful for modal embedding). */
+  onLoginSuccess?: () => void;
+  /**
+   * Redirect after success. Default "/".
+   * Set to null to disable navigation (e.g. modal login in dashboard).
+   */
+  redirectTo?: string | null;
+};
+
+const Login: React.FC<Props> = ({ onLoginSuccess, redirectTo = "/" }) => {
   const [isLoading, setIsLoading] = useState(false);
+  const submitLockRef = useRef(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { t } = useTranslationWithRerender();
 
   const handleLogin = async (values: LoginFormData) => {
+    if (submitLockRef.current) {
+      return;
+    }
+    submitLockRef.current = true;
     setIsLoading(true);
     try {
       const response = await dispatch(login(values));
       console.log(response);
       if (response.payload === true) {
         notification.success({
+          key: "auth-login-success",
           message: t('auth.messages.loginSuccess'),
           description: t('auth.messages.loginWelcome'),
         });
-        navigate("/");
+        onLoginSuccess?.();
+        if (redirectTo !== null) {
+          navigate(redirectTo);
+        }
       } else {
         notification.error({
           message: t('auth.messages.loginFailed'),
@@ -49,18 +68,19 @@ const Login: React.FC = () => {
       });
     } finally {
       setIsLoading(false);
+      submitLockRef.current = false;
     }
   };
 
   return (
-    <div style={styles.formContainer}>
-      <div style={styles.header}>
-        <Title level={2} style={styles.title}>
-          {t('auth.login.title')}
-        </Title>
-        <Text style={styles.subtitle}>
-          {t('auth.login.subtitle')}
-        </Text>
+    <div className="w-full">
+      <div className="mb-7">
+        <h2 className="mb-2 text-3xl font-bold leading-tight text-slate-50">
+          {t("auth.login.welcomeTitle", "Chào mừng trở lại")}
+        </h2>
+        <p className="text-slate-400">
+          {t("auth.login.welcomeSubtitle", "Vui lòng đăng nhập để tiếp tục học tập")}
+        </p>
       </div>
 
       <Formik
@@ -69,128 +89,94 @@ const Login: React.FC = () => {
         onSubmit={handleLogin}
       >
         {({ isSubmitting }) => (
-          <Form style={styles.form}>
-            <div style={styles.inputGroup}>
-              <CustomInput
-                label={t('auth.login.email')}
-                name="email"
-                type="email"
-                placeholder="Nhập email của bạn"
-              />
+          <Form className="w-full">
+            <div className="mb-4">
+              <label className="mb-2 inline-block text-sm font-medium text-slate-200">
+                {t("auth.login.email")}
+              </label>
+              <Field name="email">
+                {({ field }: any) => (
+                  <div className="relative">
+                    <MailOutlined className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-base text-slate-400" />
+                    <input
+                      {...field}
+                      type="email"
+                      placeholder="email@example.com"
+                      className="h-[54px] w-full rounded-xl border border-[#25364d] bg-[rgba(18,30,48,0.9)] pl-11 pr-4 text-sm text-slate-200 outline-none transition focus:border-primary"
+                    />
+                  </div>
+                )}
+              </Field>
+              <ErrorMessage name="email">
+                {(message) => <div className="mt-1.5 text-xs text-red-400">{message}</div>}
+              </ErrorMessage>
             </div>
 
-            <div style={styles.inputGroup}>
-              <CustomInputHide
-                label={t('auth.login.password')}
-                name="password"
-                placeholder="Nhập mật khẩu"
-              />
+            <div className="mb-4">
+              <div className="mb-2 flex items-center justify-between">
+                <label className="text-sm font-medium text-slate-200">{t("auth.login.password")}</label>
+                <Link to="/forgot-password" className="text-xs font-semibold text-primary hover:underline">
+                  {t("auth.login.forgotPassword")}
+                </Link>
+              </div>
+              <Field name="password">
+                {({ field }: any) => (
+                  <div className="relative">
+                    <LockOutlined className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-base text-slate-400" />
+                    <input
+                      {...field}
+                      type="password"
+                      placeholder="••••••••"
+                      className="h-[54px] w-full rounded-xl border border-[#25364d] bg-[rgba(18,30,48,0.9)] pl-11 pr-11 text-sm text-slate-200 outline-none transition focus:border-primary"
+                    />
+                    <EyeInvisibleOutlined className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-base text-slate-400" />
+                  </div>
+                )}
+              </Field>
+              <ErrorMessage name="password">
+                {(message) => <div className="mt-1.5 text-xs text-red-400">{message}</div>}
+              </ErrorMessage>
             </div>
 
-            <div style={styles.forgotPassword}>
-              <Link href="/forgot-password" style={styles.link}>
-                {t('auth.login.forgotPassword')}
-              </Link>
+            <div className="mb-4">
+              <Checkbox className="text-slate-400">{t("auth.login.rememberMe", "Ghi nhớ đăng nhập")}</Checkbox>
             </div>
 
-            <div style={styles.buttonContainer}>
-              <CustomButton
-                type="submit"
-                label={t('auth.login.loginButton')}
-                disabled={isLoading || isSubmitting}
-                loading={isLoading}
-              />
-            </div>
+            <button
+              type="submit"
+              disabled={isLoading || isSubmitting}
+              className="mb-2 flex h-[54px] w-full items-center justify-center gap-2 rounded-xl bg-primary text-sm font-bold text-white shadow-[0_8px_20px_rgba(0,127,255,0.2)] transition hover:bg-[#0b74df] disabled:cursor-not-allowed disabled:opacity-70"
+            >
+              <span>{t("auth.login.loginButton")}</span>
+              <ArrowRightOutlined />
+            </button>
           </Form>
         )}
       </Formik>
 
-      <Divider style={styles.divider}>{t('auth.login.or')}</Divider>
+      <div className="relative mt-8">
+        <div className="absolute inset-0 flex items-center">
+          <div className="h-px w-full bg-[rgba(148,163,184,0.28)]" />
+        </div>
+        <div className="relative flex justify-center">
+          <span className="bg-background-dark px-4 text-[13px] text-[#6b7f97]">{t("auth.login.or")}</span>
+        </div>
+      </div>
 
-      <div style={styles.socialLogin}>
+      <div className="mt-8">
         <LoginMethods />
       </div>
 
-      <div style={styles.registerLink}>
-        <Text style={styles.text}>
-          {t('auth.login.noAccount')}{" "}
-          <Link href="/signup" style={styles.link}>
-            {t('auth.login.signupLink')}
+      <div className="mt-10 text-center">
+        <span className="text-sm text-slate-400">
+          {t("auth.login.noAccount")}{" "}
+          <Link to="/signup" className="font-bold text-primary">
+            {t("auth.login.signupLink")}
           </Link>
-        </Text>
+        </span>
       </div>
     </div>
   );
-};
-
-const styles: {
-    [key: string]: React.CSSProperties;
-} = {
-    formContainer: {
-        width: "100%",
-        maxWidth: "400px",
-        margin: "0 auto",
-        paddingBottom: SPACING.md,
-        height: "100vh",
-        overflowY: "auto",
-        overflowX: "hidden",
-    },
-    header: {
-        textAlign: "center",
-        marginBottom: SPACING.md,
-    },
-    title: {
-        color: "var(--text-primary)",
-        marginBottom: "4px",
-        fontWeight: 700,
-        fontSize: "22px",
-        letterSpacing: "-0.025em",
-    },
-    subtitle: {
-        color: "var(--text-secondary)",
-        fontSize: "13px",
-        fontWeight: 400,
-    },
-    form: {
-        width: "100%",
-    },
-    inputGroup: {
-        marginBottom: "8px",
-    },
-    forgotPassword: {
-        textAlign: "right",
-        marginBottom: "12px",
-    },
-    link: {
-        color: "var(--accent-color)",
-        fontWeight: 500,
-        textDecoration: "none",
-        transition: "color 0.2s ease",
-        fontSize: "14px",
-    },
-    buttonContainer: {
-        width: "100%",
-        marginBottom: "8px",
-    },
-    divider: {
-        margin: "8px 0",
-        borderColor: "var(--border-color)",
-        color: "var(--text-tertiary)",
-        fontSize: "14px",
-        fontWeight: 500,
-    },
-    socialLogin: {
-        marginBottom: "8px",
-    },
-    registerLink: {
-        textAlign: "center",
-        marginTop: "8px",
-    },
-    text: {
-        color: "var(--text-secondary)",
-        fontSize: "14px",
-        fontWeight: 400,
-    },
 };
 
 export default Login;

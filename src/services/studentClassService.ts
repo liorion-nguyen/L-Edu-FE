@@ -5,6 +5,7 @@ import type {
   SessionItem,
   MyAttendanceRecord,
   SessionNote,
+  ScheduleEvent,
 } from '../types/class';
 
 const API_URL = '/classes';
@@ -49,6 +50,31 @@ class StudentClassService {
         studentComments: [],
       }
     );
+  }
+
+  /** Notes for Admin/Teacher dashboard routes: GET /dashboard/classes/:id/notes/:sessionId */
+  async getDashboardSessionNote(classId: string, sessionId: string): Promise<SessionNote> {
+    const response = await apiClient.get<{ success: boolean; data: SessionNote }>(
+      `/dashboard/classes/${classId}/notes/${sessionId}`,
+    );
+    return (
+      response.data?.data ?? {
+        sessionContent: "",
+        homework: "",
+        studentComments: [],
+      }
+    );
+  }
+
+  async getMySchedule(params?: { from?: string; to?: string }): Promise<ScheduleEvent[]> {
+    const query = new URLSearchParams();
+    if (params?.from) query.set('from', params.from);
+    if (params?.to) query.set('to', params.to);
+    const suffix = query.toString() ? `?${query.toString()}` : '';
+    const response = await apiClient.get<{ success: boolean; data: ScheduleEvent[] }>(
+      `${API_URL}/my-schedule${suffix}`,
+    );
+    return response.data?.data ?? [];
   }
 
   /** Nội dung bài học (session) - dùng API public GET /session/:id */

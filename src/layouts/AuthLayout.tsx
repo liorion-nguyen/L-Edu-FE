@@ -1,126 +1,73 @@
-import { Col, Layout, Row, Typography } from "antd";
-import React, { CSSProperties } from "react";
-import { useTranslationWithRerender } from "../hooks/useLanguageChange";
-import { COLORS } from "../constants/colors";
-
-const { Content } = Layout;
-const { Text } = Typography;
+import { CodeOutlined, TeamOutlined } from "@ant-design/icons";
+import React from "react";
 
 interface AuthLayoutProps {
   children: React.ReactNode;
 }
 
 const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => {
-  const { t } = useTranslationWithRerender();
-  
   return (
-    <Layout style={styles.layout}>
-      <Row style={{ width: "100%", height: "100vh" }}>
-        {/* Tech Graphic Section */}
-        <Col xs={0} sm={0} md={12} lg={14} style={styles.graphicSection}>
-          <div style={styles.graphicContainer}>
-            <img
-              src="/images/auth/auth-bg.png" 
-              alt="Tech Illustration"
-              style={styles.graphic}
-            />
-          </div>
-        </Col>
+    <main className="min-h-screen bg-background-dark">
+      <div className="grid min-h-screen grid-cols-1 lg:grid-cols-2">
+        <section className="relative hidden min-h-screen overflow-hidden bg-[linear-gradient(135deg,#0f1923_0%,#1a2a3a_100%)] lg:flex flex-col items-center justify-center">
+          <div
+            className="absolute inset-0 opacity-20"
+            style={{
+              backgroundImage:
+                'url("https://lh3.googleusercontent.com/aida-public/AB6AXuBLjYYF6vuxZc3Q2jQdrp5f8uwaDJNkM4chTe5VvGpg2XOvaXT-OVlVV0UicLeLFEkZxHiALjgL_E1_tr3CAzPaTM-7BDF03Cp6kk41fyHRH4CRzoakpoqYeamZgaSC1HjzcxppJ9WHbna7H0Iw1gOJXFhqI0tosJglID_Rx6MFXbdXDd-4n3m6-LT__noAOL0Yry56sqoJVipmfUmeoNKz1InW1uyWxZ2f__oZXr5LlkCXWdxAy1rwTltnszGYbSWzbyMU676oBIM")',
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
+          />
+          <div className="absolute inset-0 bg-[linear-gradient(45deg,rgba(15,25,35,0.85),rgba(15,25,35,0.35),rgba(0,127,255,0.18))]" />
 
-        {/* Form Section */}
-        <Col xs={24} sm={24} md={12} lg={10} style={styles.formSection}>
-          <div style={styles.logoContainer}>
-            <img src="/logo.png" style={styles.logo} alt="logo" />
+          <div className="relative z-10 mx-auto max-w-[560px] px-12 py-[72px]">
+            <div className="mb-8 flex items-center gap-3">
+              <img src="/logo.png" className="h-[42px] w-[42px] rounded-[10px] object-contain" alt="logo" />
+              <h2 className="m-0 text-3xl font-bold tracking-tight text-white">L Edu Academy</h2>
+            </div>
+
+            <div className="mb-10">
+              <h1 className="mb-3 text-[52px] font-extrabold leading-[1.2] text-white">
+                Nâng tầm kỹ năng
+                <br />
+                <span className="text-primary">Lập trình</span> của bạn
+              </h1>
+              <p className="m-0 text-lg leading-[1.6] text-slate-400">
+                Gia nhập cộng đồng hơn 50,000 học viên đang học tập và phát triển sự nghiệp công nghệ mỗi ngày.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="flex flex-col gap-2 rounded-[14px] border border-white/10 bg-[rgba(27,33,40,0.7)] p-4 backdrop-blur-[12px]">
+                <CodeOutlined className="text-xl text-primary" />
+                <span className="font-semibold text-white">200+ Khóa học</span>
+              </div>
+              <div className="flex flex-col gap-2 rounded-[14px] border border-white/10 bg-[rgba(27,33,40,0.7)] p-4 backdrop-blur-[12px]">
+                <TeamOutlined className="text-xl text-primary" />
+                <span className="font-semibold text-white">Cộng đồng hỗ trợ</span>
+              </div>
+            </div>
           </div>
-          <Content style={styles.content}>{children}</Content>
-          <Text style={styles.footerText}>
-            © 2025 - {t('auth.copyright')}{" "}
-            <Text style={styles.footerLink}>L-Edu</Text>.
-          </Text>
-        </Col>
-      </Row>
-    </Layout>
+        </section>
+
+        <section className="flex min-h-screen w-full flex-col items-center justify-center bg-background-dark px-6 py-12 sm:px-12 lg:px-24">
+          <div className="w-full max-w-[440px]">
+            <div className="mb-8 flex items-center gap-2 lg:hidden">
+              <div className="flex h-8 w-8 items-center justify-center rounded bg-primary text-white">
+                <CodeOutlined className="text-base" />
+              </div>
+              <h2 className="text-xl font-bold text-white">IT Academy</h2>
+            </div>
+            {children}
+          </div>
+          <div className="mt-auto pt-8 text-center text-xs text-slate-500">
+            © 2024 IT Academy. Bảo lưu mọi quyền.
+          </div>
+        </section>
+      </div>
+    </main>
   );
 };
 
 export default AuthLayout;
-
-const styles: {
-  layout: CSSProperties;
-  graphicSection: CSSProperties;
-  graphicContainer: CSSProperties;
-  graphic: CSSProperties;
-  slogan: CSSProperties;
-  formSection: CSSProperties;
-  logoContainer: CSSProperties;
-  logo: CSSProperties;
-  content: CSSProperties;
-  footerText: CSSProperties;
-  footerLink: CSSProperties;
-} = {
-  layout: {
-    minHeight: "100vh",
-    background: COLORS.background.secondary,
-    position: "relative",
-    overflowY: "auto",
-  },
-  graphicSection: {
-    width: "100%",
-    height: "100%",
-    overflow: "hidden",
-  },
-  graphicContainer: {
-    width: "100%",
-    height: "100%",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  graphic: {
-    width: "100%",
-    height: "100%",
-    objectFit: "cover",
-  },
-  slogan: {
-    color: COLORS.text.primary,
-    fontSize: "18px",
-    marginTop: "20px",
-  },
-  formSection: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "flex-start",
-    gap: "8px",
-    padding: "12px 24px",
-    background: COLORS.background.primary,
-    borderLeft: `1px solid ${COLORS.border.light}`,
-    height: "100vh",
-  },
-  logoContainer: {
-    display: "flex",
-    justifyContent: "center",
-    marginTop: "8px",
-  },
-  logo: {
-    width: "80%",
-    maxWidth: "200px",
-  },
-  content: {
-    width: "100%",
-    maxWidth: "400px",
-    flex: 1,
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-  },
-  footerText: {
-    fontSize: "14px",
-    color: COLORS.text.secondary,
-  },
-  footerLink: {
-    color: COLORS.primary[500],
-    fontWeight: "bold",
-  },
-};

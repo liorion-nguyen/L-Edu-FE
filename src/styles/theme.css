@@ -21,7 +21,7 @@
 
 /* Dark theme colors */
 [data-theme="dark"] {
-  --bg-primary: #141414;
+  --bg-primary: rgb(15 23 42 / 0.8);
   --bg-secondary: #1f1f1f;
   --bg-tertiary: #262626;
   --text-primary: #f5f5f5;
@@ -129,8 +129,8 @@ body {
 }
 
 .ant-layout-header {
-  background-color: var(--bg-primary) !important;
-  border-bottom: 1px solid var(--border-color) !important;
+  background-color: transparent !important;
+  border-bottom: none !important;
 }
 
 .ant-layout-sider {
@@ -161,8 +161,8 @@ body {
 
 /* Ant Design component overrides for dark mode */
 [data-theme="dark"] .ant-layout-header {
-  background-color: var(--bg-secondary) !important;
-  border-bottom: 1px solid var(--border-color);
+  background-color: transparent !important;
+  border-bottom: none !important;
 }
 
 [data-theme="dark"] .ant-menu {
@@ -201,7 +201,7 @@ body {
 }
 
 [data-theme="dark"] .ant-card {
-  background-color: var(--bg-secondary) !important;
+  background-color: transparent !important;
   border: 1px solid var(--border-color);
 }
 
@@ -210,9 +210,9 @@ body {
   border-bottom: 1px solid var(--border-color);
 }
 
-[data-theme="dark"] .ant-card-body {
+/* [data-theme="dark"] .ant-card-body {
   background-color: var(--bg-secondary) !important;
-}
+} */
 
 [data-theme="dark"] .ant-input {
   background-color: var(--bg-tertiary) !important;
@@ -659,8 +659,8 @@ body {
 }
 
 [data-theme="dark"] .ant-layout-footer {
-  background-color: var(--bg-secondary) !important;
-  border-top: 1px solid var(--border-color);
+  background-color: transparent !important;
+  border-top: none !important;
 }
 
 [data-theme="dark"] .ant-layout-sider {
@@ -760,8 +760,8 @@ body {
 
 /* Footer specific dark mode styles */
 [data-theme="dark"] .ant-layout-footer {
-  background-color: var(--bg-tertiary) !important;
-  border-top: 1px solid var(--border-color);
+  background-color: transparent !important;
+  border-top: none !important;
 }
 
 [data-theme="dark"] .ant-layout-footer .ant-typography {
@@ -1008,4 +1008,57 @@ body {
 /* Smooth transitions */
 * {
   transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* UserMenu dropdown (Header avatar) */
+.ledu-user-menu .ant-dropdown-menu,
+.ledu-user-menu .ant-menu {
+  background: var(--bg-primary) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: 16px !important;
+  padding: 8px !important;
+  overflow: hidden !important;
+}
+
+.ledu-user-menu .ant-dropdown-menu-item,
+.ledu-user-menu .ant-menu-item {
+  color: var(--text-secondary) !important;
+  border-radius: 12px !important;
+  margin: 0 !important;
+  background: transparent !important;
+  transition: color 0.15s ease !important;
+}
+
+.ledu-user-menu .ant-dropdown-menu-item .anticon,
+.ledu-user-menu .ant-menu-item .anticon {
+  color: currentColor !important;
+}
+
+.ledu-user-menu .ant-dropdown-menu-item:hover,
+.ledu-user-menu .ant-menu-item:hover {
+  background: var(--hover-bg) !important;
+  color: var(--primary-color) !important;
+}
+
+.ledu-user-menu .ant-dropdown-menu-item:active,
+.ledu-user-menu .ant-menu-item:active,
+.ledu-user-menu .ant-dropdown-menu-item-active,
+.ledu-user-menu .ant-menu-item-active,
+.ledu-user-menu .ant-dropdown-menu-item-selected,
+.ledu-user-menu .ant-menu-item-selected {
+  background: transparent !important;
+}
+
+.ledu-user-menu .ant-dropdown-menu-item-divider,
+.ledu-user-menu .ant-menu-item-divider,
+.ledu-user-menu .ant-dropdown-menu-item-group-title,
+.ledu-user-menu .ant-menu-item-group-title,
+.ledu-user-menu .ant-menu-divider {
+  background: var(--border-color) !important;
+}
+
+[data-theme="dark"] .ledu-user-menu .ant-dropdown-menu,
+[data-theme="dark"] .ledu-user-menu .ant-menu {
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }

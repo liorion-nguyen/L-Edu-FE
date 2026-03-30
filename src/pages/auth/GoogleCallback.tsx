@@ -6,8 +6,13 @@ const GoogleCallback: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const callbackHandledRef = React.useRef(false);
+  const POST_LOGIN_REDIRECT_KEY = 'post-login-redirect';
 
   useEffect(() => {
+    if (callbackHandledRef.current) return;
+    callbackHandledRef.current = true;
+
     const handleGoogleCallback = async () => {
       try {
         console.log('Google callback URL:', window.location.href);
@@ -27,6 +32,7 @@ const GoogleCallback: React.FC = () => {
         if (errorParam) {
           setError(`Lỗi từ Google: ${errorParam}`);
           notification.error({
+            key: 'google-login-error',
             message: 'Đăng nhập thất bại',
             description: `Lỗi: ${errorParam}`,
           });
@@ -48,16 +54,20 @@ const GoogleCallback: React.FC = () => {
             localStorage.setItem('user_info', JSON.stringify(userInfo));
             
             notification.success({
+              key: 'google-login-success',
               message: 'Đăng nhập thành công',
               description: `Chào mừng ${userInfo.fullName} đến với L-Edu!`,
             });
             
-            // Redirect về trang chủ sau 1 giây
-            setTimeout(() => navigate('/'), 1000);
+            // Redirect về trang đã lưu (vd /dashboard-program/...) sau 1 giây
+            const returnTo = localStorage.getItem(POST_LOGIN_REDIRECT_KEY);
+            if (returnTo) localStorage.removeItem(POST_LOGIN_REDIRECT_KEY);
+            setTimeout(() => navigate(returnTo || '/'), 1000);
           } catch (parseError) {
             console.error('Error parsing user info:', parseError);
             setError('Lỗi khi xử lý thông tin người dùng');
             notification.error({
+              key: 'google-login-error',
               message: 'Đăng nhập thất bại',
               description: 'Có lỗi khi xử lý thông tin người dùng.',
             });
@@ -66,6 +76,7 @@ const GoogleCallback: React.FC = () => {
         } else {
           setError('Thiếu thông tin cần thiết từ Google');
           notification.error({
+            key: 'google-login-error',
             message: 'Đăng nhập thất bại',
             description: 'Không thể xác thực với Google. Vui lòng thử lại.',
           });
@@ -75,6 +86,7 @@ const GoogleCallback: React.FC = () => {
         console.error('Google callback error:', error);
         setError('Có lỗi xảy ra trong quá trình xử lý');
         notification.error({
+          key: 'google-login-error',
           message: 'Đăng nhập thất bại',
           description: 'Có lỗi xảy ra trong quá trình đăng nhập.',
         });
@@ -89,34 +101,18 @@ const GoogleCallback: React.FC = () => {
 
   if (loading) {
     return (
-      <div style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100vh',
-        flexDirection: 'column',
-        gap: '16px',
-        backgroundColor: '#f5f5f5'
-      }}>
+      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-background-dark px-6">
         <Spin size="large" />
-        <p style={{ color: '#666', fontSize: '16px' }}>Đang xử lý đăng nhập...</p>
+        <p className="text-base text-slate-400">Đang xử lý đăng nhập...</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100vh',
-        flexDirection: 'column',
-        gap: '16px',
-        backgroundColor: '#f5f5f5'
-      }}>
-        <p style={{ color: '#ff4d4f', fontSize: '16px' }}>{error}</p>
-        <p style={{ color: '#666', fontSize: '14px' }}>Đang chuyển hướng về trang đăng nhập...</p>
+      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-background-dark px-6 text-center">
+        <p className="text-base text-red-400">{error}</p>
+        <p className="text-sm text-slate-400">Đang chuyển hướng về trang đăng nhập...</p>
       </div>
     );
   }

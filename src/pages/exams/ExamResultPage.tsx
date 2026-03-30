@@ -1,17 +1,21 @@
-import { CheckCircleTwoTone, CloseCircleTwoTone, CheckCircleOutlined, CloseCircleOutlined, FileTextOutlined } from "@ant-design/icons";
+import { CheckCircleOutlined, CloseCircleOutlined, FileTextOutlined } from "@ant-design/icons";
 import { Alert, Button, Card, Checkbox, Col, Input, Radio, Result, Row, Space, Spin, Table, Tag, Typography } from "antd";
 import dayjs from "dayjs";
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { showNotification } from "../../components/common/Toaster";
-import { ToasterType } from "../../enum/toaster";
-import { examService } from "../../services/examService";
-import { ExamAttempt, ExamDetail, ExamQuestionType } from "../../types/exam";
-import { useSelector } from "../../redux/store";
-import type { RootState } from "../../redux/store";
-import { Role } from "../../enum/user.enum";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import DashboardProgramBackButton from "../../components/common/DashboardProgramBackButton";
 import MarkdownViewer from "../../components/common/MarkdownViewer";
 import ScrollAnimation from "../../components/common/ScrollAnimation";
+import { showNotification } from "../../components/common/Toaster";
+import { localStorageConfig } from "../../config";
+import { ToasterType } from "../../enum/toaster";
+import { Role } from "../../enum/user.enum";
+import { getUser } from "../../redux/slices/auth";
+import type { RootState } from "../../redux/store";
+import { useDispatch, useSelector } from "../../redux/store";
+import { examService } from "../../services/examService";
+import { ExamAttempt, ExamDetail, ExamQuestionType } from "../../types/exam";
+import { getExamRoutesBase, isDashboardProgramExamPath } from "../../utils/studentDashboardRoutes";
 import "./ExamResultPage.css";
 
 const { Title, Paragraph, Text } = Typography;
@@ -45,12 +49,26 @@ const normalizeId = (value: unknown): string => {
 const ExamResultPage: React.FC = () => {
   const { examId, attemptId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  const examRoutesBase = getExamRoutesBase(location.pathname);
+  const isDashboardExam = isDashboardProgramExamPath(location.pathname);
+  const exitHomePath = examRoutesBase.startsWith("/dashboard-program") ? "/dashboard-program" : "/";
   const { user } = useSelector((state: RootState) => state.auth);
+  const dispatch = useDispatch();
   const [loading, setLoading] = useState(true);
   const [attempt, setAttempt] = useState<ExamAttempt | null>(null);
   const [exam, setExam] = useState<ExamDetail | null>(null);
   const [attemptHistory, setAttemptHistory] = useState<ExamAttempt[]>([]);
   const [historyLoading, setHistoryLoading] = useState(false);
+
+  // Deep-link: hydrate user so history (student) can load.
+  useEffect(() => {
+    if (user?._id) return;
+    const token = typeof window !== "undefined" ? localStorage.getItem(localStorageConfig.accessToken) : null;
+    if (token) {
+      void dispatch(getUser());
+    }
+  }, [dispatch, user?._id]);
 
   useEffect(() => {
     const load = async () => {
@@ -297,7 +315,15 @@ const ExamResultPage: React.FC = () => {
   }
 
   return (
-    <div style={{ padding: 24 }}>
+    <div
+      className={isDashboardExam ? "exam-result-page--dashboard w-full" : undefined}
+      style={isDashboardExam ? { padding: 0, width: "100%" } : { padding: 24 }}
+    >
+      {isDashboardExam && (
+        <div className="mb-6">
+          <DashboardProgramBackButton />
+        </div>
+      )}
       <Row gutter={24}>
         <Col span={24}>
           <Card>
@@ -307,10 +333,10 @@ const ExamResultPage: React.FC = () => {
               subTitle={`Điểm số: ${attempt.totalScore ?? 0}/${attempt.maxScore ?? exam.totalPoints} (${resultStatus?.scorePercent ?? 0}%)`}
               extra={
                 <Space>
-                  <Button type="primary" onClick={() => navigate(`/exams/${examId}`)}>
+                  <Button type="primary" onClick={() => navigate(`${examRoutesBase}/${examId}`)}>
                     Làm lại (nếu được phép)
                   </Button>
-                  <Button onClick={() => navigate("/")}>Về trang chủ</Button>
+                  <Button onClick={() => navigate(exitHomePath)}>Về trang chủ</Button>
                 </Space>
               }
             />
@@ -349,7 +375,7 @@ const ExamResultPage: React.FC = () => {
                   dataIndex: "attemptId",
                   width: 160,
                   render: (_: string, record: { attemptId: string; isCurrent: boolean }) => (
-                    <Button type="link" disabled={record.isCurrent} onClick={() => navigate(`/exams/${examId}/result/${record.attemptId}`)}>
+                    <Button type="link" disabled={record.isCurrent} onClick={() => navigate(`${examRoutesBase}/${examId}/result/${record.attemptId}`)}>
                       {record.isCurrent ? "Đang xem" : "Xem chi tiết"}
                     </Button>
                   ),

@@ -1,26 +1,7 @@
-import React, { CSSProperties, useEffect, useMemo, useState } from "react";
-import {
-  Avatar,
-  Button,
-  DatePicker,
-  Flex,
-  Form,
-  Input,
-  Row,
-  Col,
-  Select,
-  Upload,
-  message,
-} from "antd";
-import { UploadOutlined, UserOutlined } from "@ant-design/icons";
-import moment from "moment";
-import { UserType } from "../../../types/user";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { envConfig } from "../../../config";
-import type { UploadChangeParam, UploadFile } from "antd/es/upload/interface";
-
-const { Option } = Select;
-const { TextArea } = Input;
+import { UserType } from "../../../types/user";
 
 type ProfileUpdatePayload = Partial<Omit<UserType, "_id" | "email" | "password" | "createdAt" | "updatedAt">>;
 
@@ -34,48 +15,38 @@ type LocationItem = {
   name: string;
 };
 
+const inputClass =
+  "w-full bg-slate-800/50 border border-slate-700 rounded-lg text-slate-100 px-3 py-2 text-sm " +
+  "focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none " +
+  "placeholder:text-slate-400";
+
 const UpdateProfile: React.FC<UpdateProfileProps> = ({ user, onSubmit }) => {
-  const [form] = Form.useForm();
-  const [avatarUrl, setAvatarUrl] = useState<string | undefined>(user.avatar ?? undefined);
-  const [avatarFileList, setAvatarFileList] = useState<UploadFile[]>(
-    user.avatar
-      ? [
-          {
-            uid: "-1",
-            name: "avatar",
-            status: "done",
-            url: user.avatar,
-          },
-        ]
-      : [],
-  );
+  const [avatarUrl, setAvatarUrl] = useState<string>(user.avatar ?? "");
   const [avatarUploading, setAvatarUploading] = useState(false);
+
+  const [fullName, setFullName] = useState(user.fullName ?? "");
+  const [birthday, setBirthday] = useState<string>(() => {
+    if (!user.birthday) return "";
+    try {
+      const d = new Date(user.birthday);
+      if (Number.isNaN(d.getTime())) return "";
+      return d.toISOString().slice(0, 10);
+    } catch {
+      return "";
+    }
+  });
+  const [gender, setGender] = useState<string>(user.gender ?? "");
+  const [bio, setBio] = useState<string>(user.bio ?? "");
+
+  const [province, setProvince] = useState<string>(user.address?.province ?? "");
+  const [district, setDistrict] = useState<string>(user.address?.district ?? "");
+  const [ward, setWard] = useState<string>(user.address?.ward ?? "");
+
+  const [country, setCountry] = useState<string>(user.phone?.country ?? "");
+  const [phoneNumber, setPhoneNumber] = useState<string>(user.phone?.number ?? "");
   const [provinces, setProvinces] = useState<LocationItem[]>([]);
   const [districts, setDistricts] = useState<LocationItem[]>([]);
   const [wards, setWards] = useState<LocationItem[]>([]);
-  const provinceValue = Form.useWatch("province", form);
-  const districtValue = Form.useWatch("district", form);
-
-  useEffect(() => {
-    const styleId = "profile-update-form-styles";
-    if (document.getElementById(styleId)) return;
-
-    const style = document.createElement("style");
-    style.id = styleId;
-    style.innerText = `
-      .profile-upload-btn:hover {
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.45), 0 0 15px rgba(78, 205, 196, 0.35);
-      }
-      .profile-submit-btn:hover {
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.45), 0 0 15px rgba(78, 205, 196, 0.35);
-      }
-    `;
-    document.head.appendChild(style);
-
-    return () => {
-      document.head.removeChild(style);
-    };
-  }, []);
 
   useEffect(() => {
     const fetchProvinces = async () => {
@@ -92,15 +63,17 @@ const UpdateProfile: React.FC<UpdateProfileProps> = ({ user, onSubmit }) => {
   }, []);
 
   useEffect(() => {
-    if (!provinceValue) {
+    if (!province) {
       setDistricts([]);
       setWards([]);
+      setDistrict("");
+      setWard("");
       return;
     }
 
     const fetchDistricts = async () => {
       try {
-        const response = await fetch(`https://esgoo.net/api-tinhthanh/2/${provinceValue}.htm`);
+        const response = await fetch(`https://esgoo.net/api-tinhthanh/2/${province}.htm`);
         const json = await response.json();
         setDistricts(Array.isArray(json?.data) ? json.data : []);
       } catch (error) {
@@ -109,17 +82,18 @@ const UpdateProfile: React.FC<UpdateProfileProps> = ({ user, onSubmit }) => {
     };
 
     fetchDistricts();
-  }, [provinceValue]);
+  }, [province]);
 
   useEffect(() => {
-    if (!districtValue) {
+    if (!district) {
       setWards([]);
+      setWard("");
       return;
     }
 
     const fetchWards = async () => {
       try {
-        const response = await fetch(`https://esgoo.net/api-tinhthanh/3/${districtValue}.htm`);
+        const response = await fetch(`https://esgoo.net/api-tinhthanh/3/${district}.htm`);
         const json = await response.json();
         setWards(Array.isArray(json?.data) ? json.data : []);
       } catch (error) {
@@ -128,7 +102,7 @@ const UpdateProfile: React.FC<UpdateProfileProps> = ({ user, onSubmit }) => {
     };
 
     fetchWards();
-  }, [districtValue]);
+  }, [district]);
 
   useEffect(() => {
     if (!user.address?.province) return;
@@ -153,33 +127,21 @@ const UpdateProfile: React.FC<UpdateProfileProps> = ({ user, onSubmit }) => {
     initialiseLocation();
   }, [user.address?.district, user.address?.province]);
 
-  const locationOptions = useMemo(
-    () => ({ provinces, districts, wards }),
-    [districts, provinces, wards]
-  );
-
-  const handleAvatarChange = ({ fileList }: UploadChangeParam<UploadFile>) => {
-    setAvatarFileList(fileList);
-    if (fileList.length === 0) {
-      setAvatarUrl(user.avatar ?? undefined);
-    }
-  };
-
-  const beforeUploadAvatar = (file: File) => {
+  const beforeUploadAvatar = (file: File): boolean => {
     const isImage = file.type.startsWith("image/");
     if (!isImage) {
-      message.error("Vui lòng chọn tệp hình ảnh");
-      return Upload.LIST_IGNORE;
+      alert("Vui lòng chọn tệp hình ảnh");
+      return false;
     }
     const isLt5M = file.size / 1024 / 1024 < 5;
     if (!isLt5M) {
-      message.error("Ảnh phải nhỏ hơn 5MB");
-      return Upload.LIST_IGNORE;
+      alert("Ảnh phải nhỏ hơn 5MB");
+      return false;
     }
     return true;
   };
 
-  const handleUploadAvatar = async ({ file, onSuccess, onError }: any) => {
+  const handleUploadAvatar = async (file: File) => {
     if (!file) return;
     try {
       setAvatarUploading(true);
@@ -192,50 +154,40 @@ const UpdateProfile: React.FC<UpdateProfileProps> = ({ user, onSubmit }) => {
       if (!url) {
         throw new Error("Không nhận được đường dẫn ảnh");
       }
-      const nextFileList: UploadFile[] = [
-        {
-          uid: file.uid ?? `${Date.now()}`,
-          name: file.name,
-          status: "done",
-          url,
-        },
-      ];
-      setAvatarFileList(nextFileList);
       setAvatarUrl(url);
-      message.success("Tải ảnh thành công");
-      onSuccess?.(response.data, file);
+      alert("Tải ảnh thành công");
     } catch (error: any) {
-      message.error(error?.message || "Tải ảnh thất bại");
-      onError?.(error);
+      alert(error?.message || "Tải ảnh thất bại");
     } finally {
       setAvatarUploading(false);
     }
   };
 
-  const handleFinish = async (values: any) => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     try {
-      const avatar = avatarUrl;
-      const address = values.province && values.district && values.ward
+      const avatar = avatarUrl || undefined;
+      const address = province && district && ward
         ? {
-            province: values.province,
-            district: values.district,
-            ward: values.ward,
+            province,
+            district,
+            ward,
           }
         : undefined;
 
-      const phone = values.country || values.phoneNumber
+      const phone = country || phoneNumber
         ? {
-            country: values.country ?? "",
-            number: values.phoneNumber ?? "",
+            country: country ?? "",
+            number: phoneNumber ?? "",
           }
         : undefined;
 
       const payload: ProfileUpdatePayload = {
-        fullName: values.fullName?.trim(),
+        fullName: fullName?.trim(),
         avatar,
-        birthday: values.birthday ? values.birthday.toISOString() : undefined,
-        gender: values.gender || undefined,
-        bio: values.bio?.trim() || undefined,
+        birthday: birthday ? new Date(birthday) : undefined,
+        gender: gender || undefined,
+        bio: bio?.trim() || undefined,
         address,
         phone,
       };
@@ -248,229 +200,147 @@ const UpdateProfile: React.FC<UpdateProfileProps> = ({ user, onSubmit }) => {
       });
 
       await onSubmit(payload);
-      message.success("Cập nhật hồ sơ thành công!");
-      setAvatarFileList(
-        avatar ? [{ uid: "-1", name: "avatar", status: "done", url: avatar }] : [],
-      );
+      alert("Cập nhật hồ sơ thành công!");
     } catch (error) {
-      message.error("Không thể cập nhật hồ sơ. Vui lòng thử lại.");
+      alert("Không thể cập nhật hồ sơ. Vui lòng thử lại.");
     }
   };
 
   return (
-    <Form
-      form={form}
-      layout="vertical"
-      onFinish={handleFinish}
-      initialValues={{
-        fullName: user.fullName,
-        birthday: user.birthday ? moment(user.birthday) : undefined,
-        gender: user.gender,
-        bio: user.bio || "",
-        province: user.address?.province,
-        district: user.address?.district,
-        ward: user.address?.ward,
-        country: user.phone?.country,
-        phoneNumber: user.phone?.number,
-      }}
-    >
-      <Form.Item name="avatar">
-        <Flex align="center" vertical gap={18}>
-          <Avatar
-            size={120}
-            src={avatarUrl || "/images/landing/sections/fakeImages/avatarStudent.png"}
-            icon={<UserOutlined />}
-            style={styles.avatar}
+    <form onSubmit={handleSubmit} className="space-y-5">
+      <div className="flex flex-col items-center gap-4">
+        <div className="h-28 w-28 rounded-full overflow-hidden border border-slate-700 bg-slate-800/60 flex items-center justify-center">
+          {avatarUrl ? (
+            <img alt="" src={avatarUrl} className="w-full h-full object-cover" />
+          ) : (
+            <span className="material-symbols-outlined text-slate-300 text-5xl">person</span>
+          )}
+        </div>
+
+        <div className="flex flex-col items-center gap-2">
+          <label className="cursor-pointer">
+            <input
+              type="file"
+              accept="image/*"
+              className="hidden"
+              disabled={avatarUploading}
+              onChange={async (e) => {
+                const file = e.target.files?.[0];
+                if (!file) return;
+                if (!beforeUploadAvatar(file)) return;
+                await handleUploadAvatar(file);
+                e.currentTarget.value = "";
+              }}
+            />
+            <span className="profile-upload-btn inline-flex items-center justify-center bg-primary hover:bg-[#006fe6] text-white px-4 py-2 rounded-lg font-bold text-sm shadow-lg shadow-primary/20 transition-all">
+              {avatarUploading ? "Đang tải..." : "Tải ảnh lên"}
+            </span>
+          </label>
+          <p className="text-xs text-slate-400">Chỉ chấp nhận ảnh JPG, JPEG, PNG dưới 5MB.</p>
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <label className="text-sm font-medium text-slate-300">Họ và tên</label>
+        <input className={inputClass} type="text" value={fullName} onChange={(e) => setFullName(e.target.value)} required />
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-slate-300">Ngày sinh</label>
+          <input className={inputClass} type="date" value={birthday} onChange={(e) => setBirthday(e.target.value)} required />
+        </div>
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-slate-300">Giới tính</label>
+          <select className={inputClass} value={gender} onChange={(e) => setGender(e.target.value)}>
+            <option value="">Chọn giới tính</option>
+            <option value="Male">Nam</option>
+            <option value="Female">Nữ</option>
+            <option value="Other">Khác</option>
+          </select>
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <label className="text-sm font-medium text-slate-300">Tiểu sử</label>
+        <textarea
+          className={inputClass + " min-h-[100px] resize-none"}
+          value={bio}
+          onChange={(e) => setBio(e.target.value)}
+          placeholder="Chia sẻ đôi nét về bạn..."
+        />
+      </div>
+
+      <div className="grid md:grid-cols-3 gap-4">
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-slate-300">Tỉnh/Thành phố</label>
+          <select className={inputClass} value={province} onChange={(e) => setProvince(e.target.value)} required>
+            <option value="">{provinces.length ? "Chọn tỉnh" : "Đang tải..."}</option>
+            {provinces.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-slate-300">Quận/Huyện</label>
+          <select
+            className={inputClass}
+            value={district}
+            onChange={(e) => setDistrict(e.target.value)}
+            disabled={!province}
+            required
+          >
+            <option value="">{!province ? "Chọn tỉnh trước" : districts.length ? "Chọn quận" : "Đang tải..."}</option>
+            {districts.map((d) => (
+              <option key={d.id} value={d.id}>
+                {d.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-slate-300">Phường/Xã</label>
+          <select className={inputClass} value={ward} onChange={(e) => setWard(e.target.value)} disabled={!district} required>
+            <option value="">{!district ? "Chọn quận trước" : wards.length ? "Chọn phường" : "Đang tải..."}</option>
+            {wards.map((w) => (
+              <option key={w.id} value={w.id}>
+                {w.name}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      <div className="grid md:grid-cols-3 gap-4">
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-slate-300">Mã quốc gia</label>
+          <input className={inputClass} type="text" value={country} onChange={(e) => setCountry(e.target.value)} placeholder="+84" required />
+        </div>
+        <div className="space-y-2 md:col-span-2">
+          <label className="text-sm font-medium text-slate-300">Số điện thoại</label>
+          <input
+            className={inputClass}
+            type="tel"
+            value={phoneNumber}
+            onChange={(e) => setPhoneNumber(e.target.value)}
+            placeholder="000000000"
+            pattern="^\\d{8,11}$"
+            required
           />
-          <Upload
-            name="avatar"
-            accept="image/*"
-            listType="picture"
-            fileList={avatarFileList}
-            onChange={handleAvatarChange}
-            beforeUpload={beforeUploadAvatar}
-            customRequest={handleUploadAvatar}
-            disabled={avatarUploading}
-            maxCount={1}
-            showUploadList={false}
-          >
-            <Button
-              icon={<UploadOutlined />}
-              style={styles.uploadButton}
-              className="profile-upload-btn"
-              loading={avatarUploading}
-            >
-              Tải ảnh lên
-            </Button>
-          </Upload>
-          <span style={{ color: "#8de3dd", fontSize: 12 }}>Chỉ chấp nhận ảnh JPG, JPEG, PNG dưới 5MB.</span>
-        </Flex>
-      </Form.Item>
+          <p className="text-xs text-slate-400">Số điện thoại phải từ 8 đến 11 chữ số.</p>
+        </div>
+      </div>
 
-      <Form.Item
-        name="fullName"
-        label={<span style={styles.label}>Họ và tên</span>}
-        rules={[{ required: true, message: "Vui lòng nhập họ và tên" }]}
+      <button
+        type="submit"
+        className="profile-submit-btn w-full bg-primary hover:bg-[#006fe6] text-white px-5 py-3 rounded-lg font-bold text-sm shadow-lg shadow-primary/20 transition-all"
       >
-        <Input style={styles.input} placeholder="Nguyễn Văn A" />
-      </Form.Item>
-
-      <Row gutter={16}>
-        <Col xs={24} md={12}>
-          <Form.Item
-            name="birthday"
-            label={<span style={styles.label}>Ngày sinh</span>}
-            rules={[{ required: true, message: "Vui lòng chọn ngày sinh" }]}
-          >
-            <DatePicker style={styles.input} format="YYYY-MM-DD" placeholder="YYYY-MM-DD" />
-          </Form.Item>
-        </Col>
-        <Col xs={24} md={12}>
-          <Form.Item
-            name="gender"
-            label={<span style={styles.label}>Giới tính</span>}
-          >
-            <Select style={styles.input} placeholder="Chọn giới tính">
-              <Option value="Male">Nam</Option>
-              <Option value="Female">Nữ</Option>
-              <Option value="Other">Khác</Option>
-            </Select>
-          </Form.Item>
-        </Col>
-      </Row>
-
-      <Form.Item
-        name="bio"
-        label={<span style={styles.label}>Tiểu sử</span>}
-      >
-        <TextArea rows={4} style={styles.input} placeholder="Chia sẻ đôi nét về bạn..." />
-      </Form.Item>
-
-      <Row gutter={16}>
-        <Col xs={24} md={8}>
-          <Form.Item
-            name="province"
-            label={<span style={styles.label}>Tỉnh/Thành phố</span>}
-            rules={[{ required: true, message: "Vui lòng chọn tỉnh/thành phố" }]}
-          >
-            <Select
-              style={styles.input}
-              placeholder="Chọn tỉnh"
-              loading={!locationOptions.provinces.length}
-            >
-              {locationOptions.provinces.map((province) => (
-                <Option key={province.id} value={province.id}>
-                  {province.name}
-                </Option>
-              ))}
-            </Select>
-          </Form.Item>
-        </Col>
-        <Col xs={24} md={8}>
-          <Form.Item
-            name="district"
-            label={<span style={styles.label}>Quận/Huyện</span>}
-            rules={[{ required: true, message: "Vui lòng chọn quận/huyện" }]}
-          >
-            <Select
-              style={styles.input}
-              placeholder="Chọn quận"
-              disabled={!provinceValue}
-              loading={!!provinceValue && !locationOptions.districts.length}
-            >
-              {locationOptions.districts.map((district) => (
-                <Option key={district.id} value={district.id}>
-                  {district.name}
-                </Option>
-              ))}
-            </Select>
-          </Form.Item>
-        </Col>
-        <Col xs={24} md={8}>
-          <Form.Item
-            name="ward"
-            label={<span style={styles.label}>Phường/Xã</span>}
-            rules={[{ required: true, message: "Vui lòng chọn phường/xã" }]}
-          >
-            <Select
-              style={styles.input}
-              placeholder="Chọn phường"
-              disabled={!districtValue}
-              loading={!!districtValue && !locationOptions.wards.length}
-            >
-              {locationOptions.wards.map((ward) => (
-                <Option key={ward.id} value={ward.id}>
-                  {ward.name}
-                </Option>
-              ))}
-            </Select>
-          </Form.Item>
-        </Col>
-      </Row>
-
-      <Row gutter={16}>
-        <Col xs={24} md={8}>
-          <Form.Item
-            name="country"
-            label={<span style={styles.label}>Mã quốc gia</span>}
-            rules={[{ required: true, message: "Vui lòng nhập mã quốc gia" }]}
-          >
-            <Input style={styles.input} placeholder="+84" />
-          </Form.Item>
-        </Col>
-        <Col xs={24} md={16}>
-          <Form.Item
-            name="phoneNumber"
-            label={<span style={styles.label}>Số điện thoại</span>}
-            rules={[
-              { required: true, message: "Vui lòng nhập số điện thoại" },
-              {
-                pattern: /^\d{8,11}$/,
-                message: "Số điện thoại phải từ 8 đến 11 chữ số",
-              },
-            ]}
-          >
-            <Input style={styles.input} placeholder="000000000" />
-          </Form.Item>
-        </Col>
-      </Row>
-
-      <Form.Item>
-        <Button type="primary" htmlType="submit" style={styles.submitButton} className="profile-submit-btn" block>
-          Lưu thay đổi
-        </Button>
-      </Form.Item>
-    </Form>
+        Lưu thay đổi
+      </button>
+    </form>
   );
 };
 
 export default UpdateProfile;
-
-const styles: Record<string, CSSProperties> = {
-  label: {
-    color: "#B0E0E6",
-    textShadow: "0 0 5px rgba(78, 205, 196, 0.3)",
-  },
-  input: {
-    background: "rgba(78, 205, 196, 0.05)",
-    border: "1px solid rgba(78, 205, 196, 0.2)",
-    color: "#B0E0E6",
-  },
-  uploadButton: {
-    background: "linear-gradient(45deg, #4ECDC4, #1A4A4A)",
-    border: "none",
-    color: "#0A2E2E",
-    fontWeight: 600,
-  },
-  submitButton: {
-    background: "linear-gradient(45deg, #4ECDC4, #1A4A4A)",
-    border: "none",
-    color: "#0A2E2E",
-    fontWeight: 600,
-    padding: "12px 16px",
-  },
-  avatar: {
-    backgroundColor: "#4ECDC4",
-    color: "#0A2E2E",
-  },
-};

@@ -16,18 +16,14 @@ interface ThemeProviderProps {
 
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   const [theme, setTheme] = useState<Theme>(() => {
-    // Lấy theme từ localStorage hoặc system preference
+    // Lấy theme từ localStorage hoặc default dark
     const savedTheme = localStorage.getItem('theme') as Theme;
     if (savedTheme) {
       return savedTheme;
     }
-    
-    // Fallback to system preference
-    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      return 'dark';
-    }
-    
-    return 'light';
+
+    // Default to dark (light theme not ready)
+    return 'dark';
   });
 
   const toggleTheme = () => {

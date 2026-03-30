@@ -1,5 +1,6 @@
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import "./styles/theme.css";
+import "./styles/dashboardProgramShell.css";
 import "./i18n"; // Initialize i18n
 import AuthLayout from "./layouts/AuthLayout";
 import MainLayout from "./layouts/MainLayout";
@@ -27,6 +28,14 @@ import ChatbotTestPage from "./pages/test/ChatbotTestPage";
 import DebugAuthPage from "./pages/test/DebugAuthPage";
 import DashboardLayout from "./layouts/DashboardLayout";
 import DashboardHome from "./pages/dashboard/DashboardHome";
+import StudentDashboardLayout from "./layouts/StudentDashboardLayout";
+import StudentOverview from "./pages/dashboard/student/StudentOverview";
+import StudentCourseCatalog from "./pages/dashboard/student/StudentCourseCatalog";
+import StudentCourseSessions from "./pages/dashboard/student/StudentCourseSessions";
+import StudentSettingsPage from "./pages/dashboard/student/StudentSettingsPage";
+import StudentClassManagement from "./pages/dashboard/student/StudentClassManagement";
+import StudentSchedulePage from "./pages/dashboard/student/StudentSchedulePage";
+import StudentCertificatesPage from "./pages/dashboard/student/StudentCertificatesPage";
 import UserManagement from "./pages/dashboard/UserManagement";
 import CourseManagement from "./pages/dashboard/CourseManagement";
 import SessionManagement from "./pages/dashboard/SessionManagement";
@@ -99,6 +108,105 @@ function App() {
         <Route path="/dashboard/categories" element={<DashboardLayout><CategoryManagement /></DashboardLayout>} />
         <Route path="/dashboard/course-registrations" element={<DashboardLayout><CourseRegistrationManagement /></DashboardLayout>} />
         <Route path="/dashboard/linked-apps" element={<DashboardLayout><LinkedAppManagement /></DashboardLayout>} />
+
+        {/* Student Dashboard (new layout) */}
+        <Route path="/dashboard-program" element={<StudentDashboardLayout><StudentOverview /></StudentDashboardLayout>} />
+        <Route
+          path="/dashboard-program/courses/:courseId"
+          element={
+            <StudentDashboardLayout>
+              <StudentCourseSessions />
+            </StudentDashboardLayout>
+          }
+        />
+        <Route
+          path="/dashboard-program/learn/document/:id"
+          element={
+            <StudentDashboardLayout>
+              <Document />
+            </StudentDashboardLayout>
+          }
+        />
+        <Route
+          path="/dashboard-program/learn/video/:id"
+          element={
+            <StudentDashboardLayout>
+              <Video />
+            </StudentDashboardLayout>
+          }
+        />
+        <Route
+          path="/dashboard-program/exams/:examId"
+          element={
+            <StudentDashboardLayout>
+              <ExamOverviewPage />
+            </StudentDashboardLayout>
+          }
+        />
+        <Route
+          path="/dashboard-program/exams/:examId/take"
+          element={
+            <StudentDashboardLayout>
+              <ExamTakingPage />
+            </StudentDashboardLayout>
+          }
+        />
+        <Route
+          path="/dashboard-program/exams/:examId/result/:attemptId"
+          element={
+            <StudentDashboardLayout>
+              <ExamResultPage />
+            </StudentDashboardLayout>
+          }
+        />
+        <Route
+          path="/dashboard-program/courses"
+          element={
+            <StudentDashboardLayout>
+              <StudentCourseCatalog />
+            </StudentDashboardLayout>
+          }
+        />
+        <Route
+          path="/dashboard-program/schedule"
+          element={
+            <StudentDashboardLayout>
+              <StudentSchedulePage />
+            </StudentDashboardLayout>
+          }
+        />
+        <Route
+          path="/dashboard-program/classes"
+          element={
+            <StudentDashboardLayout>
+              <StudentClassManagement />
+            </StudentDashboardLayout>
+          }
+        />
+        <Route
+          path="/dashboard-program/classes/:id"
+          element={
+            <StudentDashboardLayout>
+              <ClassDetailPage />
+            </StudentDashboardLayout>
+          }
+        />
+        <Route
+          path="/dashboard-program/certificates"
+          element={
+            <StudentDashboardLayout>
+              <StudentCertificatesPage />
+            </StudentDashboardLayout>
+          }
+        />
+        <Route
+          path="/dashboard-program/settings"
+          element={
+            <StudentDashboardLayout>
+              <StudentSettingsPage />
+            </StudentDashboardLayout>
+          }
+        />
 
         {/* 404 Not Found */}
         <Route path="*" element={<MainLayout><NotFound/></MainLayout>} />

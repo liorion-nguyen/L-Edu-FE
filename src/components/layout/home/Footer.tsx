@@ -1,17 +1,16 @@
-import { Col, Layout, Row, Space, Typography, Spin } from "antd";
-import { CSSProperties, useEffect, useState } from "react";
-import { useTranslationWithRerender } from "../../../hooks/useLanguageChange";
-import SectionLayout from "../../../layouts/SectionLayout";
-import { contactService, Contact } from "../../../services/contactService";
-import { footerService, Footer as FooterType } from "../../../services/footerService";
-import { linkedAppService, LinkedApp } from "../../../services/linkedAppService";
-import { getIconByValue } from "../../../constants/icons";
 import { LinkOutlined } from "@ant-design/icons";
-
-const { Title, Text } = Typography;
+import { Layout, Spin } from "antd";
+import { CSSProperties, useEffect, useMemo, useState } from "react";
+import { getIconByValue } from "../../../constants/icons";
+import { useTheme } from "../../../contexts/ThemeContext";
+import { useTranslationWithRerender } from "../../../hooks/useLanguageChange";
+import { Contact, contactService } from "../../../services/contactService";
+import { footerService, Footer as FooterType } from "../../../services/footerService";
+import { LinkedApp, linkedAppService } from "../../../services/linkedAppService";
 
 const Footer = () => {
   const { t } = useTranslationWithRerender();
+  useTheme();
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [footers, setFooters] = useState<FooterType[]>([]);
   const [linkedApps, setLinkedApps] = useState<LinkedApp[]>([]);
@@ -49,184 +48,172 @@ const Footer = () => {
   }, []);
 
   // Fallback data if API fails
-  const fallbackContacts = [
+  const fallbackContacts = useMemo(() => ([
     { name: "Location", value: "Cau Giay, Ha Noi, Viet Nam", icon: "/images/icons/contacts/location.png" },
     { name: "Email", value: "liorion.nguyen@gmail.com", icon: "/images/icons/contacts/email.png" },
     { name: "Phone", value: "(+84) 708-200-334", icon: "/images/icons/contacts/phone.png" },
-  ];
+  ]), []);
 
-  const fallbackSocials = [
+  const fallbackSocials = useMemo(() => ([
     { name: "Facebook", icon: "/images/icons/socials/ft_facebook.png", link: "#" },
     { name: "Twitter", icon: "/images/icons/socials/ft_twitter.png", link: "#" },
     { name: "Pinterest", icon: "/images/icons/socials/ft_pinterest.png", link: "#" },
     { name: "Linkedin", icon: "/images/icons/socials/ft_linkedin.png", link: "#" },
-  ];
+  ]), []);
 
   const fallbackCompanyLinks = [t('footer.courses'), t('footer.features'), t('footer.design')];
   const fallbackCourseLinks = [t('footer.language'), t('footer.marketing'), t('footer.testimonial'), t('footer.developer')];
 
+  const socials = useMemo(() => {
+    const socialContacts = contacts.filter((c) => c.type === "social");
+    if (socialContacts.length > 0) {
+      return socialContacts.map((c) => ({ label: c.label || "Social", url: c.value, icon: c.icon }));
+    }
+    return fallbackSocials.map((s) => ({ label: s.name, url: s.link, icon: s.icon }));
+  }, [contacts, fallbackSocials]);
+
+  const contactItems = useMemo(() => {
+    const items = contacts.filter((c) => ["email", "phone", "address"].includes(c.type));
+    const base: any[] = items.length > 0 ? items : (fallbackContacts as any[]);
+    return base.map((c) => ({ type: c.type, value: c.value }));
+  }, [contacts, fallbackContacts]);
+
   return (
     <Layout.Footer style={styles.footer}>
-      <SectionLayout style={styles.sectionLayout}>
-        {loading ? (
-          <div style={{ textAlign: 'center', padding: '40px' }}>
-            <Spin size="large" />
-          </div>
-        ) : (
-          <Row gutter={[32, 32]} justify="space-between" style={{ padding: "30px 0" }}>
-            {/* Logo & Socials */}
-            <Col lg={6} md={12} sm={24} xs={24} style={styles.center}>
-              <Title level={3} style={styles.logo}>
-                L-Edu
-              </Title>
-              <Text style={styles.text}>{t('footer.description')}</Text>
-              <Space size="middle">
-                {contacts.filter(c => c.type === 'social').length > 0 ? 
-                  contacts.filter(c => c.type === 'social').map((social, index) => {
-                    const iconData = getIconByValue(social.icon || '');
-                    return (
-                      <a key={index} href={social.value} target="_blank" rel="noopener noreferrer" style={styles.socialLink}>
-                        {iconData ? (
-                          <span style={{ fontSize: '24px' }}>{iconData.emoji}</span>
-                        ) : (
-                          <img src={`/images/icons/socials/ft_${social.label.toLowerCase()}.png`} alt={social.label} style={styles.icon} />
-                        )}
-                      </a>
-                    );
-                  }) :
-                  fallbackSocials.map((social, index) => (
-                    <a key={index} href={social.link} style={styles.socialLink}>
-                      <img src={social.icon} alt={social.name} style={styles.icon} />
-                    </a>
-                  ))
-                }
-              </Space>
-            </Col>
+      <footer className="bg-white dark:bg-slate-900 pt-24 pb-12 border-t border-slate-100 dark:border-slate-800">
+        <div className="max-w-7xl mx-auto px-6">
+          {loading ? (
+            <div className="text-center py-10">
+              <Spin size="large" />
+            </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+                <div className="space-y-6">
+                  <div className="flex items-center gap-3">
+                    <img src="/logo_name.png" alt="L-Edu" className="h-12"  />
+                  </div>
 
-            {/* Dynamic Footer Sections from API */}
-            {footers.map((footer, index) => (
-              <Col key={footer._id} lg={4} md={8} sm={12} xs={24} style={styles.center}>
-                <Title level={4} style={styles.title}>
-                  {footer.title}
-                </Title>
-                <ul style={styles.list}>
-                  {footer.links.map((link, linkIndex) => (
-                    <li key={linkIndex}>
-                      <a 
-                        href={link.url} 
-                        style={styles.link}
-                        {...(link.isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-                      >
-                        {link.label}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </Col>
-            ))}
+                  <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">{t("footer.description")}</p>
 
-            {/* Fallback sections if no API data */}
-            {footers.length === 0 && (
-              <>
-                {/* Company Section */}
-                <Col lg={4} md={8} sm={12} xs={24} style={styles.center}>
-                  <Title level={4} style={styles.title}>
-                    {t('footer.company')}
-                  </Title>
-                  <ul style={styles.list}>
-                    {fallbackCompanyLinks.map((link, index) => (
-                      <li key={index}>
-                        <span style={styles.link}>{link}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </Col>
-
-                {/* Course Section */}
-                <Col lg={4} md={8} sm={12} xs={24} style={styles.center}>
-                  <Title level={4} style={styles.title}>
-                    {t('footer.course')}
-                  </Title>
-                  <ul style={styles.list}>
-                    {fallbackCourseLinks.map((link, index) => (
-                      <li key={index}>
-                        <span style={styles.link}>{link}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </Col>
-              </>
-            )}
-
-            {/* Linked Apps Section */}
-            {linkedApps.length > 0 && (
-              <Col lg={4} md={8} sm={12} xs={24} style={styles.center}>
-                <Title level={4} style={styles.title}>
-                  Ứng Dụng Liên Kết
-                </Title>
-                <ul style={styles.list}>
-                  {linkedApps.slice(0, 5).map((app) => (
-                    <li key={app._id}>
-                      <a
-                        href={app.url}
-                        style={styles.link}
-                        {...(app.openInNewTab ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-                        onClick={(e) => {
-                          if (app.openInNewTab) {
-                            e.preventDefault();
-                            window.open(app.url, '_blank', 'noopener,noreferrer');
-                          }
-                        }}
-                      >
-                        <Space>
-                          {app.icon ? (
-                            app.icon.startsWith('http') ? (
-                              <img 
-                                src={app.icon} 
-                                alt={app.name}
-                                style={{ width: '16px', height: '16px', objectFit: 'contain' }}
-                              />
-                            ) : (
-                              <span style={{ fontSize: '16px' }}>{app.icon}</span>
-                            )
+                  <div className="flex gap-4">
+                    {socials.map((s, index) => {
+                      const iconData = getIconByValue(s.icon || "");
+                      return (
+                        <a
+                          key={index}
+                          className="w-10 h-10 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center hover:bg-primary hover:text-white transition-all"
+                          href={s.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label={s.label}
+                        >
+                          {iconData ? (
+                            <span style={{ fontSize: 18 }}>{iconData.emoji}</span>
                           ) : (
-                            <LinkOutlined />
+                            <span className="material-symbols-outlined text-lg">alternate_email</span>
                           )}
-                          <span>{app.name}</span>
-                        </Space>
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </Col>
-            )}
+                        </a>
+                      );
+                    })}
+                  </div>
+                </div>
 
-            {/* Contact Information */}
-            <Col lg={6} md={12} sm={24} xs={24} style={styles.center}>
-              <Title level={4} style={styles.title}>
-                {t('footer.contactInfo')}
-              </Title>
-              <ul style={styles.list}>
-                {(contacts.length > 0 ? 
-                  contacts.filter(c => ['email', 'phone', 'address'].includes(c.type)) : 
-                  fallbackContacts
-                ).map((contact, index) => {
-                  const iconData = getIconByValue(contact.icon || '');
-                  const icon = iconData ? iconData.emoji : '📋';
-                  return (
-                    <li key={index} style={styles.contactItem}>
-                      <span style={{ fontSize: '20px', marginRight: '10px' }}>{icon}</span>
-                      <Text style={styles.contactText}>
-                        {contact.value}
-                      </Text>
-                    </li>
-                  );
-                })}
-              </ul>
-            </Col>
-          </Row>
-        )}
-      </SectionLayout>
+                {footers.length > 0 &&
+                  footers.slice(0, 2).map((footer) => (
+                    <div key={footer._id}>
+                      <h4 className="font-bold mb-6 dark:text-white">{footer.title}</h4>
+                      <ul className="space-y-4 text-sm text-slate-500 dark:text-slate-400">
+                        {footer.links.map((link, i) => (
+                          <li key={i}>
+                            <a
+                              className="hover:text-primary transition-colors"
+                              href={link.url}
+                              {...(link.isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                            >
+                              {link.label}
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+
+                {footers.length === 0 && (
+                  <>
+                    <div>
+                      <h4 className="font-bold mb-6 dark:text-white">{t("footer.company")}</h4>
+                      <ul className="space-y-4 text-sm text-slate-500 dark:text-slate-400">
+                        {fallbackCompanyLinks.map((label, i) => (
+                          <li key={i}>
+                            <span className="hover:text-primary transition-colors">{label}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div>
+                      <h4 className="font-bold mb-6 dark:text-white">{t("footer.course")}</h4>
+                      <ul className="space-y-4 text-sm text-slate-500 dark:text-slate-400">
+                        {fallbackCourseLinks.map((label, i) => (
+                          <li key={i}>
+                            <span className="hover:text-primary transition-colors">{label}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </>
+                )}
+
+                <div>
+                  <h4 className="font-bold mb-6 dark:text-white">{t("footer.contactInfo")}</h4>
+                  <ul className="space-y-4 text-sm text-slate-500 dark:text-slate-400">
+                    {contactItems.map((c, i) => {
+                      const icon =
+                        c.type === "email" ? "mail" : c.type === "phone" ? "phone_iphone" : "location_on";
+                      return (
+                        <li key={i} className="flex items-start gap-3">
+                          <span className="material-symbols-outlined text-primary text-sm mt-0.5">{icon}</span>
+                          {c.value}
+                        </li>
+                      );
+                    })}
+
+                    {linkedApps.length > 0 && (
+                      <li className="pt-2">
+                        <div className="flex items-center gap-2 font-semibold text-slate-700 dark:text-slate-200">
+                          <LinkOutlined />
+                          Ứng dụng liên kết
+                        </div>
+                        <ul className="mt-3 space-y-3">
+                          {linkedApps.slice(0, 3).map((app) => (
+                            <li key={app._id}>
+                              <a
+                                className="hover:text-primary transition-colors"
+                                href={app.url}
+                                {...(app.openInNewTab ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                              >
+                                {app.name}
+                              </a>
+                            </li>
+                          ))}
+                        </ul>
+                      </li>
+                    )}
+                  </ul>
+                </div>
+              </div>
+
+              <div className="pt-12 border-t border-slate-100 dark:border-slate-800 flex flex-col md:flex-row justify-between items-center gap-6 text-xs text-slate-500">
+                <p>© {new Date().getFullYear()} L-Edu Academy. All rights reserved.</p>
+                <div className="flex gap-8">
+                  <a className="hover:text-primary transition-colors" href="/privacy">Chính sách bảo mật</a>
+                  <a className="hover:text-primary transition-colors" href="/sitemap">Sitemap</a>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+      </footer>
     </Layout.Footer>
   );
 };
@@ -235,85 +222,9 @@ export default Footer;
 
 const styles: {
   footer: CSSProperties;
-  sectionLayout: CSSProperties;
-  center: CSSProperties;
-  logo: CSSProperties;
-  title: CSSProperties;
-  list: CSSProperties;
-  text: CSSProperties;
-  icon: CSSProperties;
-  socialLink: CSSProperties;
-  link: CSSProperties;
-  contactItem: CSSProperties;
-  contactIcon: CSSProperties;
-  contactText: CSSProperties;
 } = {
   footer: {
-    textAlign: "center",
     padding: 0,
     background: "transparent",
-  },
-  sectionLayout: {
-    background: "var(--bg-tertiary)",
-    padding: "0",
-    position: "relative",
-    overflow: "hidden",
-  },
-  center: {
-    textAlign: "center",
-  },
-  logo: {
-    fontWeight: 700,
-    color: "var(--text-primary)",
-    marginBottom: "20px",
-  },
-  title: {
-    fontSize: "18px",
-    fontWeight: 600,
-    color: "var(--text-primary)",
-    marginBottom: "20px",
-  },
-  list: {
-    listStyleType: "none",
-    padding: 0,
-    margin: 0,
-    fontSize: "16px",
-  },
-  text: {
-    color: "var(--text-secondary)",
-    fontSize: "16px",
-    display: "block",
-    marginBottom: "20px",
-  },
-  icon: {
-    width: "24px",
-    height: "24px",
-  },
-  socialLink: {
-    display: "inline-block",
-  },
-  link: {
-    color: "var(--text-secondary)",
-    textDecoration: "none",
-    display: "block",
-    marginBottom: "10px",
-  },
-  contactItem: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: "15px",
-    background: "var(--bg-primary)",
-    borderRadius: "8px",
-    padding: "10px",
-    border: "1px solid var(--border-color)",
-  },
-  contactIcon: {
-    width: "20px",
-    marginRight: "10px",
-  },
-  contactText: {
-    color: "var(--text-primary)",
-    fontSize: "14px",
   },
 };

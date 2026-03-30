@@ -1,10 +1,10 @@
 import { ArrowUpOutlined } from "@ant-design/icons";
 import { BackTop, Layout } from "antd";
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import GlobalChatbot from "../components/chatbot/GlobalChatbot";
 import Footer from "../components/layout/home/Footer";
 import Header from "../components/layout/home/Header";
-import GlobalChatbot from "../components/chatbot/GlobalChatbot";
-import { COLORS, RADIUS, SPACING } from "../constants/colors";
+import { RADIUS, SPACING } from "../constants/colors";
 
 const { Content } = Layout;
 
@@ -52,7 +52,6 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     <Layout style={styles.layout}>
       <Header />
       <Content style={styles.content}>{children}</Content>
-      <div style={styles.divider} />
       <Footer />
       <BackTop 
         style={{
@@ -77,7 +76,7 @@ const styles: {
 } = {
     layout: {
         minHeight: "100vh",
-        background: COLORS.background.primary,
+        background: "var(--bg-primary)",
         position: "relative",
         overflow: "visible",
     },
@@ -91,16 +90,16 @@ const styles: {
     },
     divider: {
         height: "1px",
-        background: COLORS.border.light,
+        background: "var(--border-color)",
         margin: `${SPACING.xl} 0`,
         position: "relative",
         overflow: "hidden",
     },
     backTop: {
-        background: COLORS.background.elevated,
-        border: `1px solid ${COLORS.border.light}`,
+        background: "var(--bg-primary)",
+        border: "1px solid var(--border-color)",
         borderRadius: RADIUS.lg,
-        color: COLORS.primary[500],
+        color: "var(--primary-color)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",

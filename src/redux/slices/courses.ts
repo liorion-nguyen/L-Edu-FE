@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { showNotification } from '../../components/common/Toaster';
+import apiClient from '../../services/api';
 import { envConfig } from '../../config';
 import { ToasterType } from '../../enum/toaster';
 import { Role } from '../../enum/user.enum';
@@ -23,11 +24,11 @@ export const getCourses = createAsyncThunk(
     'courses/getCourses',
     async ({ page = 0, limit = 20, name = "", categoryId }: { page?: number; limit?: number; name?: string; categoryId?: string }) => {
         try {
-            let url = `${envConfig.serverURL}/courses/search?page=${page}&limit=${limit}&name=${name}`;
+            const params: Record<string, string | number> = { page, limit, name };
             if (categoryId) {
-                url += `&categoryId=${categoryId}`;
+                params.categoryId = categoryId;
             }
-            const result = await axios.get(url);
+            const result = await apiClient.get('/courses/search', { params });
             const courses: CourseType[] = Array.isArray(result.data.data.data) ? result.data.data.data : [];
             return { courses, totalCourse: result.data.data.total };
         } catch (error: Error | any) {
