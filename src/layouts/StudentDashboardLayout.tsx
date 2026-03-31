@@ -1,13 +1,11 @@
-import { MoonOutlined, SunOutlined } from "@ant-design/icons";
 import React, { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import LanguageSwitcher, { DASHBOARD_HEADER_ICON_BUTTON_CLASS } from "../components/common/LanguageSwitcher";
-import { useTheme } from "../contexts/ThemeContext";
-import { localStorageConfig } from "../config";
-import { RootState, useSelector } from "../redux/store";
-import { useDispatch } from "../redux/store";
-import { getUser } from "../redux/slices/auth";
 import DashboardLoginModal from "../components/auth/DashboardLoginModal";
+import LanguageSwitcher, { DASHBOARD_HEADER_ICON_BUTTON_CLASS } from "../components/common/LanguageSwitcher";
+import { localStorageConfig } from "../config";
+import { useTheme } from "../contexts/ThemeContext";
+import { getUser } from "../redux/slices/auth";
+import { RootState, useDispatch, useSelector } from "../redux/store";
 
 type NavItem = { key: string; label: string; icon: string };
 
@@ -64,6 +62,14 @@ const StudentDashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
     }
     setLoginOpen(false);
   }, [dispatch, location.pathname, user?._id]);
+
+  // Temporarily force dark theme in student dashboard (light theme has issues on some devices).
+  useEffect(() => {
+    if (!location.pathname.startsWith("/dashboard-program")) return;
+    if (!isDark) {
+      toggleTheme();
+    }
+  }, [isDark, location.pathname, toggleTheme]);
 
   useEffect(() => {
     try {
@@ -206,14 +212,6 @@ const StudentDashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
               <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-red-500 ring-2 ring-slate-100 dark:ring-slate-800" />
             </button>
             <LanguageSwitcher variant="iconButton" iconButtonUniform />
-            <button
-              type="button"
-              aria-label="Đổi theme"
-              onClick={toggleTheme}
-              className={DASHBOARD_HEADER_ICON_BUTTON_CLASS}
-            >
-              {isDark ? <SunOutlined className="text-lg leading-none" /> : <MoonOutlined className="text-lg leading-none" />}
-            </button>
           </div>
         </header>
 

@@ -12,7 +12,11 @@ const LoginMethods: React.FC<Props> = ({ returnTo }) => {
     const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
     const location = useLocation();
 
-    const resolvedReturnTo = returnTo ?? `${location.pathname}${location.search}`;
+    const defaultReturnTo =
+        location.pathname === "/login" || location.pathname === "/signup"
+            ? "/"
+            : `${location.pathname}${location.search}`;
+    const resolvedReturnTo = returnTo ?? defaultReturnTo;
 
     const rememberReturnTo = () => {
         try {
