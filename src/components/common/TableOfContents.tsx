@@ -12,6 +12,18 @@ interface TableOfContentsProps {
   containerRef: React.RefObject<HTMLDivElement | null>;
 }
 
+function getScrollParent(el: HTMLElement | null): HTMLElement | Window | null {
+  let p: HTMLElement | null = el?.parentElement ?? null;
+  while (p) {
+    const { overflowY } = window.getComputedStyle(p);
+    if (overflowY === "auto" || overflowY === "scroll" || overflowY === "overlay") {
+      return p;
+    }
+    p = p.parentElement;
+  }
+  return typeof window !== "undefined" ? window : null;
+}
+
 const TableOfContents: React.FC<TableOfContentsProps> = ({ headings, containerRef }) => {
   const [activeId, setActiveId] = useState<string>('');
   const [isHovered, setIsHovered] = useState(false);
@@ -44,13 +56,16 @@ const TableOfContents: React.FC<TableOfContentsProps> = ({ headings, containerRe
 
     // Calculate positions after a short delay to ensure DOM is ready
     const timer = setTimeout(calculatePositions, 100);
-    window.addEventListener('resize', calculatePositions);
-    window.addEventListener('scroll', calculatePositions);
+    const scrollRoot = getScrollParent(containerRef.current);
+    window.addEventListener("resize", calculatePositions);
+    scrollRoot?.addEventListener("scroll", calculatePositions, { passive: true });
+    window.addEventListener("scroll", calculatePositions, { passive: true });
 
     return () => {
       clearTimeout(timer);
-      window.removeEventListener('resize', calculatePositions);
-      window.removeEventListener('scroll', calculatePositions);
+      window.removeEventListener("resize", calculatePositions);
+      scrollRoot?.removeEventListener("scroll", calculatePositions);
+      window.removeEventListener("scroll", calculatePositions);
     };
   }, [headings, containerRef]);
 
@@ -58,16 +73,28 @@ const TableOfContents: React.FC<TableOfContentsProps> = ({ headings, containerRe
   useEffect(() => {
     if (headings.length === 0) return;
 
-    const handleScroll = () => {
-      const scrollPosition = window.scrollY + 100; // Offset for header
+    const scrollRoot = getScrollParent(containerRef.current);
 
-      // Find the current active heading
-      let current = '';
+    const handleScroll = () => {
+      const offset = 100;
+      let current = "";
+
       for (let i = headings.length - 1; i >= 0; i--) {
         const element = document.getElementById(headings[i].id);
-        if (element && element.offsetTop <= scrollPosition) {
-          current = headings[i].id;
-          break;
+        if (!element) continue;
+
+        const rect = element.getBoundingClientRect();
+        if (scrollRoot instanceof Window) {
+          if (rect.top <= offset) {
+            current = headings[i].id;
+            break;
+          }
+        } else if (scrollRoot) {
+          const rootRect = (scrollRoot as HTMLElement).getBoundingClientRect();
+          if (rect.top <= rootRect.top + offset) {
+            current = headings[i].id;
+            break;
+          }
         }
       }
 
@@ -76,20 +103,20 @@ const TableOfContents: React.FC<TableOfContentsProps> = ({ headings, containerRe
       }
     };
 
-    window.addEventListener('scroll', handleScroll);
-    handleScroll(); // Initial check
+    scrollRoot?.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
 
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [headings]);
+    return () => {
+      scrollRoot?.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [headings, containerRef]);
 
   const scrollToHeading = (id: string) => {
     const element = document.getElementById(id);
     if (element) {
-      const offsetTop = element.offsetTop - 80; // Account for fixed header
-      window.scrollTo({
-        top: offsetTop,
-        behavior: 'smooth'
-      });
+      element.scrollIntoView({ behavior: "smooth", block: "start" });
       setActiveId(id);
     }
   };

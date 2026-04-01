@@ -1,22 +1,48 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeHighlight from "rehype-highlight";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
+import type { PluggableList } from "unified";
 import { RADIUS, SPACING } from "../../constants/colors";
 import { useTheme } from "../../contexts/ThemeContext";
-import TableOfContents from "./TableOfContents";
 import './MarkdownViewer.css';
+import TableOfContents from "./TableOfContents";
+
+/** rehype-highlight: map fence labels like ```react to highlight.js grammars */
+const markdownRehypePlugins: PluggableList = [
+  [
+    rehypeHighlight,
+    {
+      aliases: {
+        javascript: ['react', 'react-native'],
+        python: ['py'],
+      },
+    },
+  ],
+  rehypeRaw,
+];
+
+/** Decorative macOS-style traffic lights on fenced code blocks */
+const CodeBlockTitleBar = () => (
+  <div className="aui-code-header-root">
+    <div className="aui-code-window-dots" aria-hidden="true">
+      <span className="aui-code-dot aui-code-dot--red" />
+      <span className="aui-code-dot aui-code-dot--yellow" />
+      <span className="aui-code-dot aui-code-dot--green" />
+    </div>
+  </div>
+);
 
 // Function to load appropriate highlight.js theme based on current theme
 const loadHighlightTheme = (isDark: boolean) => {
   const themeLink = document.getElementById('highlight-theme') as HTMLLinkElement;
   
   if (themeLink) {
-    // Use a minimal theme and override with custom colors
+    // Base theme; token colors refined in MarkdownViewer.css (VS Code / GitHub-dark–style)
     themeLink.href = isDark 
-      ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css'
-      : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css';
+      ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css'
+      : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github.min.css';
     
     // Add custom style tag after theme loads to ensure our overrides work
     setTimeout(() => {
@@ -156,6 +182,49 @@ interface Heading {
   level: number;
 }
 
+/**
+ * Strip fenced code blocks (``` / ~~~) so lines like `## foo` inside examples
+ * are not mistaken for real headings (would desync TOC ids vs ReactMarkdown output).
+ */
+function stripFencedCodeBlocks(markdown: string): string {
+  const lines = markdown.split("\n");
+  const out: string[] = [];
+  let inFence = false;
+  for (const line of lines) {
+    const t = line.trimStart();
+    if (/^(```|~~~)/.test(t)) {
+      inFence = !inFence;
+      continue;
+    }
+    if (!inFence) {
+      out.push(line);
+    }
+  }
+  return out.join("\n");
+}
+
+/** Same rules as rendered headings: GFM optional indent, blockquote, duplicate titles get -2, -3, ... */
+function extractHeadingsFromMarkdown(markdown: string): Heading[] {
+  const body = stripFencedCodeBlocks(markdown);
+  // Optional leading `> ` (blockquote) — up to 2 levels, common in GFM
+  const headingRegex = /^\s{0,3}(?:>\s*){0,2}(#{1,6})\s+(.+)$/gm;
+  const matches: Heading[] = [];
+  const slugCount = new Map<string, number>();
+  let match;
+
+  while ((match = headingRegex.exec(body)) !== null) {
+    const level = match[1].length;
+    const text = match[2].trim().replace(/^>\s*/g, "").trim();
+    const base = generateSlug(text);
+    const n = (slugCount.get(base) ?? 0) + 1;
+    slugCount.set(base, n);
+    const id = n === 1 ? base : `${base}-${n}`;
+    matches.push({ id, text, level });
+  }
+
+  return matches;
+}
+
 const MarkdownViewer: React.FC<MarkdownViewerProps> = ({ 
   content, 
   className = "", 
@@ -164,7 +233,9 @@ const MarkdownViewer: React.FC<MarkdownViewerProps> = ({
 }) => {
   const { isDark } = useTheme();
   const containerRef = useRef<HTMLDivElement>(null);
-  const [headings, setHeadings] = useState<Heading[]>([]);
+  const headings = useMemo(() => (content ? extractHeadingsFromMarkdown(content) : []), [content]);
+  /** Document order; reset to 0 at start of each render so h1…h6 ids match `headings`. */
+  const headingIdIndexRef = useRef(0);
   
   // Initialize theme on component load
   useEffect(() => {
@@ -176,32 +247,6 @@ const MarkdownViewer: React.FC<MarkdownViewerProps> = ({
     }
     loadHighlightTheme(isDark);
   }, [isDark]);
-
-  // Extract headings from markdown content
-  useEffect(() => {
-    if (!content) {
-      setHeadings([]);
-      return;
-    }
-
-    const extractHeadings = (markdown: string): Heading[] => {
-      const headingRegex = /^(#{1,6})\s+(.+)$/gm;
-      const matches: Heading[] = [];
-      let match;
-
-      while ((match = headingRegex.exec(markdown)) !== null) {
-        const level = match[1].length;
-        const text = match[2].trim();
-        const id = generateSlug(text);
-        matches.push({ id, text, level });
-      }
-
-      return matches;
-    };
-
-    const extractedHeadings = extractHeadings(content);
-    setHeadings(extractedHeadings);
-  }, [content]);
 
   // Handle anchor link clicks for smooth scrolling
   useEffect(() => {
@@ -217,11 +262,7 @@ const MarkdownViewer: React.FC<MarkdownViewerProps> = ({
           const element = document.getElementById(id);
           
           if (element) {
-            const offsetTop = element.offsetTop - 80; // Account for fixed header
-            window.scrollTo({
-              top: offsetTop,
-              behavior: 'smooth'
-            });
+            element.scrollIntoView({ behavior: "smooth", block: "start" });
           }
         }
       }
@@ -266,51 +307,52 @@ const MarkdownViewer: React.FC<MarkdownViewerProps> = ({
   }
 
   try {
+    headingIdIndexRef.current = 0;
     return (
       <div style={styles.wrapper}>
         <div ref={containerRef} className={`markdown-viewer ${className}`} style={styles.container}>
           <ReactMarkdown
-          rehypePlugins={[rehypeHighlight, rehypeRaw]}
+          rehypePlugins={markdownRehypePlugins}
           remarkPlugins={[remarkGfm]}
         components={{
           h1: ({ children, ...props }) => {
             const text = childrenToString(children);
-            const id = generateSlug(text);
+            const id = headings[headingIdIndexRef.current++]?.id ?? generateSlug(text);
             return (
               <h1 id={id} className="aui-md-h1" {...props}>{children}</h1>
             );
           },
           h2: ({ children, ...props }) => {
             const text = childrenToString(children);
-            const id = generateSlug(text);
+            const id = headings[headingIdIndexRef.current++]?.id ?? generateSlug(text);
             return (
               <h2 id={id} className="aui-md-h2" {...props}>{children}</h2>
             );
           },
           h3: ({ children, ...props }) => {
             const text = childrenToString(children);
-            const id = generateSlug(text);
+            const id = headings[headingIdIndexRef.current++]?.id ?? generateSlug(text);
             return (
               <h3 id={id} className="aui-md-h3" {...props}>{children}</h3>
             );
           },
           h4: ({ children, ...props }) => {
             const text = childrenToString(children);
-            const id = generateSlug(text);
+            const id = headings[headingIdIndexRef.current++]?.id ?? generateSlug(text);
             return (
               <h4 id={id} className="aui-md-h4" {...props}>{children}</h4>
             );
           },
           h5: ({ children, ...props }) => {
             const text = childrenToString(children);
-            const id = generateSlug(text);
+            const id = headings[headingIdIndexRef.current++]?.id ?? generateSlug(text);
             return (
               <h5 id={id} className="aui-md-h5" {...props}>{children}</h5>
             );
           },
           h6: ({ children, ...props }) => {
             const text = childrenToString(children);
-            const id = generateSlug(text);
+            const id = headings[headingIdIndexRef.current++]?.id ?? generateSlug(text);
             return (
               <h6 id={id} className="aui-md-h6" {...props}>{children}</h6>
             );
@@ -352,7 +394,7 @@ const MarkdownViewer: React.FC<MarkdownViewerProps> = ({
             );
           },
           code: ({ children, className, ...props }) => {
-            const match = /language-(\w+)/.exec(className || '');
+            const match = /language-([\w+-]+)/.exec(className || '');
             
             // Convert children to string safely
             const codeContent = childrenToString(children).replace(/\n$/, '');
@@ -366,12 +408,8 @@ const MarkdownViewer: React.FC<MarkdownViewerProps> = ({
                 const highlighted = highlightHtml(codeContent);
                 return (
                   <div className="my-5 w-full">
-                    <div className="aui-code-header-root">
-                      <div className="aui-code-header-language">
-                        <span>{match[1]}</span>
-                      </div>
-                    </div>
-                    <pre className="aui-md-pre">
+                    <CodeBlockTitleBar />
+                    <pre className="aui-md-pre aui-md-pre--below-title">
                       <code 
                         className={`${className} hljs language-${language}`} 
                         {...props}
@@ -382,20 +420,16 @@ const MarkdownViewer: React.FC<MarkdownViewerProps> = ({
                 );
               }
               
-              // For other languages, use default highlighting
+              // rehype-highlight injects hljs spans — render children, not a flattened string
               return (
                 <div className="my-5 w-full">
-                  <div className="aui-code-header-root">
-                    <div className="aui-code-header-language">
-                      <span>{match[1]}</span>
-                    </div>
-                  </div>
-                  <pre className="aui-md-pre">
+                  <CodeBlockTitleBar />
+                  <pre className="aui-md-pre aui-md-pre--below-title">
                     <code 
                       className={className} 
                       {...props}
                     >
-                      {codeContent}
+                      {children}
                     </code>
                   </pre>
                 </div>
@@ -409,17 +443,16 @@ const MarkdownViewer: React.FC<MarkdownViewerProps> = ({
             );
           },
           pre: ({ children, ...props }) => {
-            // If pre contains code element, just return the children
-            // The code element will handle the styling
-            const hasCodeChild = React.Children.toArray(children).some(
-              child => React.isValidElement(child) && child.type === 'code'
-            );
-            
-            if (hasCodeChild) {
+            // Fenced blocks are `pre > code`; our `code` renderer wraps output in a <div>
+            // (header + pre + code). Only a raw <code> child used to be detected — div wrappers
+            // fell through to childrenToString(), which strips every hljs <span> (no colors).
+            const childList = React.Children.toArray(children);
+            const hasRenderedElement = childList.some((child) => React.isValidElement(child));
+
+            if (hasRenderedElement) {
               return <>{children}</>;
             }
-            
-            // For plain pre blocks without code
+
             return (
               <pre className="aui-md-pre" {...props}>
                 {childrenToString(children)}
@@ -463,11 +496,7 @@ const MarkdownViewer: React.FC<MarkdownViewerProps> = ({
                     }
                     
                     if (element) {
-                      const offsetTop = element.offsetTop - 80; // Account for fixed header
-                      window.scrollTo({
-                        top: offsetTop,
-                        behavior: 'smooth'
-                      });
+                      element.scrollIntoView({ behavior: "smooth", block: "start" });
                     } else {
                       // Fallback: try to scroll to any element with matching text content
                       console.warn(`Could not find element with id: ${id}`);
@@ -525,12 +554,12 @@ const MarkdownViewer: React.FC<MarkdownViewerProps> = ({
       <div className={`markdown-viewer ${className}`} style={styles.container}>
         <div>
           <p style={{ color: '#ff6b6b', fontWeight: 'bold' }}>Error rendering markdown:</p>
-          <pre style={{ background: '#f5f5f5', padding: '16px', borderRadius: '8px', overflow: 'auto' }}>
+          <pre style={{ background: '#f5f5f5', padding: '16px', borderRadius: '0 0 8px 8px', overflow: 'auto' }}>
             {error instanceof Error ? error.message : String(error)}
           </pre>
           <details style={{ marginTop: '16px' }}>
             <summary style={{ cursor: 'pointer', fontWeight: 'bold' }}>Raw content:</summary>
-            <pre style={{ background: '#f0f0f0', padding: '16px', borderRadius: '8px', overflow: 'auto', marginTop: '8px' }}>
+            <pre style={{ background: '#f0f0f0', padding: '16px', borderRadius: '0 0 8px 8px', overflow: 'auto', marginTop: '8px' }}>
               {content}
             </pre>
           </details>
