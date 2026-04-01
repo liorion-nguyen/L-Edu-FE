@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Loading from "../../../components/common/Loading";
-import { Session } from "../../home/courses/[id]";
 import { useTranslationWithRerender } from "../../../hooks/useLanguageChange";
-import { examService } from "../../../services/examService";
-import { ExamSummary, ExamVisibility } from "../../../types/exam";
 import { getCourseById } from "../../../redux/slices/courses";
 import { RootState, useDispatch, useSelector } from "../../../redux/store";
+import { examService } from "../../../services/examService";
+import { ExamSummary, ExamVisibility } from "../../../types/exam";
+import { Session } from "../../home/courses/[id]";
 
 /**
  * Chi tiết khóa học trong student dashboard: danh sách buổi học & tài liệu / video / bài kiểm tra.
@@ -65,7 +65,7 @@ const StudentCourseSessions: React.FC = () => {
   }
 
   return (
-    <div className="w-full max-w-7xl mx-auto space-y-8 pb-4">
+    <div className="w-full space-y-8 pb-4">
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
         <div className="flex items-start gap-3 min-w-0">
           <button

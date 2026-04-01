@@ -217,7 +217,7 @@ const StudentDashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
 
         <div
           className={[
-            "flex-1 min-h-0 overflow-y-auto overscroll-contain p-8 max-w-7xl mx-auto w-full transition",
+            "flex-1 min-h-0 overflow-y-auto overscroll-contain p-8 w-full transition",
             loginOpen ? "pointer-events-none select-none blur-[1.5px] opacity-70" : "",
           ].join(" ")}
         >

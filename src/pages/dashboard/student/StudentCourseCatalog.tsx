@@ -259,7 +259,7 @@ const StudentCourseCatalog: React.FC = () => {
   };
 
   return (
-    <div className="w-full max-w-7xl mx-auto">
+    <div className="w-full">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
         <div className="flex items-center gap-4">
           <div className="bg-primary/10 p-3 rounded-2xl">
