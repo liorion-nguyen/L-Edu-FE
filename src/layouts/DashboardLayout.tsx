@@ -28,6 +28,7 @@ import { useSelector } from "../redux/store";
 import { RootState } from "../redux/store";
 import { Role } from "../enum/user.enum";
 import LanguageSwitcher from "../components/common/LanguageSwitcher";
+import { CODELAB_BRAND_NAME, CODELAB_IMG } from "../constants/codelabSite";
 import { envConfig, localStorageConfig } from "../config";
 import "../styles/layout.css";
 
@@ -276,13 +277,14 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
                 e.currentTarget.style.opacity = "1";
               }}
             >
-              <img 
-                src="/logo_name.png" 
-                alt="logo" 
-                style={{ 
+              <img
+                src={CODELAB_IMG.logoRow}
+                alt={CODELAB_BRAND_NAME}
+                style={{
                   maxHeight: "36px",
-                  objectFit: "contain"
-                }} 
+                  width: "auto",
+                  objectFit: "contain",
+                }}
               />
             </div>
             

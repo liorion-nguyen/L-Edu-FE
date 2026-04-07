@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import DashboardLoginModal from "../components/auth/DashboardLoginModal";
 import LanguageSwitcher, { DASHBOARD_HEADER_ICON_BUTTON_CLASS } from "../components/common/LanguageSwitcher";
+import { CODELAB_BRAND_NAME, CODELAB_IMG } from "../constants/codelabSite";
 import { localStorageConfig } from "../config";
 import { useTheme } from "../contexts/ThemeContext";
 import { getUser } from "../redux/slices/auth";
@@ -99,11 +100,11 @@ const StudentDashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
           title="Về trang chủ"
         >
           <img
-            src="/logo_name.png"
-            alt="logo"
+            src={CODELAB_IMG.logoRow}
+            alt={CODELAB_BRAND_NAME}
             className={[
-              "rounded-[10px] object-contain",
-              navCollapsed ? "h-10 w-10" : "h-12",
+              "object-contain object-left",
+              navCollapsed ? "h-8 w-full max-w-[52px]" : "h-11 w-auto max-w-[200px]",
             ].join(" ")}
           />
         </button>

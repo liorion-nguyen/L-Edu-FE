@@ -52,7 +52,7 @@ const SignUp = () => {
     return (
         <div className="w-full">
             <Helmet>
-                <title>Sign Up | L-Edu</title>
+                <title>Sign Up | CodeLab</title>
             </Helmet>
 
             <div className="mb-7">

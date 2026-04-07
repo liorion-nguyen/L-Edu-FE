@@ -1,5 +1,14 @@
 import { Spin } from "antd";
 import { useEffect, useMemo, useState } from "react";
+import {
+  CODELAB_ADDRESS_TEXT,
+  CODELAB_BRAND_NAME,
+  CODELAB_CONTACT_EMAIL,
+  CODELAB_CONTACT_PHONE,
+  CODELAB_FACEBOOK_URL,
+  CODELAB_IMG,
+  CODELAB_TIKTOK_URL,
+} from "../../../constants/codelabSite";
 import { getIconByValue } from "../../../constants/icons";
 import { useTheme } from "../../../contexts/ThemeContext";
 import { useTranslationWithRerender } from "../../../hooks/useLanguageChange";
@@ -41,6 +50,15 @@ const AboutUs = () => {
   }, []);
 
   const socials = useMemo(() => contacts.filter((c) => c.type === "social"), [contacts]);
+  const socialLinks = useMemo(() => {
+    if (socials.length) {
+      return socials.map((s) => ({ label: s.label, value: s.value, icon: s.icon || "" }));
+    }
+    return [
+      { label: "Facebook — CodeLab", value: CODELAB_FACEBOOK_URL, icon: "facebook" },
+      { label: "TikTok — @codelab.pro.vn", value: CODELAB_TIKTOK_URL, icon: "tiktok" },
+    ];
+  }, [socials]);
   const email = useMemo(() => contacts.find((c) => c.type === "email"), [contacts]);
   const phone = useMemo(() => contacts.find((c) => c.type === "phone"), [contacts]);
   const address = useMemo(() => contacts.find((c) => c.type === "address"), [contacts]);
@@ -69,12 +87,12 @@ const AboutUs = () => {
             </div>
 
             <h1 className="text-4xl font-black leading-tight tracking-tight md:text-6xl" style={{ color: "var(--text-primary)" }}>
-              {contentBlocks?.[0]?.title || "Giới thiệu về chúng tôi"}
+              {contentBlocks?.[0]?.title || `Giới thiệu ${CODELAB_BRAND_NAME}`}
             </h1>
 
             <p className="max-w-xl text-lg leading-relaxed" style={{ color: "var(--text-secondary)" }}>
               {contentBlocks?.[0]?.descriptions?.[0] ||
-                "Chúng tôi xây dựng nền tảng học lập trình thực chiến, giúp bạn tiến bộ nhanh và tự tin làm dự án thật."}
+                `${CODELAB_BRAND_NAME} dạy lập trình thực chiến cho học sinh cấp 2–3 (khoảng 12–18 tuổi) tại TP. Vinh, Nghệ An: lớp nhỏ, mentor kèm, dự án thật và định hướng ôn thi khi phù hợp.`}
             </p>
           </div>
 
@@ -89,12 +107,20 @@ const AboutUs = () => {
                 <div className="h-2 w-2 rounded-full bg-amber-400" />
                 <div className="h-2 w-2 rounded-full bg-emerald-400" />
               </div>
-              <div className="mt-6 rounded-2xl p-5" style={{ background: "var(--bg-primary)", border: "1px solid var(--border-color)" }}>
+              <div className="mt-6 overflow-hidden rounded-2xl" style={{ border: "1px solid var(--border-color)" }}>
+                <img
+                  src={CODELAB_IMG.classMain}
+                  alt={`${CODELAB_BRAND_NAME} — Hoạt động tại lớp`}
+                  className="h-auto w-full object-cover"
+                />
+              </div>
+              <div className="mt-4 rounded-2xl p-5" style={{ background: "var(--bg-primary)", border: "1px solid var(--border-color)" }}>
                 <div className="text-sm font-bold" style={{ color: "var(--text-primary)" }}>
-                  {contentBlocks?.[0]?.subtitle || "Học lập trình theo lộ trình rõ ràng"}
+                  {contentBlocks?.[0]?.subtitle || "Lộ trình Python, web và ôn thi"}
                 </div>
                 <div className="mt-2 text-sm" style={{ color: "var(--text-secondary)" }}>
-                  {contentBlocks?.[0]?.descriptions?.[1] || "Từ nền tảng đến nâng cao, học để làm được việc."}
+                  {contentBlocks?.[0]?.descriptions?.[1] ||
+                    "Từ làm quen logic và Python đến React, deployment và luyện thi HSG — học để làm được sản phẩm thật."}
                 </div>
               </div>
             </div>
@@ -114,9 +140,11 @@ const AboutUs = () => {
             style={{ borderColor: "var(--border-color)", background: "var(--bg-primary)", color: "var(--text-secondary)" }}
           >
             <div className="text-2xl font-black" style={{ color: "var(--text-primary)" }}>
-              No content available
+              Nội dung chi tiết đang cập nhật
             </div>
-            <div className="mt-2">Please add content blocks in the admin dashboard.</div>
+            <div className="mt-2">
+              Thông tin đầy đủ về chương trình {CODELAB_BRAND_NAME} sẽ được hiển thị khi quản trị viên thêm khối nội dung trong hệ thống.
+            </div>
           </div>
         ) : (
           <div className="space-y-16">
@@ -126,7 +154,7 @@ const AboutUs = () => {
                 <section key={block._id} className="space-y-10">
                   <div className="space-y-3">
                     <h2 className="text-3xl font-black md:text-4xl" style={{ color: "var(--text-primary)" }}>
-                      {blockIndex === 0 ? block.subtitle || "Tại sao chọn L-Edu?" : block.title}
+                      {blockIndex === 0 ? block.subtitle || `Vì sao chọn ${CODELAB_BRAND_NAME}?` : block.title}
                     </h2>
                     {block.subtitle && (
                       <p className="text-base" style={{ color: "var(--text-secondary)" }}>
@@ -253,9 +281,9 @@ const AboutUs = () => {
                 <a
                   className="mt-2 block text-sm"
                   style={{ color: "var(--primary-color)" }}
-                  href={email?.value ? `mailto:${email.value}` : undefined}
+                  href={email?.value ? `mailto:${email.value}` : `mailto:${CODELAB_CONTACT_EMAIL}`}
                 >
-                  {email?.value || "support@l-edu.vn"}
+                  {email?.value || CODELAB_CONTACT_EMAIL}
                 </a>
               </div>
 
@@ -278,7 +306,10 @@ const AboutUs = () => {
                   </div>
                 </div>
                 <div className="mt-2 text-sm" style={{ color: "var(--text-secondary)" }}>
-                  {phone?.value || "0900 000 000"}
+                  {phone?.value ||
+                    (CODELAB_CONTACT_PHONE
+                      ? CODELAB_CONTACT_PHONE
+                      : "Hotline/Zalo — cấu hình REACT_APP_CONTACT_PHONE hoặc xem fanpage Facebook")}
                 </div>
               </div>
 
@@ -301,36 +332,34 @@ const AboutUs = () => {
                   </div>
                 </div>
                 <div className="mt-2 text-sm" style={{ color: "var(--text-secondary)" }}>
-                  {address?.value || "Việt Nam"}
+                  {address?.value || CODELAB_ADDRESS_TEXT}
                 </div>
               </div>
             </div>
 
-            {!!socials.length && (
-              <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
-                {socials.map((s, idx) => {
-                  const iconData = getIconByValue(s.icon || "");
-                  const emoji = iconData?.emoji || "🔗";
-                  return (
-                    <a
-                      key={`${s.label}-${idx}`}
-                      href={s.value}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-bold transition-colors"
-                      style={{
-                        borderColor: "var(--border-color)",
-                        background: softCardBg,
-                        color: "var(--text-primary)",
-                      }}
-                    >
-                      <span>{emoji}</span>
-                      <span className="max-w-[180px] truncate">{s.label}</span>
-                    </a>
-                  );
-                })}
-              </div>
-            )}
+            <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
+              {socialLinks.map((s, idx) => {
+                const iconData = getIconByValue(s.icon || "");
+                const emoji = iconData?.emoji || "🔗";
+                return (
+                  <a
+                    key={`${s.label}-${idx}`}
+                    href={s.value}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-bold transition-colors"
+                    style={{
+                      borderColor: "var(--border-color)",
+                      background: softCardBg,
+                      color: "var(--text-primary)",
+                    }}
+                  >
+                    <span>{emoji}</span>
+                    <span className="max-w-[180px] truncate">{s.label}</span>
+                  </a>
+                );
+              })}
+            </div>
           </div>
         </section>
       </main>

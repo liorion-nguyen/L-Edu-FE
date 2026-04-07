@@ -1,6 +1,7 @@
 import { LinkOutlined } from "@ant-design/icons";
 import { Layout, Spin } from "antd";
 import { CSSProperties, useEffect, useMemo, useState } from "react";
+import { CODELAB_BRAND_NAME } from "../../../constants/codelabSite";
 import { getIconByValue } from "../../../constants/icons";
 import { useTheme } from "../../../contexts/ThemeContext";
 import { useTranslationWithRerender } from "../../../hooks/useLanguageChange";
@@ -91,7 +92,11 @@ const Footer = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
                 <div className="space-y-6">
                   <div className="flex items-center gap-3">
-                    <img src="/logo_name.png" alt="L-Edu" className="h-12"  />
+                    <img
+                      src="/codelab/logo/logo_row.png"
+                      alt={CODELAB_BRAND_NAME}
+                      className="h-10 w-auto max-w-[220px] object-contain object-left md:h-12"
+                    />
                   </div>
 
                   <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">{t("footer.description")}</p>
@@ -204,7 +209,9 @@ const Footer = () => {
               </div>
 
               <div className="pt-12 border-t border-slate-100 dark:border-slate-800 flex flex-col md:flex-row justify-between items-center gap-6 text-xs text-slate-500">
-                <p>© {new Date().getFullYear()} L-Edu Academy. All rights reserved.</p>
+                <p>
+                  © {new Date().getFullYear()} {CODELAB_BRAND_NAME}. All rights reserved.
+                </p>
                 <div className="flex gap-8">
                   <a className="hover:text-primary transition-colors" href="/privacy">Chính sách bảo mật</a>
                   <a className="hover:text-primary transition-colors" href="/sitemap">Sitemap</a>

@@ -4,6 +4,7 @@ import { CSSProperties, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { localStorageConfig } from "../../../config";
 import { COLORS } from "../../../constants/colors";
+import { CODELAB_BRAND_NAME } from "../../../constants/codelabSite";
 import { useTheme } from "../../../contexts/ThemeContext";
 import { Role } from "../../../enum/user.enum";
 import { useTranslationWithRerender } from "../../../hooks/useLanguageChange";
@@ -145,7 +146,11 @@ const Header = () => {
       >
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <button type="button" className="flex items-center gap-3 text-left" onClick={handleHome}>
-            <img src="/logo_name.png" alt="L-Edu" className="h-12"  />
+            <img
+              src="/codelab/logo/logo_row.png"
+              alt={CODELAB_BRAND_NAME}
+              className="h-10 w-auto max-w-[200px] object-contain object-left md:h-12 md:max-w-none"
+            />
           </button>
 
           <div className="hidden md:flex items-center gap-8 text-sm font-semibold">

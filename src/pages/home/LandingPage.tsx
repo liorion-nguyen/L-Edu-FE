@@ -1,9 +1,19 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  CODELAB_BRAND_NAME,
+  CODELAB_FACEBOOK_URL,
+  CODELAB_IMG,
+  CODELAB_SIGNUP_URL,
+  CODELAB_SITE_URL,
+  CODELAB_TIKTOK_URL,
+} from "../../constants/codelabSite";
+import { RootState, useSelector } from "../../redux/store";
 import { Category, categoryService } from "../../services/categoryService";
 import { Footer, FooterLink, footerService } from "../../services/footerService";
 import { LinkedApp, linkedAppService } from "../../services/linkedAppService";
 
 const LandingPage = () => {
+  const { user } = useSelector((s: RootState) => s.auth);
   const [linkedApps, setLinkedApps] = useState<LinkedApp[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [companySection, setCompanySection] = useState<Footer | null>(null);
@@ -114,12 +124,9 @@ const LandingPage = () => {
       (companySection?.links?.length
         ? companySection.links
         : [
-            { label: "Google", url: "#", isExternal: true },
-            { label: "Meta", url: "#", isExternal: true },
-            { label: "Microsoft", url: "#", isExternal: true },
-            { label: "Amazon", url: "#", isExternal: true },
-            { label: "Netflix", url: "#", isExternal: true },
-            { label: "Apple", url: "#", isExternal: true },
+            { label: "Facebook — CodeLab", url: CODELAB_FACEBOOK_URL, isExternal: true },
+            { label: "TikTok — @codelab.pro.vn", url: CODELAB_TIKTOK_URL, isExternal: true },
+            { label: "Website", url: CODELAB_SITE_URL, isExternal: true },
           ]) as FooterLink[],
     [companySection],
   );
@@ -195,51 +202,64 @@ const LandingPage = () => {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
               </span>
-              Tương lai của giáo dục IT
+              {CODELAB_BRAND_NAME} — Học lập trình thực chiến
             </div>
 
             <h1 className="text-5xl font-black leading-tight tracking-tight dark:text-white lg:text-7xl">
-              Học lập trình từ{" "}
-              <span className="bg-gradient-to-r from-primary to-indigo-400 bg-clip-text text-transparent">cơ bản</span> đến{" "}
-              <span className="bg-gradient-to-r from-indigo-400 to-primary bg-clip-text text-transparent">nâng cao</span>
+              Lập trình{" "}
+              <span className="bg-gradient-to-r from-primary to-indigo-400 bg-clip-text text-transparent">thực chiến</span> cho học
+              sinh cấp 2–3 tại{" "}
+              <span className="bg-gradient-to-r from-indigo-400 to-primary bg-clip-text text-transparent">TP. Vinh, Nghệ An</span>
             </h1>
 
             <p className="max-w-lg text-lg leading-relaxed text-slate-600 dark:text-slate-400">
-              Khám phá thế giới lập trình với các khóa học chất lượng cao, được thiết kế bởi các chuyên gia hàng đầu từ Google, Meta và Microsoft.
+              Không chỉ dừng lại ở lý thuyết suông. Chúng tôi đào tạo thế hệ học sinh làm chủ công nghệ thông qua các dự án thực tế
+              và tư duy giải quyết vấn đề.
             </p>
 
             <div className="flex flex-wrap gap-4 pt-4">
-              <button className="flex items-center gap-3 rounded-2xl bg-primary px-8 py-4 text-lg font-bold text-white shadow-xl shadow-primary/30 transition-all hover:bg-primary/90">
-                Bắt đầu ngay
+              <a
+                href={CODELAB_SIGNUP_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-3 rounded-2xl bg-primary px-8 py-4 text-lg font-bold text-white shadow-xl shadow-primary/30 transition-all hover:bg-primary/90"
+              >
+                Nhận tư vấn lộ trình
                 <span className="material-symbols-outlined">arrow_forward</span>
-              </button>
-              <button className="rounded-2xl border border-slate-200 bg-white px-8 py-4 text-lg font-bold transition-all hover:border-primary dark:border-slate-700 dark:bg-slate-800">
-                Xem khóa học
-              </button>
+              </a>
+              <a
+                href={user ? "/dashboard-program" : CODELAB_SIGNUP_URL}
+                {...(user ? {} : { target: "_blank" as const, rel: "noopener noreferrer" })}
+                className="rounded-2xl border border-slate-200 bg-white px-8 py-4 text-lg font-bold transition-all hover:border-primary dark:border-slate-700 dark:bg-slate-800"
+              >
+                Tìm hiểu chương trình
+              </a>
             </div>
 
             <div className="flex items-center gap-4">
               <div className="flex -space-x-3">
                 <img
-                  alt="Student"
+                  alt="Học viên CodeLab — Phú Minh"
                   className="h-10 w-10 rounded-full border-4 border-background-light object-cover dark:border-background-dark"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuDNT3xKdcYhwvIZredtwcdj0-pOdpK6r3Vf6yiAwinlm5Krz07u3gIU2BeDI_m2mL_Tg4Fu1LlKydZzLn5DtgJxP1DNvojyp08bmJDGYU4G7yVyQbbnryT-zI5GDTNV7UjvjmM9-M5qUgJ2qT2VZ2-IWeOSfbMAVrVee9E1JGc2iwQ4Q613NinxI1gF92v8duHD7p6TBXY5rN_DoEgUdbxWyQSv-SZYTS-Gse3Pnpw-nwJeOsVbidTqk3DJQeFbEcClO5_V_5PdYIE"
+                  src={CODELAB_IMG.studentPhuMinh}
                 />
                 <img
-                  alt="Student"
+                  alt="Học viên CodeLab — Lê Mạnh"
                   className="h-10 w-10 rounded-full border-4 border-background-light object-cover dark:border-background-dark"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuDBW9M-oh-ICon_jBfdYgnOvv_7v8TajD2TaXPAVSgKlKJm9F5izuKIZfgPrMGKRRwNseQHaki6jRA3L4Ppkf0IbJpIBt8QlfSkeptBOrdKCaxnvUtnavd6FFotFD9KV1TQK0bpw-lYWh2h_uDUHIwsIfvEEtxQw16AuYIdgnlk8c_gMMVsSyER_tBiS4MkRBp3WryHXRyZM5YR4zc5q_USlSPKGCTPCX3IKwABBdg9BBeHxqYAZJbGxszIaVdMhieFbORFIiAuRrk"
+                  src={CODELAB_IMG.studentLeManh}
                 />
                 <img
-                  alt="Student"
+                  alt="Học viên CodeLab — Ngọc Phương"
                   className="h-10 w-10 rounded-full border-4 border-background-light object-cover dark:border-background-dark"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuCMrGogxPV81RkS4Ntw85vgOqtLx-JDsadCh1UZgSkVjJ9qYUXsj4qkbK91X_ojFIfmnxmpDbyVEt7sST_Jhgw5OE9FSqfQljWvGePYA-BjRPLAnDVEjB56gA2OR5dGI7RwZzPwxAvYlkA-Smh2s2MFCAIvDowKhXv2qSpaAlKWwy_RbSfVtsN4hBKRLVySKy0FfYr-G-uBdfhcoh2eeH1PYFffyx71t_vmqxdmD09WyUF8_OXb8QypNArGJUwPsol8ADu0xmzkdcs"
+                  src={CODELAB_IMG.studentNgocPhuong}
                 />
-                <div className="flex h-10 w-10 items-center justify-center rounded-full border-4 border-background-light bg-slate-200 text-[10px] font-bold dark:border-background-dark dark:bg-slate-700">
-                  +200k
-                </div>
+                <img
+                  alt="Học viên CodeLab — Quang Vinh"
+                  className="h-10 w-10 rounded-full border-4 border-background-light object-cover dark:border-background-dark"
+                  src={CODELAB_IMG.studentQuangVinh}
+                />
               </div>
-              <p className="text-sm font-medium text-slate-500">200k+ học viên đã đăng ký học</p>
+              <p className="text-sm font-medium text-slate-500">Học viên TP. Vinh đồng hành cùng {CODELAB_BRAND_NAME}</p>
             </div>
           </div>
 
@@ -247,32 +267,32 @@ const LandingPage = () => {
             <div className="space-y-4">
               <div className="aspect-[4/5] overflow-hidden rounded-3xl shadow-2xl">
                 <img
-                  alt="Coding"
+                  alt="CodeLab — Hoạt động tại lớp"
                   className="h-full w-full object-cover"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuDbgBp9IzW8iGA90lnVDernAd90X6HOkSPa7mbxBsQriNVcBwnT7uhpUmiPafJpQ_c4tsFMcGKqTU-mDtmwDUuKQDZg1AQO69LYHBupD88vEmcWpW55Q16fGNj1K0kRQsdBX05C7Vtz3rxkWG3ircmg7QPnBM9KmybjJWNHSpXQxEBRZXSp4JSCpRlZc-Bpmhwt3bie-68WScOwzm5zao-usIcg7ordJBd_sBZsZgScwl-9cxVAIhhTBU9C1MMwmGoORW7liEKBQgU"
+                  src={CODELAB_IMG.classMain}
                 />
               </div>
               <div className="aspect-square overflow-hidden rounded-3xl shadow-2xl">
                 <img
-                  alt="Collaboration"
+                  alt="CodeLab — Thảo luận nhóm"
                   className="h-full w-full object-cover"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuDh214laZ7oHU0H_sABl11d2vRAE_JCnxUn7pmJjKNGVUJfg4ojYAcH6Fm8sRiTEQfHQjewOF6nwXkekoKjpdAG-MVymC6RKCuSFfkrpTv1dHc2OSvrivdUB3iShlFJcrSs8yQnIoRi5bHj9AZOFoS70-72VKywkCXGTNeXqiT4QwYqO0Xggwp6Soly9FXwxq3ZBsWWzMq7w8CXvaSnHUevh68Q1llrPwJrg1OkpeZUmf0CgEM_l_2EOLGzm4-Igi3aLf8dvNe1IWk"
+                  src={CODELAB_IMG.classGroup}
                 />
               </div>
             </div>
             <div className="space-y-4 pt-12">
               <div className="aspect-square overflow-hidden rounded-3xl shadow-2xl">
                 <img
-                  alt="Learning"
+                  alt="CodeLab — Mentor hỗ trợ"
                   className="h-full w-full object-cover"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuAGq5htMivjMkQjyT5Y6rWNl-Bk3Hlk6T4qo6_a1QVv97OmMTXF2ciBgYqK3gq5c7cbkgozLxpMC10jjm5TOZHu0-xNopn9py8ctz4W28d0DqhIvaO-zPAVhXCIiX2P7-eBrNKflUAkww2S14IXm0gIsJvZFmfT34-XJCsnSPOAZp3am3c9t_wQwUfP-McdRgC6BwqnrCG4GzCcbnQMLlFpEITx82vn-oB5mRhKxSMxZPth2KbX5pZ_UoZONpNQjl-jDFf9lw5RrPk"
+                  src={CODELAB_IMG.classMentor}
                 />
               </div>
               <div className="aspect-[4/5] overflow-hidden rounded-3xl shadow-2xl">
                 <img
-                  alt="Workshop"
+                  alt="CodeLab — Toàn cảnh lớp học"
                   className="h-full w-full object-cover"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuDfiSE7pQI1RAeG3l9cf7iuyvefqN-TBxrKVPiiFo-f-FMPDLeYMNsHKEs8bLPRYG3iK1iOr9D5zQugZNMJk8EhH40CwYPxnZIheZCB0pbmZi9iouk2m1EVRyYvtcPToBUHDT5UmUFjLo8v8AABe1TwIQxa0g8yu6jWJUu1WyiIp9wAA3ddPLGgIGLMEZ8kiPvTwzIa6lFj9xCHvICo-eer0zSGLb4KxsVcfrTaPloLw5YvlNhVI6X5OL47z0woqnX5X8LKKNTRK48"
+                  src={CODELAB_IMG.classWide}
                 />
               </div>
             </div>
@@ -285,20 +305,20 @@ const LandingPage = () => {
         <div className="mx-auto max-w-7xl px-6">
           <div className="grid grid-cols-2 gap-8 border-y border-slate-100 py-10 dark:border-slate-800 md:grid-cols-4">
             <div className="space-y-2 text-center">
-              <div className="text-4xl font-black text-primary">200.1K+</div>
-              <div className="text-sm font-medium uppercase tracking-widest text-slate-500">Học viên đăng ký</div>
+              <div className="text-4xl font-black text-primary">12–18</div>
+              <div className="text-sm font-medium uppercase tracking-widest text-slate-500">Độ tuổi học viên</div>
             </div>
             <div className="space-y-2 text-center">
-              <div className="text-4xl font-black text-primary">253</div>
-              <div className="text-sm font-medium uppercase tracking-widest text-slate-500">Mentor chuyên gia</div>
+              <div className="text-4xl font-black text-primary">≤10</div>
+              <div className="text-sm font-medium uppercase tracking-widest text-slate-500">Học sinh / lớp</div>
             </div>
             <div className="space-y-2 text-center">
-              <div className="text-4xl font-black text-primary">500.0K+</div>
-              <div className="text-sm font-medium uppercase tracking-widest text-slate-500">Đánh giá học viên</div>
+              <div className="text-4xl font-black text-primary">Vinh</div>
+              <div className="text-sm font-medium uppercase tracking-widest text-slate-500">TP. Vinh, Nghệ An</div>
             </div>
             <div className="space-y-2 text-center">
-              <div className="text-4xl font-black text-primary">180.0K+</div>
-              <div className="text-sm font-medium uppercase tracking-widest text-slate-500">Hoàn thành</div>
+              <div className="text-4xl font-black text-primary">0đ</div>
+              <div className="text-sm font-medium uppercase tracking-widest text-slate-500">Buổi học thử miễn phí</div>
             </div>
           </div>
         </div>
@@ -307,28 +327,21 @@ const LandingPage = () => {
       {/* Features */}
       <section className="mx-auto max-w-7xl px-6 py-24">
         <div className="mb-16 space-y-4 text-center">
-          <h2 className="text-3xl font-black dark:text-white md:text-4xl">Tại sao chọn L-Edu?</h2>
+          <h2 className="text-3xl font-black dark:text-white md:text-4xl">Vì sao không chỉ là khóa code?</h2>
+          <p className="mx-auto max-w-2xl text-slate-500">
+            {CODELAB_BRAND_NAME} định hướng sản phẩm, tư duy và lộ trình thi đấu khi phù hợp — không chỉ dạy cú pháp.
+          </p>
           <div className="mx-auto h-1.5 w-20 rounded-full bg-primary" />
         </div>
 
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
           <div className="group rounded-2xl border border-slate-100 bg-white p-8 transition-all hover:border-primary dark:border-slate-700/50 dark:bg-slate-800/50">
             <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-100 text-primary transition-transform group-hover:scale-110 dark:bg-blue-500/10">
-              <span className="material-symbols-outlined text-3xl">school</span>
+              <span className="material-symbols-outlined text-3xl">hub</span>
             </div>
-            <h3 className="mb-3 text-xl font-bold">Khóa học chất lượng</h3>
+            <h3 className="mb-3 text-xl font-bold">Tư duy logic hệ thống</h3>
             <p className="text-sm leading-relaxed text-slate-500 dark:text-slate-400">
-              Nội dung bài giảng được cập nhật liên tục theo xu hướng công nghệ mới nhất.
-            </p>
-          </div>
-
-          <div className="group rounded-2xl border border-slate-100 bg-white p-8 transition-all hover:border-primary dark:border-slate-700/50 dark:bg-slate-800/50">
-            <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-500 transition-transform group-hover:scale-110 dark:bg-emerald-500/10">
-              <span className="material-symbols-outlined text-3xl">support_agent</span>
-            </div>
-            <h3 className="mb-3 text-xl font-bold">Hỗ trợ 24/7</h3>
-            <p className="text-sm leading-relaxed text-slate-500 dark:text-slate-400">
-              Đội ngũ mentor luôn sẵn sàng giải đáp thắc mắc và hỗ trợ bạn trong suốt quá trình.
+              Học cách chia nhỏ vấn đề phức tạp thành các module giải quyết được ngay lập tức.
             </p>
           </div>
 
@@ -336,9 +349,9 @@ const LandingPage = () => {
             <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-100 text-amber-500 transition-transform group-hover:scale-110 dark:bg-amber-500/10">
               <span className="material-symbols-outlined text-3xl">rocket_launch</span>
             </div>
-            <h3 className="mb-3 text-xl font-bold">Dự án thực tế</h3>
+            <h3 className="mb-3 text-xl font-bold">Dự án thực chiến 100%</h3>
             <p className="text-sm leading-relaxed text-slate-500 dark:text-slate-400">
-              Thực hành với các dự án thực tế để xây dựng Portfolio chuyên nghiệp.
+              Kết thúc khóa học, mỗi học sinh đều sở hữu ít nhất 2 sản phẩm website hoặc ứng dụng cá nhân.
             </p>
           </div>
 
@@ -346,10 +359,29 @@ const LandingPage = () => {
             <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-100 text-indigo-500 transition-transform group-hover:scale-110 dark:bg-indigo-500/10">
               <span className="material-symbols-outlined text-3xl">workspace_premium</span>
             </div>
-            <h3 className="mb-3 text-xl font-bold">Chứng chỉ uy tín</h3>
+            <h3 className="mb-3 text-xl font-bold">Chứng chỉ &amp; giải thưởng</h3>
             <p className="text-sm leading-relaxed text-slate-500 dark:text-slate-400">
-              Nhận chứng chỉ hoàn thành khóa học có giá trị cao khi ứng tuyển việc làm.
+              Lộ trình ôn luyện bài bản cho các kỳ thi Tin học trẻ và chứng chỉ lập trình quốc tế.
             </p>
+          </div>
+        </div>
+
+        <div className="mt-16 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
+          <div className="rounded-2xl border border-slate-100 bg-white p-6 dark:border-slate-700/50 dark:bg-slate-800/50">
+            <h3 className="mb-2 text-lg font-bold">Lớp tối đa 10 em</h3>
+            <p className="text-sm text-slate-500 dark:text-slate-400">Mentor theo sát từng dòng code.</p>
+          </div>
+          <div className="rounded-2xl border border-slate-100 bg-white p-6 dark:border-slate-700/50 dark:bg-slate-800/50">
+            <h3 className="mb-2 text-lg font-bold">Thiết bị hiện đại</h3>
+            <p className="text-sm text-slate-500 dark:text-slate-400">Máy tính cấu hình cao tại lớp cho học sinh chưa có laptop.</p>
+          </div>
+          <div className="rounded-2xl border border-slate-100 bg-white p-6 dark:border-slate-700/50 dark:bg-slate-800/50">
+            <h3 className="mb-2 text-lg font-bold">Lịch học linh hoạt</h3>
+            <p className="text-sm text-slate-500 dark:text-slate-400">Ca tối hoặc cuối tuần, phù hợp lịch văn hóa.</p>
+          </div>
+          <div className="rounded-2xl border border-slate-100 bg-white p-6 dark:border-slate-700/50 dark:bg-slate-800/50">
+            <h3 className="mb-2 text-lg font-bold">Support 24/7</h3>
+            <p className="text-sm text-slate-500 dark:text-slate-400">Kênh hỗ trợ online kể cả khi không ở lớp.</p>
           </div>
         </div>
       </section>
@@ -361,10 +393,10 @@ const LandingPage = () => {
             <div className="space-y-3">
               <span className="text-sm font-bold uppercase tracking-widest text-primary">Company</span>
               <h2 className="text-3xl font-black dark:text-white md:text-4xl">
-                {companySection?.title || "Được tin tưởng bởi các đội ngũ hàng đầu"}
+                {companySection?.title || "Theo dõi & kết nối CodeLab"}
               </h2>
               <p className="max-w-2xl text-slate-500">
-                Những công nghệ và tư duy xây dựng sản phẩm mà bạn học tại L-Edu tương thích với tiêu chuẩn của các công ty hiện đại.
+                Cập nhật lịch khai giảng, buổi học thử và hoạt động tại TP. Vinh qua website và mạng xã hội chính thức của {CODELAB_BRAND_NAME}.
               </p>
             </div>
             <div className="flex items-center gap-2">
@@ -451,7 +483,9 @@ const LandingPage = () => {
           <div className="space-y-3">
             <span className="text-sm font-bold uppercase tracking-widest text-primary">Danh mục</span>
             <h2 className="text-3xl font-black dark:text-white md:text-4xl">Khám phá danh mục</h2>
-            <p className="max-w-2xl text-slate-500">Chọn lộ trình phù hợp và bắt đầu học theo mục tiêu của bạn.</p>
+            <p className="max-w-2xl text-slate-500">
+              Python &amp; logic · Web/Frontend · Ôn thi HSG — chọn hướng phù hợp lứa tuổi và mục tiêu tại {CODELAB_BRAND_NAME}.
+            </p>
           </div>
           <div className="flex items-center gap-2">
             <button
@@ -534,33 +568,31 @@ const LandingPage = () => {
       <section className="bg-slate-50 py-24 dark:bg-[#0b1219]">
         <div className="mx-auto max-w-7xl px-6">
           <div className="mb-16 space-y-4 text-center">
-            <h2 className="text-3xl font-black dark:text-white md:text-4xl">Mentor khóa học của chúng tôi</h2>
+            <h2 className="text-3xl font-black dark:text-white md:text-4xl">Đội ngũ mentor</h2>
             <p className="mx-auto max-w-2xl text-slate-500">
-              Những chuyên gia có nhiều năm kinh nghiệm trong lĩnh vực phần mềm sẽ dẫn dắt bạn trên con đường chinh phục code.
+              Học từ những người làm nghề thực sự — kỹ sư phần mềm và giảng viên đồng hành học sinh Vinh trên lộ trình thực chiến.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {[
               {
-                name: "Lê Thị Hồng Nhung",
-                role: "Fullstack Developer",
-                img: "https://lh3.googleusercontent.com/aida-public/AB6AXuAHlThwxqYSkU5GV65sYfHeevBagbOChLF7nOXxivnhgOfVoIol3yD8YC5RpErl4US21A2am_KkuE0ZJUxlC0mLWRv24AcGkdphX7XuvFpc_zvx3n7TgUxlAOUFjjRqIehitzyQdyaPOBILo-yVpVD9j24Q-Il7Zcw57AUbsEVCkLiLjObm6LiMQqhnrNACM4URbSnIGK2vlm0U_MYImCbJzrUGHiwO97_GLFWsFhNQn4wgGK1FJJDjZGxUk7O8ccgbLi61NErLDkc",
+                name: "Nguyễn Quốc Chung",
+                role: "Kỹ sư phần mềm · Đào tạo Tin học trẻ",
+                headline: "Học từ người làm nghề thực sự, không chỉ lý thuyết.",
+                img: CODELAB_IMG.mentorChung,
               },
               {
-                name: "Phạm Gia Bảo",
-                role: "Senior Web Architect",
-                img: "https://lh3.googleusercontent.com/aida-public/AB6AXuAEDDC8CSipq2mBgrleYJOIKj1OQeHILl5p0aL9AwmqsP3Ndf9xywtCVEsLYVFWyS88p8oC63zDqz9s-TsW4mwi6khhTWTHX4iKel_QlNEwdsB0Om6er_LQOT_PgIH08fyqvKpC7JeXqLlGkqyEIZj1dQziMi8CzteTB-EuABG1OIfuGj49DBGIte4OvqiLhSurSP3ynBKoVyWYlAx5gb3583UpyWndg0Xs9PIOVwvVIck3QXy6YSRPyEaB0uRGEpO-acg2oczDeFc",
+                name: "Nguyễn Văn Duy",
+                role: "Web, API & luyện thi HSG",
+                headline: "Thuật toán, backend và tư duy giải bài có hệ thống.",
+                img: CODELAB_IMG.mentorDuy,
               },
               {
-                name: "Nguyễn Thanh Tùng",
-                role: "Mobile Developer",
-                img: "https://lh3.googleusercontent.com/aida-public/AB6AXuBjkELWqwl_qxWCnyv0j_RX7lOdZwbXl10X-Uty17fceOcJECXeQRpNwuh79HrWYCiicTDKVi1um4pb4M8w0piEm2jpXDNku8jpmTbBU9BwbsN6tM1o9ydoPDXwq_NHTkSzG4AR8b5Nbecl5ZxlwR6bzA1PsOK6tXKG5pHgrP1IT38GrSAPnT3FPpFm5Uoc2UT-iHGnRr47thLtIpbq5Xw6PXUipWTu_SnD2So74qwyPFqm8Ng2BdeDNXOE70RuHtB15Eby6PxGFb0",
-              },
-              {
-                name: "Trần Minh Đức",
-                role: "AI Research Lead",
-                img: "https://lh3.googleusercontent.com/aida-public/AB6AXuC15OIJ5CnST0ncCTOLH_ptdOpWTnqQu4fulNLXxnNGStvCvmZ92lZkvx4PxhiC2jrJdR-6LnC5BjebartDgarJmlU1lfIad0R-Zt5p8R02Jz5qFhp_hPb6tOLNU-ISr0jWDfqT8M2SrbGSdC3LdgdrkQ5hkec0kjLXg9zcfD5PvZdtTy5pvhjJ8GE3yU6uR6BYVMaPRszoLHBXoTK3TFBgyhq_wk7xrUbIPhGZFLpJj1WQq3yZWobSE4xFUzH58jQc6lWnzs0x3Q4",
+                name: "Phạm Lê Minh",
+                role: "Fullstack & sản phẩm số",
+                headline: "Từ UI đến triển khai — portfolio và thuyết trình sản phẩm.",
+                img: CODELAB_IMG.mentorMinh,
               },
             ].map((m) => (
               <div
@@ -569,7 +601,7 @@ const LandingPage = () => {
               >
                 <div className="relative aspect-square overflow-hidden bg-slate-200 dark:bg-slate-700">
                   <img
-                    alt="Mentor"
+                    alt={`Mentor ${m.name}`}
                     className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
                     src={m.img}
                   />
@@ -577,15 +609,19 @@ const LandingPage = () => {
                     <div className="flex gap-4">
                       <a
                         className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-md transition-colors hover:bg-primary"
-                        href="/"
+                        href={CODELAB_SITE_URL}
+                        target="_blank"
+                        rel="noopener noreferrer"
                       >
                         <span className="material-symbols-outlined text-xl">language</span>
                       </a>
                       <a
                         className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-md transition-colors hover:bg-primary"
-                        href="/"
+                        href={CODELAB_FACEBOOK_URL}
+                        target="_blank"
+                        rel="noopener noreferrer"
                       >
-                        <span className="material-symbols-outlined text-xl">code</span>
+                        <span className="material-symbols-outlined text-xl">share</span>
                       </a>
                     </div>
                   </div>
@@ -593,6 +629,7 @@ const LandingPage = () => {
                 <div className="p-6 text-center">
                   <h4 className="text-xl font-bold">{m.name}</h4>
                   <p className="mt-1 text-sm font-medium text-primary">{m.role}</p>
+                  <p className="mt-2 text-xs leading-relaxed text-slate-500 dark:text-slate-400">{m.headline}</p>
                 </div>
               </div>
             ))}
@@ -604,26 +641,27 @@ const LandingPage = () => {
       <section className="py-24">
         <div className="mx-auto max-w-7xl px-6">
           <div className="mb-16 space-y-4 text-center">
-            <h2 className="text-3xl font-black dark:text-white md:text-4xl">Đánh giá từ học viên</h2>
-            <p className="text-slate-500">Hàng ngàn học viên đã thay đổi sự nghiệp sau các khóa học tại L-Edu.</p>
+            <h2 className="text-3xl font-black dark:text-white md:text-4xl">Học viên tiêu điểm</h2>
+            <p className="text-slate-500">Một vài gương mặt học sinh TP. Vinh đồng hành cùng {CODELAB_BRAND_NAME}.</p>
           </div>
 
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
             <div className="relative rounded-3xl border border-slate-100 bg-white p-8 shadow-sm dark:border-slate-700 dark:bg-slate-800">
               <div className="mb-6 flex items-center gap-4">
                 <img
-                  alt="User"
+                  alt="Phú Minh"
                   className="h-14 w-14 rounded-full border-2 border-primary object-cover"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuDN_rZeApIYYNQfLm0ixzR6mk-LZVgTMTseiod6Z6eTDGYxCS-ftIr3y7fFC7ut3uEeOvgi_6iqRcs5Q40MKZvO0OZ5H9hewiGmCkXQlxeIkJ4-pivhkRgO_q03BU98ynPqstXr-zfcCFq9Yn-ZsOofLq9-ziIBDsxsQKUwMbgN2xOGc3CaVxBg9z2j47oFXopTdhjS9gT7hrLBwgrrskhJWAQm-5gtJXi7lyPTFjSK6VbOyYNF7SwAYzbTy7jwEGDZUIZ7t-LdTLg"
+                  src={CODELAB_IMG.studentPhuMinh}
                 />
                 <div>
-                  <h5 className="font-bold">Nguyễn Văn A</h5>
-                  <p className="text-xs text-slate-500">React Native Student</p>
+                  <h5 className="font-bold">Phú Minh</h5>
+                  <p className="text-xs text-slate-500">Học viên tiêu biểu · TP. Vinh</p>
                 </div>
               </div>
               <p className="italic leading-relaxed text-slate-600 dark:text-slate-400">
-                "Khóa học rất bổ ích! Giảng viên hướng dẫn chi tiết, giúp mình hiểu rõ cách xây dựng ứng dụng di động với React Native."
+                “Em tập trung thực hành dự án nhiều hơn lý thuyết — mentor kèm từng bước nên em tự tin hơn khi làm bài nâng cao.”
               </p>
+              <p className="mt-3 text-xs font-bold text-primary">95% — Thực hành dự án</p>
               <div className="mt-6 flex text-amber-400">
                 <span className="material-symbols-outlined fill-1">star</span>
                 <span className="material-symbols-outlined fill-1">star</span>
@@ -637,18 +675,19 @@ const LandingPage = () => {
               <span className="material-symbols-outlined absolute right-8 top-8 select-none text-6xl text-white/10">format_quote</span>
               <div className="mb-6 flex items-center gap-4">
                 <img
-                  alt="User"
+                  alt="Lê Mạnh"
                   className="h-14 w-14 rounded-full border-2 border-white object-cover"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuBx9Zxi8zh5d5kPqm17kd4fcsOZaWkhPQZocI5p9JKKW49tyrchq-TsqNZqMwml9VugsZ0Jf0wmR96zK1Gb6GnV5wOik61eQh7lPDSzZG7TBtMBEtc4Na0whabIAPy9Nzqrf5LrkmcWRPlynHFsQ_TYXAhcdvepXk0xNyCztEZYCgSOg97QPw0ZbsPUNDxK2iOb1XieniMwlJfAsc7HoDwZ0HX4dnJ54KLTiDkScLsmEHFVH7ziJMvzKoE53JkBZQ0kCbzJ_xPY5F0"
+                  src={CODELAB_IMG.studentLeManh}
                 />
                 <div>
-                  <h5 className="font-bold">Trần Thị Bích Ngọc</h5>
-                  <p className="text-xs text-white/70">ReactJS Enthusiast</p>
+                  <h5 className="font-bold">Lê Mạnh</h5>
+                  <p className="text-xs text-white/70">Vinh · Lộ trình Web &amp; Python</p>
                 </div>
               </div>
               <p className="italic leading-relaxed">
-                "Mình đã học nhiều khóa học lập trình trước đây nhưng đây là khóa ReactJS khiến mình hài lòng nhất. Giảng viên dạy rất có tâm."
+                “Lộ trình rõ ràng từ web đến Python; em hoàn thành phần lớn bài tập nâng cao nhờ được review code thường xuyên.”
               </p>
+              <p className="mt-3 text-xs font-bold text-white/90">92% — Hoàn thành bài tập nâng cao</p>
               <div className="mt-6 flex text-white">
                 <span className="material-symbols-outlined fill-1">star</span>
                 <span className="material-symbols-outlined fill-1">star</span>
@@ -661,18 +700,44 @@ const LandingPage = () => {
             <div className="relative rounded-3xl border border-slate-100 bg-white p-8 shadow-sm dark:border-slate-700 dark:bg-slate-800">
               <div className="mb-6 flex items-center gap-4">
                 <img
-                  alt="User"
+                  alt="Ngọc Phương"
                   className="h-14 w-14 rounded-full border-2 border-primary object-cover"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuDEWy-fKv8WDsUhk5PlHXS1R0PyBoUtE5B9Kb8pJl2RTk2XT_ELpjMKiHDDW1OendMAGPlGerPPq3r9d8JYMwdjPSf8Zmhl1-5OGwLkdwsP6Hy_u6oOehd4kwrHSTCeCG-Vfh4ov9Fllz8vWHuszsIkTw666N915OuwfeH3jbCTrBS7RfQ4APjJnihQ-5fVL2-6kGwojILXw8ZZ7H-8LxdYJ8YKiWO3M0kBiuLvnFDjBUUrHqCrWJavTg46he7W8b-W_u5F9PhvA70"
+                  src={CODELAB_IMG.studentNgocPhuong}
                 />
                 <div>
-                  <h5 className="font-bold">Lê Minh Tuấn</h5>
-                  <p className="text-xs text-slate-500">Backend Student</p>
+                  <h5 className="font-bold">Ngọc Phương</h5>
+                  <p className="text-xs text-slate-500">Học viên tiên tiến · Dự án cá nhân</p>
                 </div>
               </div>
               <p className="italic leading-relaxed text-slate-600 dark:text-slate-400">
-                "Khóa học tuyệt vời! Mình đã có một nền tảng kiến thức vững chắc để tự tin ứng tuyển vị trí Backend Developer."
+                “Em tự làm được một dự án web riêng và thuyết trình trước lớp — trước đó em chỉ nghĩ code là trên sách giáo khoa.”
               </p>
+              <p className="mt-3 text-xs font-bold text-primary">88% — Tự chủ sản phẩm riêng</p>
+              <div className="mt-6 flex text-amber-400">
+                <span className="material-symbols-outlined fill-1">star</span>
+                <span className="material-symbols-outlined fill-1">star</span>
+                <span className="material-symbols-outlined fill-1">star</span>
+                <span className="material-symbols-outlined fill-1">star</span>
+                <span className="material-symbols-outlined fill-1">star</span>
+              </div>
+            </div>
+
+            <div className="relative rounded-3xl border border-slate-100 bg-white p-8 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+              <div className="mb-6 flex items-center gap-4">
+                <img
+                  alt="Nguyễn Quang Vinh"
+                  className="h-14 w-14 rounded-full border-2 border-primary object-cover"
+                  src={CODELAB_IMG.studentQuangVinh}
+                />
+                <div>
+                  <h5 className="font-bold">Nguyễn Quang Vinh</h5>
+                  <p className="text-xs text-slate-500">Vinh · Lộ trình Web &amp; Python</p>
+                </div>
+              </div>
+              <p className="italic leading-relaxed text-slate-600 dark:text-slate-400">
+                “Buổi học nhóm và debug cùng mentor giúp em hiểu sâu bài khó; em làm được gần hết bài nâng cao trong khóa.”
+              </p>
+              <p className="mt-3 text-xs font-bold text-primary">93% — Hoàn thành bài tập nâng cao</p>
               <div className="mt-6 flex text-amber-400">
                 <span className="material-symbols-outlined fill-1">star</span>
                 <span className="material-symbols-outlined fill-1">star</span>
@@ -689,8 +754,10 @@ const LandingPage = () => {
       <section className="bg-slate-50 py-24 dark:bg-[#0b1219]">
         <div className="mx-auto max-w-7xl px-6">
           <div className="mb-16 space-y-4 text-center">
-            <h2 className="text-3xl font-black dark:text-white md:text-4xl">Hệ sinh thái ứng dụng</h2>
-            <p className="text-slate-500">Khám phá các công cụ hỗ trợ học tập và thực hành của L-Edu.</p>
+            <h2 className="text-3xl font-black dark:text-white md:text-4xl">Hệ sinh thái &amp; công cụ</h2>
+            <p className="text-slate-500">
+              Công cụ nội bộ và nền tảng đồng hành học viên {CODELAB_BRAND_NAME} — từ portfolio đến theo dõi tiến độ.
+            </p>
           </div>
 
           <div className="grid grid-cols-1 gap-12 md:grid-cols-2">
@@ -761,28 +828,28 @@ const LandingPage = () => {
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
           {[
             {
-              tag: "React Native",
+              tag: "Kết quả",
               tagClass: "bg-primary/10 text-primary",
-              date: "15 Oct, 2024",
-              title: "Hướng dẫn React Native cho người mới bắt đầu",
-              desc: "Tìm hiểu cách xây dựng ứng dụng di động đa nền tảng với React Native từ những bước đầu tiên...",
-              img: "https://lh3.googleusercontent.com/aida-public/AB6AXuDlERYqPFG7SKVmjUGh2F8kH815d63BmkXLK7pScScXjW1TUlabUd1bWMJCuDx6lXg2m3Kwb0banOcqxJNx-M6Nv8qHyXh_ifcROZLBfJotX3oMk31txwNbeo2p1T-9NpcBsciMGbiF_ECH4i9lnP9je8oRDIv77H-xoa5ITs1OTWIetC_SM6eyMPUTt4uEbu3L1TFjFRup8CHJSEzOdpTQQv4wAtc7gaDwqyxSK4ZXg5LgJ79gE9qlgel8jeis0BmbwlKhRP3qz24",
+              date: "CodeLab",
+              title: "Website cá nhân sau khóa học",
+              desc: "Học viên tự thiết kế và lập trình trang web giới thiệu bản thân chuyên nghiệp — minh họa từ lớp thực chiến.",
+              img: CODELAB_IMG.resultPortfolio,
             },
             {
-              tag: "Javascript",
+              tag: "Dự án",
               tagClass: "bg-amber-500/10 text-amber-500",
-              date: "12 Oct, 2024",
-              title: "JavaScript ES6+ Những tính năng quan trọng",
-              desc: "Khám phá các tính năng hiện đại của JavaScript giúp code của bạn sạch hơn và hiệu quả hơn...",
-              img: "https://lh3.googleusercontent.com/aida-public/AB6AXuBTaxuF9NtCw2H3QYF8DlRzVzADselLdUXmU7I4bjETTpGe86m5ehlYCItU8w7rVzbmPYLEDlTVX468OW7C9Z3kEi3ceWR8JvJ-CxI8d5-FrCkuUGkwsTJSWZhGkva_zX5tHlStiP7INlMlWYXjX_tBlO0bVUKzxcjsAyumUNQa9wese_jvmTnR-s1A2vXsv5K5e4GTrBVFKdFCoGd8-jpK4I4VBAgYbdcn5YxH_jixonohLiwY6D8prZ5J6pUWuP3kdh8Jd3LPbn8",
+              date: "CodeLab",
+              title: "App web thực tế: quản lý, to-do, blog",
+              desc: "Ứng dụng hữu ích như quản lý chi tiêu, to-do list hay blog tin tức — đúng tinh thần dự án thật tại Vinh.",
+              img: CODELAB_IMG.resultAppWeb,
             },
             {
-              tag: "Career",
+              tag: "Tư duy",
               tagClass: "bg-emerald-500/10 text-emerald-500",
-              date: "08 Oct, 2024",
-              title: "Lộ trình học trở thành Fullstack Developer 2025",
-              desc: "Cập nhật xu hướng tuyển dụng và bộ kỹ năng cần thiết để chinh phục mức lương nghìn đô...",
-              img: "https://lh3.googleusercontent.com/aida-public/AB6AXuDoXix6f8gkmFqbDdFbF1Q1QVaYMLkiVvF6DjgRqdtJ17kdkxbgOAW1uUHIYspSJ_O9Y8_eLEwlOY8RO-rcdszxCoW6fsrchTN8rWjvxB5kQcfqpldDU6COb7OHaSYaloZne_W6LInBKqKInRfcD5urGfCmeDpMpe2X2eS0Kfq8HlCMtLPTBhoqTlMQi9JmcMfFqptdcS51aGdodGdy71XWrF5tVvrRdo926GmIu6iKUljbPPQMOuwz-qfA1EESGyz0Cz5ed_qXUi8",
+              date: "CodeLab",
+              title: "Thói quen tự học &amp; tài liệu quốc tế",
+              desc: "Rèn kiên trì, tự tìm tài liệu và làm chủ quy trình giải quyết vấn đề — nền tảng lâu dài cho học sinh.",
+              img: CODELAB_IMG.resultMindset,
             },
           ].map((b) => (
             <article key={b.title} className="group">
@@ -811,20 +878,18 @@ const LandingPage = () => {
         <div className="relative flex flex-col items-center overflow-hidden rounded-[2.5rem] bg-primary p-12 text-center text-white md:p-20">
           <div className="absolute right-0 top-0 h-64 w-64 -translate-y-1/2 translate-x-1/2 rounded-full bg-white/10 blur-3xl" />
           <div className="absolute bottom-0 left-0 h-48 w-48 -translate-x-1/2 translate-y-1/2 rounded-full bg-black/10 blur-2xl" />
-          <h2 className="mb-6 max-w-2xl text-3xl font-black md:text-5xl">Đăng ký nhận tin tức mới nhất từ L-Edu</h2>
+          <h2 className="mb-6 max-w-2xl text-3xl font-black md:text-5xl">Theo dõi {CODELAB_BRAND_NAME} Vinh</h2>
           <p className="mb-10 max-w-xl text-lg text-white/80">
-            Nếu bạn quan tâm đến các khóa học của chúng tôi và muốn biết thêm về tin tức mới nhất, đừng bỏ lỡ.
+            Nhận lịch khai giảng, ưu đãi khóa mới và mẹo học lập trình cho phụ huynh &amp; học sinh — tại TP. Vinh, Nghệ An.
           </p>
-          <form className="flex w-full max-w-md flex-col gap-3 sm:flex-row">
-            <input
-              className="flex-1 rounded-2xl border border-white/30 bg-white/20 px-6 py-4 placeholder:text-white/60 outline-none focus:ring-2 focus:ring-white"
-              placeholder="Nhập email của bạn..."
-              type="email"
-            />
-            <button className="rounded-2xl bg-white px-8 py-4 font-black text-primary shadow-xl transition-all hover:bg-slate-100">
-              Đăng ký
-            </button>
-          </form>
+          <a
+            href={CODELAB_SIGNUP_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="max-w-md w-full inline-flex items-center justify-center rounded-2xl bg-white px-10 py-4 font-black text-primary shadow-xl transition-all hover:bg-slate-100 hover:text-primary"
+          >
+            Đăng ký
+          </a>
         </div>
       </section>
     </div>
