@@ -1,4 +1,13 @@
-import React, { CSSProperties, useEffect, useMemo, useState } from "react";
+import {
+  BarChartOutlined,
+  BookOutlined,
+  EditOutlined,
+  HomeOutlined,
+  MailOutlined,
+  PhoneOutlined,
+  TeamOutlined,
+  UserOutlined
+} from "@ant-design/icons";
 import {
   Avatar,
   Badge,
@@ -16,25 +25,15 @@ import {
   Tag,
   Typography,
 } from "antd";
-import {
-  BarChartOutlined,
-  BookOutlined,
-  CalendarOutlined,
-  EditOutlined,
-  HomeOutlined,
-  MailOutlined,
-  PhoneOutlined,
-  TeamOutlined,
-  UserOutlined,
-} from "@ant-design/icons";
+import React, { CSSProperties, useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import SectionLayout from "../../../layouts/SectionLayout";
-import { RootState, useDispatch, useSelector } from "../../../redux/store";
-import { getMyCourses } from "../../../redux/slices/courses";
 import { updateUser } from "../../../redux/slices/auth";
-import UpdateProfile from "./UpdateProfile";
+import { getMyCourses } from "../../../redux/slices/courses";
+import { RootState, useDispatch, useSelector } from "../../../redux/store";
 import { MyCourseResponse } from "../../../types/course";
 import { UserType } from "../../../types/user";
+import UpdateProfile from "./UpdateProfile";
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -332,7 +331,7 @@ const Profile: React.FC = () => {
                     {user?.status && <Badge status="processing" text={user.status} style={styles.badgeText} />}
                   </Space>
                   <Paragraph style={styles.bioText} ellipsis={{ rows: 3 }}>
-                    {user?.bio?.trim() || "Cùng xây dựng hành trình học tập cá nhân hoá tại L-Edu."}
+                    {user?.bio?.trim() || "Cùng xây dựng hành trình học tập cá nhân hoá tại CodeLab."}
                   </Paragraph>
                   <Space direction="horizontal" size={16} wrap style={{ marginTop: 12 }}>
                     <Space>

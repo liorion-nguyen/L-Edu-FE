@@ -15,27 +15,19 @@ interface ThemeProviderProps {
 }
 
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
-  const [theme, setTheme] = useState<Theme>(() => {
-    // Lấy theme từ localStorage hoặc default dark
-    const savedTheme = localStorage.getItem('theme') as Theme;
-    if (savedTheme) {
-      return savedTheme;
-    }
-
-    // Default to dark (light theme not ready)
-    return 'dark';
-  });
+  // Force dark theme (no toggle)
+  const [theme] = useState<Theme>('dark');
 
   const toggleTheme = () => {
-    const newTheme = theme === 'light' ? 'dark' : 'light';
-    setTheme(newTheme);
-    localStorage.setItem('theme', newTheme);
+    // Intentionally disabled; dark is the only supported theme.
+    localStorage.setItem('theme', 'dark');
   };
 
   const isDark = theme === 'dark';
 
   // Apply theme to document
   useEffect(() => {
+    localStorage.setItem('theme', 'dark');
     document.documentElement.setAttribute('data-theme', theme);
     document.documentElement.classList.toggle('dark', isDark);
   }, [theme, isDark]);

@@ -1,5 +1,5 @@
+import { Card, Col, Input, Row, Select, Typography } from 'antd';
 import React, { useState } from 'react';
-import { Select, Row, Col, Card, Typography, Input } from 'antd';
 import { ALL_ICONS, getIconByType } from '../../constants/icons';
 
 const { Text } = Typography;
@@ -62,7 +62,7 @@ const IconSelector: React.FC<IconSelectorProps> = ({
               onClick={() => handleIconSelect(icon.value)}
             >
               <div style={{ fontSize: '20px', marginBottom: '4px' }}>
-                {icon.emoji}
+                <icon.icon />
               </div>
               <Text style={{ fontSize: '10px', display: 'block' }}>
                 {icon.name}
@@ -90,7 +90,7 @@ const IconSelector: React.FC<IconSelectorProps> = ({
       dropdownRender={dropdownRender}
       suffixIcon={
         selectedIcon ? (
-          <span style={{ fontSize: '16px' }}>{selectedIcon.emoji}</span>
+          <span style={{ fontSize: '16px' }}><selectedIcon.icon /></span>
         ) : null
       }
     >

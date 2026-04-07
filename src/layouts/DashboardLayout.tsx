@@ -1,35 +1,34 @@
-import { Layout, Menu, Typography, Avatar, Dropdown, Button } from "antd";
-import { 
+import {
+  AppstoreOutlined,
+  BookOutlined,
+  ContactsOutlined,
+  FileDoneOutlined,
+  FileTextOutlined,
+  HistoryOutlined,
   HomeOutlined,
-  UserOutlined, 
-  BookOutlined, 
-  PlayCircleOutlined, 
-  StarOutlined, 
-  SettingOutlined, 
-  MessageOutlined,
+  LinkOutlined,
   LogoutOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
-  AppstoreOutlined,
-  ContactsOutlined,
-  FileTextOutlined,
-  UserAddOutlined,
-  FileDoneOutlined,
-  HistoryOutlined,
-  SunOutlined,
+  MessageOutlined,
   MoonOutlined,
-  LinkOutlined,
+  PlayCircleOutlined,
+  SettingOutlined,
+  StarOutlined,
+  SunOutlined,
+  UserAddOutlined,
+  UserOutlined,
 } from "@ant-design/icons";
-import React, { useState, useMemo } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import { useTranslationWithRerender } from "../hooks/useLanguageChange";
-import { useTheme } from "../contexts/ThemeContext";
-import { useSelector } from "../redux/store";
-import { RootState } from "../redux/store";
-import { Role } from "../enum/user.enum";
+import { Avatar, Button, Dropdown, Layout, Menu, Typography } from "antd";
+import React, { useMemo, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import LanguageSwitcher from "../components/common/LanguageSwitcher";
-import { CODELAB_BRAND_NAME, CODELAB_IMG } from "../constants/codelabSite";
 import { envConfig, localStorageConfig } from "../config";
+import { CODELAB_BRAND_NAME, CODELAB_IMG } from "../constants/codelabSite";
+import { useTheme } from "../contexts/ThemeContext";
+import { Role } from "../enum/user.enum";
+import { useTranslationWithRerender } from "../hooks/useLanguageChange";
+import { RootState, useSelector } from "../redux/store";
 import "../styles/layout.css";
 
 const { Header, Sider, Content } = Layout;
@@ -204,7 +203,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
           background: "var(--bg-primary)"
         }}>
           <Text strong style={{ color: "var(--text-primary)", fontSize: collapsed ? "16px" : "18px" }}>
-            {collapsed ? "L-E" : "L-Edu Dashboard"}
+            {collapsed ? "CodeLab" : "CodeLab Dashboard"}
           </Text>
         </div>
         

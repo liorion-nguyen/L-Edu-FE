@@ -1,28 +1,28 @@
-import React, { useState, useEffect } from 'react';
 import {
-  Table,
-  Button,
-  Modal,
-  Space,
-  Popconfirm,
-  message,
-  Typography,
-  Card,
-  Tag,
-  Row,
-  Col,
-  Statistic,
-  List,
-  Avatar,
-  Divider,
-} from 'antd';
-import {
-  MessageOutlined,
-  UserOutlined,
-  TeamOutlined,
-  EyeOutlined,
   DeleteOutlined,
+  EyeOutlined,
+  MessageOutlined,
+  TeamOutlined,
+  UserOutlined,
 } from '@ant-design/icons';
+import {
+  Avatar,
+  Button,
+  Card,
+  Col,
+  Divider,
+  List,
+  message,
+  Modal,
+  Popconfirm,
+  Row,
+  Space,
+  Statistic,
+  Table,
+  Tag,
+  Typography,
+} from 'antd';
+import React, { useEffect, useState } from 'react';
 
 const { Title, Text } = Typography;
 
@@ -125,7 +125,7 @@ const ConversationManagement: React.FC = () => {
 
   const getSenderName = (senderId: string | { _id: string; fullName: string; avatar?: string }) => {
     if (typeof senderId === 'string') {
-      return senderId === 'assistant' ? 'L-Edu Assistant' : 'User';
+      return senderId === 'assistant' ? 'CodeLab Assistant' : 'User';
     }
     return senderId.fullName || 'Unknown User';
   };

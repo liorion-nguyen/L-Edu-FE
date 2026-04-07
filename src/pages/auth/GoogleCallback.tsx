@@ -1,6 +1,6 @@
+import { notification, Spin } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { notification, Spin } from 'antd';
 
 const GoogleCallback: React.FC = () => {
   const [loading, setLoading] = useState(true);
@@ -56,7 +56,7 @@ const GoogleCallback: React.FC = () => {
             notification.success({
               key: 'google-login-success',
               message: 'Đăng nhập thành công',
-              description: `Chào mừng ${userInfo.fullName} đến với L-Edu!`,
+              description: `Chào mừng ${userInfo.fullName} đến với CodeLab!`,
             });
             
             // Redirect về trang đã lưu (vd /dashboard-program/...) sau 1 giây

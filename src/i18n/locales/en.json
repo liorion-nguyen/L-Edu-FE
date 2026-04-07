@@ -66,7 +66,7 @@
   "auth": {
     "login": {
       "title": "Login",
-      "subtitle": "Welcome back to L-Edu",
+      "subtitle": "Welcome back to CodeLab",
       "email": "Email",
       "password": "Password",
       "forgotPassword": "Forgot password?",
@@ -84,7 +84,7 @@
       "password": "Password",
       "confirmPassword": "Confirm Password",
       "agreeTerms": "I agree with",
-      "termsLink": "L-Edu terms",
+      "termsLink": "CodeLab terms",
       "signupButton": "Sign Up",
       "or": "Or",
       "hasAccount": "Already have an account?",
@@ -151,7 +151,7 @@
     "courses": "courses"
   },
   "chatbot": {
-    "title": "L-Edu Assistant",
+    "title": "CodeLab Assistant",
     "placeholder": "Type a message...",
     "send": "Send",
     "clear": "Clear conversation",
@@ -181,7 +181,7 @@
     "team": "Our Team",
     "member1": {
       "name": "Nguyễn Thanh Tùng",
-      "description": "As a programmer at L Edu, Nguyễn Thanh Tùng has many years of experience in web and application development. With creative thinking and solid professional skills, he always brings practical and easy-to-understand lessons to students."
+      "description": "As a programmer at CodeLab, Nguyễn Thanh Tùng has many years of experience in web and application development. With creative thinking and solid professional skills, he always brings practical and easy-to-understand lessons to students."
     },
     "member2": {
       "name": "Trần Minh Đức",
@@ -322,7 +322,7 @@
     "learnMore": "Learn More"
   },
   "courseOverview": {
-    "title": "Why Choose L-Edu?",
+    "title": "Why Choose CodeLab?",
     "feature1": {
       "title": "High-Quality Courses",
       "description": "Courses designed by experts with updated and practical content"
@@ -390,8 +390,8 @@
     "newsletter": "Newsletter",
     "newsletterPlaceholder": "Enter your email",
     "subscribe": "Subscribe",
-    "copyright": "© 2024 L-Edu. All rights reserved.",
-    "madeWith": "Made with ❤️ by the L-Edu team",
+    "copyright": "© 2024 CodeLab. All rights reserved.",
+    "madeWith": "Made with ❤️ by the CodeLab team",
     "description": "Comprehensive programming learning platform",
     "course": "Course",
     "contactInfo": "Contact Information",

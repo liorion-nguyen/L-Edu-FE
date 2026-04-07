@@ -1,31 +1,31 @@
-import React, { useState, useEffect } from 'react';
 import {
-  Table,
+  DeleteOutlined,
+  EditOutlined,
+  EyeOutlined,
+  PlusOutlined,
+} from '@ant-design/icons';
+import {
   Button,
-  Modal,
+  Card,
+  Col,
   Form,
   Input,
-  Select,
-  Switch,
   InputNumber,
   message,
+  Modal,
   Popconfirm,
-  Space,
-  Typography,
-  Card,
   Row,
-  Col,
+  Select,
+  Space,
+  Switch,
+  Table,
+  Typography,
 } from 'antd';
-import {
-  PlusOutlined,
-  EditOutlined,
-  DeleteOutlined,
-  EyeOutlined,
-} from '@ant-design/icons';
-import { contactService, Contact, CreateContactData, UpdateContactData } from '../../services/contactService';
+import React, { useEffect, useState } from 'react';
+import { Contact, contactService, CreateContactData, UpdateContactData } from '../../services/contactService';
 // import { ContactResponseDto } from '../../../L-Edu-BE/src/api/contact/dto/contact.dto';
-import IconSelector from '../common/IconSelector';
 import { getIconByValue } from '../../constants/icons';
+import IconSelector from '../common/IconSelector';
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -154,7 +154,7 @@ const ContactManagement: React.FC = () => {
         const iconData = getIconByValue(icon);
         return iconData ? (
           <Space>
-            <span style={{ fontSize: '16px' }}>{iconData.emoji}</span>
+            <span style={{ fontSize: '16px' }}><iconData.icon /></span>
             <span>{iconData.name}</span>
           </Space>
         ) : icon || '-';

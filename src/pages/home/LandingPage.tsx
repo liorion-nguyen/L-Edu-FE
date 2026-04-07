@@ -19,6 +19,7 @@ const LandingPage = () => {
   const [companySection, setCompanySection] = useState<Footer | null>(null);
   const companyTrackRef = useRef<HTMLDivElement | null>(null);
   const categoryTrackRef = useRef<HTMLDivElement | null>(null);
+  const programTrackRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -309,7 +310,7 @@ const LandingPage = () => {
               <div className="text-sm font-medium uppercase tracking-widest text-slate-500">Độ tuổi học viên</div>
             </div>
             <div className="space-y-2 text-center">
-              <div className="text-4xl font-black text-primary">≤10</div>
+              <div className="text-4xl font-black text-primary">5-10</div>
               <div className="text-sm font-medium uppercase tracking-widest text-slate-500">Học sinh / lớp</div>
             </div>
             <div className="space-y-2 text-center">
@@ -387,7 +388,7 @@ const LandingPage = () => {
       </section>
 
       {/* Company */}
-      <section className="bg-slate-50 py-20 dark:bg-[#0b1219]">
+      {/* <section className="bg-slate-50 py-20 dark:bg-[#0b1219]">
         <div className="mx-auto max-w-7xl px-6">
           <div className="mb-10 flex flex-col items-start justify-between gap-4 md:flex-row md:items-end">
             <div className="space-y-3">
@@ -475,10 +476,10 @@ const LandingPage = () => {
             })}
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* Khám phá danh mục */}
-      <section className="mx-auto max-w-7xl px-6 py-24">
+      {/* <section className="mx-auto max-w-7xl px-6 py-24">
         <div className="mb-10 flex flex-col items-start justify-between gap-4 md:flex-row md:items-end">
           <div className="space-y-3">
             <span className="text-sm font-bold uppercase tracking-widest text-primary">Danh mục</span>
@@ -561,6 +562,170 @@ const LandingPage = () => {
                 </div>
               </a>
             ))}
+        </div>
+      </section> */}
+
+      {/* Chương trình & lộ trình — cuộn ngang, tối đa 3 card / desktop */}
+      <section className="mb-32 scroll-mt-24" id="chuong-trinh">
+        <div className="mx-auto max-w-7xl px-6">
+          <div className="mb-12 flex flex-col items-start justify-between gap-6 md:flex-row md:items-end">
+            <div className="space-y-4">
+              <h2 className="text-4xl font-extrabold tracking-tight" style={{ color: "var(--text-primary)" }}>
+                Chương trình &amp; lộ trình
+              </h2>
+              <p className="max-w-md text-sm leading-relaxed md:text-base" style={{ color: "var(--text-secondary)" }}>
+                Thiết kế riêng cho từng độ tuổi và trình độ, từ cơ bản đến chuyên sâu.
+              </p>
+            </div>
+            <div className="flex w-full flex-wrap items-center justify-between gap-4 md:w-auto md:justify-end">
+              <div className="flex flex-wrap gap-2">
+                <span
+                  className="rounded-full px-4 py-2 text-xs font-bold uppercase tracking-widest"
+                  style={{
+                    background: "rgba(35, 131, 226, 0.12)",
+                    color: "var(--primary-color)",
+                    border: "1px solid rgba(35, 131, 226, 0.25)",
+                  }}
+                >
+                  Phát triển tư duy
+                </span>
+                <span
+                  className="rounded-full px-4 py-2 text-xs font-bold uppercase tracking-widest"
+                  style={{
+                    background: "var(--hover-bg)",
+                    color: "var(--text-secondary)",
+                    border: "1px solid var(--border-color)",
+                  }}
+                >
+                  Kỹ năng số
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  aria-label="Cuộn trái"
+                  onClick={() => scrollTrackBy(programTrackRef, -1)}
+                  className="h-10 w-10 rounded-xl border transition-colors hover:opacity-90"
+                  style={{ borderColor: "var(--border-color)", background: "var(--hover-bg)", color: "var(--text-secondary)" }}
+                >
+                  <span className="material-symbols-outlined">chevron_left</span>
+                </button>
+                <button
+                  type="button"
+                  aria-label="Cuộn phải"
+                  onClick={() => scrollTrackBy(programTrackRef, 1)}
+                  className="h-10 w-10 rounded-xl border transition-colors hover:opacity-90"
+                  style={{ borderColor: "var(--border-color)", background: "var(--hover-bg)", color: "var(--text-secondary)" }}
+                >
+                  <span className="material-symbols-outlined">chevron_right</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div
+            ref={programTrackRef}
+            className="flex snap-x snap-mandatory gap-8 overflow-x-auto scroll-smooth py-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            style={{ WebkitOverflowScrolling: "touch" }}
+          >
+            {/* Python */}
+            <div
+              id="khoa-python"
+              className="group w-[min(100%,calc(100vw-3rem))] shrink-0 snap-start rounded-3xl border bg-white p-8 shadow-sm transition-all duration-500 hover:-translate-y-0.5 hover:shadow-2xl dark:bg-slate-900/40 md:w-[calc((100%-4rem)/3)] md:min-w-[calc((100%-4rem)/3)]"
+              style={{ borderColor: "var(--border-color)" }}
+            >
+              <p className="mb-2 text-sm font-bold text-primary">CẤP 2 (Khối 6-9)</p>
+              <h3 className="mb-6 text-2xl font-black" style={{ color: "var(--text-primary)" }}>
+                Khám phá Python &amp; Logic
+              </h3>
+              <ul className="mb-8 space-y-4">
+                {["Làm quen cú pháp Python", "Giải quyết bài toán logic", "Lập trình Game cơ bản"].map((t) => (
+                  <li key={t} className="flex items-center gap-3 text-sm" style={{ color: "var(--text-secondary)" }}>
+                    <span
+                      className="material-symbols-outlined shrink-0 text-base"
+                      style={{ color: "var(--primary-color)" }}
+                    >
+                      check_circle
+                    </span>
+                    {t}
+                  </li>
+                ))}
+              </ul>
+              <a
+                href={CODELAB_SIGNUP_URL}
+                className="block w-full rounded-full border-2 py-3 text-center text-sm font-extrabold transition-colors hover:text-white"
+                style={{ borderColor: "var(--primary-color)", color: "var(--primary-color)" }}
+                onMouseEnter={(e) => ((e.currentTarget.style.background = "var(--primary-color)"))}
+                onMouseLeave={(e) => ((e.currentTarget.style.background = "transparent"))}
+              >
+                Xem chi tiết
+              </a>
+            </div>
+
+            {/* Web — featured */}
+            <div
+              id="khoa-web"
+              className="group relative w-[min(100%,calc(100vw-3rem))] shrink-0 snap-start overflow-hidden rounded-3xl p-8 shadow-2xl transition-all duration-500 md:scale-[1.03] md:w-[calc((100%-4rem)/3)] md:min-w-[calc((100%-4rem)/3)]"
+              style={{
+                background:
+                  "linear-gradient(180deg, rgba(35,131,226,1) 0%, rgba(32,122,210,1) 70%, rgba(26,108,196,1) 100%)",
+              }}
+            >
+              <div className="absolute right-4 top-4 rounded-full bg-amber-300 px-3 py-1 text-[10px] font-black uppercase tracking-tighter text-slate-900">
+                CHỦ LỰC
+              </div>
+              <p className="mb-2 text-sm font-bold text-blue-100">CẤP 3 (Khối 10-12)</p>
+              <h3 className="mb-6 text-2xl font-black text-white">Web/Frontend Toàn diện</h3>
+              <ul className="mb-8 space-y-4">
+                {["HTML5, CSS3, JavaScript", "ReactJS Framework", "UX/UI Design cơ bản", "Hosting & Deployment"].map((t) => (
+                  <li key={t} className="flex items-center gap-3 text-sm text-blue-50">
+                    <span className="material-symbols-outlined shrink-0 text-base text-amber-200">star</span>
+                    {t}
+                  </li>
+                ))}
+              </ul>
+              <a
+                href={CODELAB_SIGNUP_URL}
+                className="block w-full rounded-full bg-white py-3 text-center text-sm font-black text-slate-900 transition-colors hover:bg-blue-50"
+              >
+                Đăng ký học ngay
+              </a>
+            </div>
+
+            {/* HSG */}
+            <div
+              id="khoa-on-thi"
+              className="group w-[min(100%,calc(100vw-3rem))] shrink-0 snap-start rounded-3xl border bg-white p-8 shadow-sm transition-all duration-500 hover:-translate-y-0.5 hover:shadow-2xl dark:bg-slate-900/40 md:w-[calc((100%-4rem)/3)] md:min-w-[calc((100%-4rem)/3)]"
+              style={{ borderColor: "var(--border-color)" }}
+            >
+              <p className="mb-2 text-sm font-bold text-primary">NÂNG CAO</p>
+              <h3 className="mb-6 text-2xl font-black" style={{ color: "var(--text-primary)" }}>
+                Luyện thi Học sinh giỏi
+              </h3>
+              <ul className="mb-8 space-y-4">
+                {["Thuật toán & Cấu trúc dữ liệu", "Ôn luyện C++ chuyên sâu", "Giải đề HKICO, SEACSO"].map((t) => (
+                  <li key={t} className="flex items-center gap-3 text-sm" style={{ color: "var(--text-secondary)" }}>
+                    <span
+                      className="material-symbols-outlined shrink-0 text-base"
+                      style={{ color: "var(--primary-color)" }}
+                    >
+                      check_circle
+                    </span>
+                    {t}
+                  </li>
+                ))}
+              </ul>
+              <a
+                href={CODELAB_SIGNUP_URL}
+                className="block w-full rounded-full border-2 py-3 text-center text-sm font-extrabold transition-colors hover:text-white"
+                style={{ borderColor: "var(--primary-color)", color: "var(--primary-color)" }}
+                onMouseEnter={(e) => ((e.currentTarget.style.background = "var(--primary-color)"))}
+                onMouseLeave={(e) => ((e.currentTarget.style.background = "transparent"))}
+              >
+                Xem chi tiết
+              </a>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -751,7 +916,7 @@ const LandingPage = () => {
       </section>
 
       {/* Integration Links */}
-      <section className="bg-slate-50 py-24 dark:bg-[#0b1219]">
+      {/* <section className="bg-slate-50 py-24 dark:bg-[#0b1219]">
         <div className="mx-auto max-w-7xl px-6">
           <div className="mb-16 space-y-4 text-center">
             <h2 className="text-3xl font-black dark:text-white md:text-4xl">Hệ sinh thái &amp; công cụ</h2>
@@ -810,7 +975,7 @@ const LandingPage = () => {
             })}
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* Blog */}
       <section className="mx-auto max-w-7xl px-6 py-24">

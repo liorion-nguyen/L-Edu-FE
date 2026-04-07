@@ -66,7 +66,7 @@
   "auth": {
     "login": {
       "title": "Đăng nhập",
-      "subtitle": "Chào mừng bạn trở lại L-Edu",
+      "subtitle": "Chào mừng bạn trở lại CodeLab",
       "email": "Email",
       "password": "Mật khẩu",
       "forgotPassword": "Quên mật khẩu?",
@@ -84,7 +84,7 @@
       "password": "Mật khẩu",
       "confirmPassword": "Xác nhận mật khẩu",
       "agreeTerms": "Tôi đồng ý với",
-      "termsLink": "điều khoản L-Edu",
+      "termsLink": "điều khoản CodeLab",
       "signupButton": "Đăng ký",
       "or": "Hoặc",
       "hasAccount": "Đã có tài khoản?",
@@ -151,7 +151,7 @@
     "courses": "khóa học"
   },
   "chatbot": {
-    "title": "L-Edu Assistant",
+    "title": "CodeLab Assistant",
     "placeholder": "Nhập tin nhắn...",
     "send": "Gửi",
     "clear": "Xóa cuộc trò chuyện",
@@ -181,7 +181,7 @@
     "team": "Đội ngũ",
     "member1": {
       "name": "Nguyễn Thanh Tùng",
-      "description": "Là một lập trình viên tại L Edu, Nguyễn Thanh Tùng có nhiều năm kinh nghiệm trong phát triển web và ứng dụng. Với tư duy sáng tạo và kỹ năng chuyên môn vững vàng, anh luôn mang đến những bài giảng thực tế và dễ hiểu cho học viên."
+      "description": "Là một lập trình viên tại CodeLab, Nguyễn Thanh Tùng có nhiều năm kinh nghiệm trong phát triển web và ứng dụng. Với tư duy sáng tạo và kỹ năng chuyên môn vững vàng, anh luôn mang đến những bài giảng thực tế và dễ hiểu cho học viên."
     },
     "member2": {
       "name": "Trần Minh Đức",
@@ -189,7 +189,7 @@
     },
     "member3": {
       "name": "Lê Thị Hồng Nhung",
-      "description": "Lê Thị Hồng Nhung, Tech Lead tại L Edu, là chuyên gia trong lĩnh vực phát triển phần mềm. Với nhiều năm kinh nghiệm quản lý dự án và xây dựng hệ thống lớn, anh mang đến cho học viên những kiến thức chuyên sâu và kỹ năng thực chiến."
+      "description": "Lê Thị Hồng Nhung, Tech Lead tại CodeLab, là chuyên gia trong lĩnh vực phát triển phần mềm. Với nhiều năm kinh nghiệm quản lý dự án và xây dựng hệ thống lớn, anh mang đến cho học viên những kiến thức chuyên sâu và kỹ năng thực chiến."
     },
     "unlockPotential": "Khơi dậy tiềm năng lập trình của bạn",
     "believeLearning": "Chúng tôi tin rằng việc học lập trình mở ra vô số cơ hội cho sự sáng tạo và đổi mới.",
@@ -322,7 +322,7 @@
     "learnMore": "Tìm hiểu thêm"
   },
   "courseOverview": {
-    "title": "Tại sao chọn L-Edu?",
+    "title": "Tại sao chọn CodeLab?",
     "feature1": {
       "title": "Khóa học chất lượng cao",
       "description": "Các khóa học được thiết kế bởi chuyên gia với nội dung cập nhật và thực tế"
@@ -390,9 +390,9 @@
     "newsletter": "Đăng ký nhận tin",
     "newsletterPlaceholder": "Nhập email của bạn",
     "subscribe": "Đăng ký",
-    "copyright": "© 2024 L-Edu. Tất cả quyền được bảo lưu.",
-    "madeWith": "Được tạo với ❤️ bởi đội ngũ L-Edu",
-    "description": "Nền tảng học lập trình toàn diện",
+    "copyright": "© 2024 CodeLab. Tất cả quyền được bảo lưu.",
+    "madeWith": "Được tạo với ❤️ bởi đội ngũ CodeLab",
+    "description": "Dạy lập trình thực chiến cho học sinh 12–18 tuổi — lớp nhỏ, mentor kèm, hybrid onl/off, định hướng sản phẩm và ôn thi khi phù hợplập trình toàn diện",
     "course": "Khóa học",
     "contactInfo": "Thông tin liên hệ",
     "courses": "Khóa học",

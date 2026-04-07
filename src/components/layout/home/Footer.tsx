@@ -114,7 +114,7 @@ const Footer = () => {
                           aria-label={s.label}
                         >
                           {iconData ? (
-                            <span style={{ fontSize: 18 }}>{iconData.emoji}</span>
+                            <span style={{ fontSize: 18 }}><iconData.icon /></span>
                           ) : (
                             <span className="material-symbols-outlined text-lg">alternate_email</span>
                           )}

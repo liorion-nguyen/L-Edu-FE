@@ -1,9 +1,9 @@
-import { CSSProperties, useEffect, useState } from "react";
-import { Button, Drawer, Flex } from "antd";
 import { MessageOutlined, RollbackOutlined } from "@ant-design/icons";
-import MessagesBox from "./MessagesBox";
+import { Button, Drawer, Flex } from "antd";
+import { CSSProperties, useEffect, useState } from "react";
 import { RootState, useSelector } from "../../redux/store";
 import ChatRoom from "./ChatRoom";
+import MessagesBox from "./MessagesBox";
 
 const ChatPopup = () => {
   const [visible, setVisible] = useState(false);
@@ -31,8 +31,8 @@ const ChatPopup = () => {
         placement="right"
         onClose={toggleChat}
         open={visible}
-        bodyStyle={styles.drawerBody}
-        headerStyle={styles.drawerHeader}
+        // bodyStyle={styles.drawerBody}
+        // headerStyle={styles.drawerHeader}
       >
         {messageBox && isChatRoom ? (
           <Flex vertical style={{ height: "100%" }}>

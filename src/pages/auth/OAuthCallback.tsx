@@ -3,8 +3,8 @@ import { notification, Spin } from 'antd';
 import { useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { getUser, setAuth } from '../../redux/slices/auth';
 import { localStorageConfig } from '../../config';
+import { getUser, setAuth } from '../../redux/slices/auth';
 
 const OAuthCallback = () => {
     const [searchParams] = useSearchParams();
@@ -50,7 +50,7 @@ const OAuthCallback = () => {
                 notification.success({
                     key: 'oauth-login-success',
                     message: 'Đăng nhập thành công',
-                    description: 'Chào mừng bạn đến với L-Edu!',
+                    description: 'Chào mừng bạn đến với CodeLab!',
                 });
 
                 const returnTo = localStorage.getItem(POST_LOGIN_REDIRECT_KEY);

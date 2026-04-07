@@ -1,12 +1,11 @@
-import { LockOutlined, MenuOutlined, MoonOutlined, SunOutlined } from "@ant-design/icons";
+import { LockOutlined, MenuOutlined } from "@ant-design/icons";
 import { Drawer, Grid, Layout, Menu, Typography } from "antd";
 import { CSSProperties, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { localStorageConfig } from "../../../config";
-import { COLORS } from "../../../constants/colors";
 import { CODELAB_BRAND_NAME } from "../../../constants/codelabSite";
+import { COLORS } from "../../../constants/colors";
 import { useTheme } from "../../../contexts/ThemeContext";
-import { Role } from "../../../enum/user.enum";
 import { useTranslationWithRerender } from "../../../hooks/useLanguageChange";
 import { getUser } from "../../../redux/slices/auth";
 import { RootState, useDispatch, useSelector } from "../../../redux/store";
@@ -26,7 +25,7 @@ const Header = () => {
   const [menuItems, setMenuItems] = useState([
     { key: "/", label: t('navigation.home') },
     { key: "/aboutus", label: t('navigation.about') },
-    { key: "/course", label: t('navigation.course') },
+    // { key: "/course", label: t('navigation.course') },
     // { 
     //   key: "/code-editor", 
     //   label: t('navigation.codeEditor'),
@@ -47,7 +46,7 @@ const Header = () => {
     const baseMenuItems = [
       { key: "/", label: t('navigation.home') },
       { key: "/aboutus", label: t('navigation.about') },
-      { key: "/course", label: t('navigation.course') },
+      // { key: "/course", label: t('navigation.course') },
       // { 
       //   key: "/code-editor", 
       //   label: t('navigation.codeEditor'),
@@ -192,23 +191,7 @@ const Header = () => {
 
             {isDesktop && <LanguageSwitcher variant="iconButton" />}
 
-            {user?.role === Role.ADMIN && isDesktop && (
-              <button
-                type="button"
-                onClick={toggleTheme}
-                title={isDark ? t("theme.switchToLight") : t("theme.switchToDark")}
-                className="h-10 w-10 rounded-xl flex items-center justify-center border transition-colors"
-                style={{
-                  borderColor: "var(--border-color)",
-                  background: "var(--hover-bg)",
-                  color: isDark ? "#fbbf24" : "var(--primary-color)",
-                }}
-              >
-                <span style={{ fontSize: 18, lineHeight: 0, display: "inline-flex" }}>
-                  {isDark ? <SunOutlined /> : <MoonOutlined />}
-                </span>
-              </button>
-            )}
+            {/* Theme toggle disabled: always dark */}
 
             {user ? (
               isDesktop ? (
@@ -266,42 +249,7 @@ const Header = () => {
               ),
             },
             // Theme toggle item
-            {
-              key: 'theme-toggle',
-              label: (
-                <div className="flex items-center justify-between gap-3">
-                  <span className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
-                    {isDark ? t('theme.light') : t('theme.dark')}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={toggleTheme}
-                    title={isDark ? t("theme.switchToLight") : t("theme.switchToDark")}
-                    className="inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm font-semibold border transition-colors"
-                    style={{
-                      borderColor: "var(--border-color)",
-                      background: "var(--hover-bg)",
-                      color: "var(--text-primary)",
-                    }}
-                  >
-                    <span
-                      className="inline-flex items-center justify-center rounded-full"
-                      style={{
-                        width: 28,
-                        height: 28,
-                        background: isDark ? "rgba(251, 191, 36, 0.18)" : "rgba(35, 131, 226, 0.12)",
-                        color: isDark ? "#fbbf24" : "var(--primary-color)",
-                      }}
-                    >
-                      {isDark ? <SunOutlined /> : <MoonOutlined />}
-                    </span>
-                    <span className="leading-none">
-                      {isDark ? t("theme.light") : t("theme.dark")}
-                    </span>
-                  </button>
-                </div>
-              ),
-            },
+            // Theme toggle disabled: always dark
             // Divider
             { type: 'divider' },
             // Other menu items

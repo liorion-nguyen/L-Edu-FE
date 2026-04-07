@@ -1,9 +1,9 @@
+import { AppstoreOutlined, LinkOutlined } from '@ant-design/icons';
+import { Button, Card, Col, Image, Row, Spin, Tag, Typography } from 'antd';
 import React, { useEffect, useState } from 'react';
-import { Row, Col, Card, Typography, Spin, Tag, Image, Space, Button } from 'antd';
 import { useTranslationWithRerender } from '../../hooks/useLanguageChange';
 import SectionLayout from '../../layouts/SectionLayout';
-import { linkedAppService, LinkedApp } from '../../services/linkedAppService';
-import { LinkOutlined, AppstoreOutlined } from '@ant-design/icons';
+import { LinkedApp, linkedAppService } from '../../services/linkedAppService';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -63,7 +63,7 @@ const LinkedApps: React.FC<LinkedAppsProps> = ({ style }) => {
           Ứng Dụng Liên Kết
         </Title>
         <Paragraph style={{ color: 'var(--text-secondary)', fontSize: '16px', maxWidth: '600px', margin: '0 auto' }}>
-          Khám phá các ứng dụng và công cụ hữu ích được liên kết với L-Edu
+          Khám phá các ứng dụng và công cụ hữu ích được liên kết với CodeLab
         </Paragraph>
       </div>
 
