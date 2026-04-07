@@ -6,7 +6,7 @@
 export const CODELAB_BRAND_NAME = "CodeLab";
 
 export const CODELAB_SITE_URL =
-  process.env.REACT_APP_SITE_URL?.replace(/\/$/, "") || "https://codelab.pro.vn";
+  process.env.REACT_APP_SITE_URL?.replace(/\/$/, "") || "https://app.codelab.pro.vn";
 
 /** Form đăng ký tư vấn trên site marketing (www + hash) */
 export const CODELAB_SIGNUP_URL =

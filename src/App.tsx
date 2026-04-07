@@ -55,10 +55,12 @@ import ExamTakingPage from "./pages/exams/ExamTakingPage";
 import ExamResultPage from "./pages/exams/ExamResultPage";
 import MyClassesPage from "./pages/home/my-classes/MyClassesPage";
 import ClassDetailPage from "./pages/home/my-classes/ClassDetailPage";
+import Seo from "./components/seo/Seo";
 
 function App() {
   return (
     <Router>
+      <Seo />
       <Routes>
         {/* Test Pages */}
         <Route path="/test/chatbot" element={<MainLayout><ChatbotTestPage /></MainLayout>} />
