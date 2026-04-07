@@ -333,7 +333,19 @@ const Course = () => {
             <Row gutter={[24, 24]}>
               {[...Array(6)].map((_, index) => (
                 <Col key={index} xs={24} sm={12} md={12} lg={8} xl={8}>
-                  <Skeleton active avatar paragraph={{ rows: 3 }} />
+                  <div className="codelab-course-skeleton">
+                    <div className="codelab-course-skeleton__cover" />
+                    <div className="codelab-course-skeleton__body">
+                      <div className="codelab-course-skeleton__row codelab-course-skeleton__row--title" />
+                      <div className="codelab-course-skeleton__row codelab-course-skeleton__row--line" />
+                      <div className="codelab-course-skeleton__row codelab-course-skeleton__row--line short" />
+                      <div className="codelab-course-skeleton__footer">
+                        <div className="codelab-course-skeleton__avatar" />
+                        <div className="codelab-course-skeleton__pill" />
+                      </div>
+                      <div className="codelab-course-skeleton__cta" />
+                    </div>
+                  </div>
                 </Col>
               ))}
             </Row>

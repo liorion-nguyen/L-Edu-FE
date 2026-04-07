@@ -205,6 +205,96 @@
   }
 }
 
+/* CodeLab course skeleton (matches current UI better than Ant Skeleton) */
+.codelab-course-skeleton {
+  position: relative;
+  overflow: hidden;
+  border-radius: 24px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-primary);
+  box-shadow: 0 10px 30px rgba(2, 6, 23, 0.08);
+}
+
+.codelab-course-skeleton::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.06) 45%,
+    rgba(255, 255, 255, 0.14) 50%,
+    rgba(255, 255, 255, 0.06) 55%,
+    transparent 100%
+  );
+  transform: translateX(-120%);
+  animation: codelab-skeleton-shimmer 1.25s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes codelab-skeleton-shimmer {
+  0% {
+    transform: translateX(-120%);
+  }
+  100% {
+    transform: translateX(120%);
+  }
+}
+
+.codelab-course-skeleton__cover {
+  height: 180px;
+  background: linear-gradient(135deg, rgba(0, 127, 255, 0.10), rgba(99, 102, 241, 0.10));
+}
+
+.codelab-course-skeleton__body {
+  padding: 18px 18px 20px 18px;
+}
+
+.codelab-course-skeleton__row {
+  height: 12px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.18);
+  margin-top: 10px;
+}
+
+.codelab-course-skeleton__row--title {
+  height: 18px;
+  margin-top: 0;
+  background: rgba(148, 163, 184, 0.24);
+}
+
+.codelab-course-skeleton__row--line.short {
+  width: 72%;
+}
+
+.codelab-course-skeleton__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 14px;
+}
+
+.codelab-course-skeleton__avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.22);
+}
+
+.codelab-course-skeleton__pill {
+  height: 26px;
+  width: 96px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.18);
+}
+
+.codelab-course-skeleton__cta {
+  height: 44px;
+  margin-top: 16px;
+  border-radius: 16px;
+  background: rgba(0, 127, 255, 0.16);
+}
+
 /* Badge Ribbon Animation */
 .ant-ribbon {
   transition: transform 0.3s ease;

@@ -31,6 +31,12 @@ apiClient.interceptors.response.use(
     if (status === 401 || status === 403) {
       try {
         const refreshToken = localStorage.getItem(REFRESH_TOKEN);
+        // Không có refresh token thì không gọi refresh endpoint.
+        if (!refreshToken) {
+          localStorage.removeItem(ACCESS_TOKEN);
+          localStorage.removeItem(REFRESH_TOKEN);
+          return Promise.reject(err);
+        }
         const { data } = await axios.post(`${envConfig.serverURL}/auth/refresh-token`, {
           refresh_token: refreshToken,
         });

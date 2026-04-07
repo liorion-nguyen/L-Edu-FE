@@ -1,7 +1,6 @@
 import { ArrowUpOutlined } from "@ant-design/icons";
 import { BackTop, Layout } from "antd";
 import React, { useEffect, useState } from "react";
-import GlobalChatbot from "../components/chatbot/GlobalChatbot";
 import Footer from "../components/layout/home/Footer";
 import Header from "../components/layout/home/Header";
 import { RADIUS, SPACING } from "../constants/colors";
@@ -63,7 +62,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       >
         <ArrowUpOutlined />
       </BackTop>
-      <GlobalChatbot />
+      {/* <GlobalChatbot /> */}
     </Layout>
   );
 };

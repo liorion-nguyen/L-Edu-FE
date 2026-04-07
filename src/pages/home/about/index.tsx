@@ -77,7 +77,7 @@ const AboutUs = () => {
         </div>
 
         <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-14 px-6 lg:grid-cols-2">
-          <div className="space-y-8">
+          <div className="space-y-8 h-full">
             <div
               className="inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-sm font-bold"
               style={{ borderColor: "rgba(35, 131, 226, 0.25)", background: "rgba(35, 131, 226, 0.10)", color: "var(--primary-color)" }}

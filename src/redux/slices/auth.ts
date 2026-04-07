@@ -141,6 +141,14 @@ export const getUser = createAsyncThunk(
     'auth/getUser',
     async (_, { rejectWithValue }) => {
         try {
+            const token =
+                typeof window !== 'undefined'
+                    ? localStorage.getItem(localStorageConfig.accessToken)
+                    : null;
+            if (!token) {
+                // Không có JWT thì không gọi API (tránh CORS/401 spam khi user chưa đăng nhập).
+                return rejectWithValue('NO_TOKEN');
+            }
             // Use apiClient to attach Authorization header from localStorage.
             const result = await apiClient.get(`/users`);
             return (result as any).data?.data ?? (result as any).data;
@@ -319,6 +327,11 @@ export const authenticationSlice = createSlice({
             })
             .addCase(getUser.rejected, (state, action) => {
                 state.loading = false;
+                // Nếu chưa đăng nhập thì không coi là lỗi hiển thị
+                if (action.payload === 'NO_TOKEN') {
+                    state.errorMessage = '';
+                    return;
+                }
                 state.errorMessage = action.payload as string;
             })
             // Update user
