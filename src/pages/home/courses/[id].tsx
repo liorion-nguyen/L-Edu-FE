@@ -1,5 +1,5 @@
 import { DownOutlined, EyeOutlined, LockOutlined, LogoutOutlined, PlusOutlined, ProductOutlined, UpOutlined, BookOutlined, PlayCircleOutlined, FileTextOutlined, FilePdfOutlined, RollbackOutlined, ClockCircleOutlined, FlagOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
-import { Button, Col, Flex, Grid, Image, Modal, Row, Typography, Avatar, Card, Space, Tag, Alert, Spin, Descriptions } from "antd";
+import { Button, Col, Flex, Grid, Image, Modal, Row, Typography, Avatar, Card, Space, Tag, Alert, Spin, Descriptions, Table } from "antd";
 import Title from "antd/es/typography/Title";
 import { CSSProperties, useEffect, useState, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -8,7 +8,7 @@ import Loading from "../../../components/common/Loading";
 import { COLORS } from "../../../constants/colors";
 import { Mode } from "../../../enum/course.enum";
 import { examService } from "../../../services/examService";
-import { ExamSummary, ExamVisibility, ExamDetail } from "../../../types/exam";
+import { ExamAttempt, ExamSummary, ExamVisibility, ExamDetail } from "../../../types/exam";
 import { Role } from "../../../enum/user.enum";
 import SectionLayout from "../../../layouts/SectionLayout";
 import { getCourseById } from "../../../redux/slices/courses";
@@ -48,6 +48,10 @@ export const Session = ({
   const [examDetails, setExamDetails] = useState<Pick<ExamDetail, "_id" | "title" | "description" | "config" | "visibility" | "totalPoints"> | null>(null);
   const [loadingExam, setLoadingExam] = useState(false);
   const [startingExam, setStartingExam] = useState(false);
+  const [historyModalVisible, setHistoryModalVisible] = useState(false);
+  const [historyLoading, setHistoryLoading] = useState(false);
+  const [historyExamId, setHistoryExamId] = useState<string | null>(null);
+  const [attemptHistory, setAttemptHistory] = useState<ExamAttempt[]>([]);
 
   const sections = [
     { type: "note", name: t('courseDetail.noteDocument'), icon: "/images/icons/course/doc.png", id: item._id, status: item.modeNoteMd === Mode.OPEN },
@@ -141,9 +145,54 @@ export const Session = ({
     }
   };
 
+  const openAttemptHistory = async (examId: string) => {
+    // Student only: history is scoped to current student.
+    if (user?.role !== Role.STUDENT) return;
+
+    // Ensure user hydrated (same logic as startExam).
+    const token = typeof window !== "undefined" ? localStorage.getItem("jwt-access-token") : null;
+    let fetchedUserId: string | undefined;
+    if (!user?._id && token) {
+      const result = await dispatch(getUser());
+      if (getUser.rejected.match(result)) {
+        showNotification(ToasterType.error, "Exam", "Vui lòng đăng nhập trước khi xem lịch sử");
+        return;
+      }
+      fetchedUserId = (result as any)?.payload?._id;
+    }
+    const latestUserId = (user?._id ?? fetchedUserId) as string | undefined;
+    if (!latestUserId) {
+      showNotification(ToasterType.error, "Exam", "Vui lòng đăng nhập trước khi xem lịch sử");
+      return;
+    }
+
+    try {
+      setHistoryExamId(examId);
+      setHistoryModalVisible(true);
+      setHistoryLoading(true);
+      const data = await examService.listAttempts(examId, { studentId: latestUserId });
+      setAttemptHistory(Array.isArray(data) ? data : []);
+    } catch (error: any) {
+      const message = error?.response?.data?.message || "Không thể tải lịch sử làm bài";
+      showNotification(ToasterType.error, "Exam", message);
+      setHistoryModalVisible(false);
+    } finally {
+      setHistoryLoading(false);
+    }
+  };
+
   const isAdmin = useIsAdmin();
   const isDash = variant === "dashboard";
   const sessionLocked = item.mode === Mode.CLOSE;
+
+  const formatDuration = (seconds: number | null | undefined) => {
+    if (seconds == null || Number.isNaN(Number(seconds))) return "—";
+    if (seconds < 60) return `${seconds}s`;
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    if (remainingSeconds === 0) return `${minutes} phút`;
+    return `${minutes} phút ${remainingSeconds}s`;
+  };
 
   const sessionCardClass = [
     "modern-session-card",
@@ -262,29 +311,49 @@ export const Session = ({
                 />
               )}
             </div>
-            <Button
-              type={section.status ? "primary" : "default"}
-              icon={<LogoutOutlined />}
-              disabled={!section.status}
-              onClick={(e) => {
-                e.stopPropagation();
-                if (section.status) handleView(section);
-              }}
-              className={[
-                "section-action-button h-9 px-4 !rounded-[10px] text-[13px] font-semibold shrink-0",
-                isDash && section.status
-                  ? "!rounded-xl !bg-primary !border-primary hover:!bg-[#006fe6] !shadow-md !shadow-primary/25"
-                  : "",
-              ]
-                .filter(Boolean)
-                .join(" ")}
-            >
-              {section.status
-                ? section.type === "exam"
-                  ? t("courseDetail.startExam")
-                  : t("courseDetail.view")
-                : t("courseDetail.locked")}
-            </Button>
+            <div className="flex items-center gap-2 shrink-0">
+              {section.type === "exam" && section.status && user?.role === Role.STUDENT && (
+                <Button
+                  type="default"
+                  icon={<RollbackOutlined />}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    void openAttemptHistory(section.id);
+                  }}
+                  className={[
+                    "h-9 px-3 !rounded-[10px] text-[13px] font-semibold",
+                    isDash ? "bg-slate-950/95 border border-slate-600/85 text-slate-100" : "",
+                  ]
+                    .filter(Boolean)
+                    .join(" ")}
+                >
+                  {t("courseDetail.history")}
+                </Button>
+              )}
+              <Button
+                type={section.status ? "primary" : "default"}
+                icon={<LogoutOutlined />}
+                disabled={!section.status}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (section.status) handleView(section);
+                }}
+                className={[
+                  "section-action-button h-9 px-4 !rounded-[10px] text-[13px] font-semibold shrink-0",
+                  isDash && section.status
+                    ? "!rounded-xl !bg-primary !border-primary hover:!bg-[#006fe6] !shadow-md !shadow-primary/25"
+                    : "",
+                ]
+                  .filter(Boolean)
+                  .join(" ")}
+              >
+                {section.status
+                  ? section.type === "exam"
+                    ? t("courseDetail.startExam")
+                    : t("courseDetail.view")
+                  : t("courseDetail.locked")}
+              </Button>
+            </div>
           </div>
         ))}
       </div>
@@ -453,6 +522,73 @@ export const Session = ({
             </div>
           </div>
         ) : null}
+      </Modal>
+
+      {/* Attempt History Modal (Student) */}
+      <Modal
+        open={historyModalVisible}
+        onCancel={() => {
+          setHistoryModalVisible(false);
+          setHistoryExamId(null);
+          setAttemptHistory([]);
+        }}
+        footer={null}
+        width={760}
+        centered
+        title={t("courseDetail.examHistoryTitle")}
+      >
+        <Table
+          pagination={false}
+          loading={historyLoading}
+          locale={{ emptyText: t("courseDetail.examHistoryEmpty") }}
+          dataSource={(attemptHistory ?? []).map((attempt, index) => {
+            const startedAt = attempt.startedAt ? dayjs(attempt.startedAt) : null;
+            const submittedAt = attempt.submittedAt ? dayjs(attempt.submittedAt) : null;
+            const durationSeconds = startedAt && submittedAt ? submittedAt.diff(startedAt, "second") : null;
+            return {
+              key: attempt._id,
+              order: index + 1,
+              startedAt: startedAt ? startedAt.format("DD/MM/YYYY HH:mm") : "—",
+              score: `${attempt.totalScore ?? 0}/${attempt.maxScore ?? 0}`,
+              status: attempt.status,
+              duration: formatDuration(durationSeconds ?? undefined),
+              attemptId: attempt._id,
+            };
+          })}
+          columns={[
+            { title: t("courseDetail.examHistoryColAttempt"), dataIndex: "order", width: 80 },
+            { title: t("courseDetail.examHistoryColTime"), dataIndex: "startedAt", width: 200 },
+            { title: t("courseDetail.examHistoryColScore"), dataIndex: "score", width: 120 },
+            { title: t("courseDetail.examHistoryColDuration"), dataIndex: "duration", width: 140 },
+            {
+              title: t("courseDetail.examHistoryColStatus"),
+              dataIndex: "status",
+              width: 160,
+              render: (status: any) => {
+                const successStatuses = new Set(["SUBMITTED", "AUTO_SUBMITTED", "GRADED"]);
+                return <Tag color={successStatuses.has(status) ? "success" : "processing"}>{status}</Tag>;
+              },
+            },
+            {
+              title: t("courseDetail.examHistoryColAction"),
+              dataIndex: "attemptId",
+              width: 160,
+              render: (attemptId: string) => (
+                <Button
+                  type="link"
+                  onClick={() => {
+                    if (!historyExamId) return;
+                    const base = variant === "dashboard" ? "/dashboard-program/exams" : "/exams";
+                    navigate(`${base}/${historyExamId}/result/${attemptId}`);
+                    setHistoryModalVisible(false);
+                  }}
+                >
+                  {t("courseDetail.examHistoryView")}
+                </Button>
+              ),
+            },
+          ]}
+        />
       </Modal>
     </Card>
   );
