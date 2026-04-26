@@ -2,8 +2,8 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import DashboardLoginModal from "../components/auth/DashboardLoginModal";
 import LanguageSwitcher, { DASHBOARD_HEADER_ICON_BUTTON_CLASS } from "../components/common/LanguageSwitcher";
-import { CODELAB_BRAND_NAME, CODELAB_IMG } from "../constants/codelabSite";
 import { localStorageConfig } from "../config";
+import { CODELAB_BRAND_NAME, CODELAB_IMG } from "../constants/codelabSite";
 import { useTheme } from "../contexts/ThemeContext";
 import { getUser } from "../redux/slices/auth";
 import { RootState, useDispatch, useSelector } from "../redux/store";
@@ -100,11 +100,11 @@ const StudentDashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
           title="Về trang chủ"
         >
           <img
-            src={CODELAB_IMG.logoRow}
+            src={navCollapsed ? CODELAB_IMG.logoIcon : CODELAB_IMG.logoRow}
             alt={CODELAB_BRAND_NAME}
             className={[
               "object-contain object-left",
-              navCollapsed ? "h-8 w-full max-w-[52px]" : "h-11 w-auto max-w-[200px]",
+              navCollapsed ? "w-full max-w-[52px]" : "h-11 w-auto max-w-[200px]",
             ].join(" ")}
           />
         </button>

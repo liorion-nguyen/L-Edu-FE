@@ -194,6 +194,7 @@ const StudentCourseCatalog: React.FC = () => {
         limit: PAGE_SIZE,
         name: appliedSearch,
         categoryId: categoryId || undefined,
+        joinedOnly: true,
       }),
     );
   }, [dispatch, page, appliedSearch, categoryId]);

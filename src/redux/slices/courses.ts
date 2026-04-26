@@ -22,11 +22,22 @@ const initialState: CoursesState = {
 // Async thunks
 export const getCourses = createAsyncThunk(
     'courses/getCourses',
-    async ({ page = 0, limit = 20, name = "", categoryId }: { page?: number; limit?: number; name?: string; categoryId?: string }) => {
+    async (
+        {
+            page = 0,
+            limit = 20,
+            name = "",
+            categoryId,
+            joinedOnly,
+        }: { page?: number; limit?: number; name?: string; categoryId?: string; joinedOnly?: boolean },
+    ) => {
         try {
-            const params: Record<string, string | number> = { page, limit, name };
+            const params: Record<string, string | number | boolean> = { page, limit, name };
             if (categoryId) {
                 params.categoryId = categoryId;
+            }
+            if (joinedOnly) {
+                params.joinedOnly = true;
             }
             const result = await apiClient.get('/courses/search', { params });
             const courses: CourseType[] = Array.isArray(result.data.data.data) ? result.data.data.data : [];
